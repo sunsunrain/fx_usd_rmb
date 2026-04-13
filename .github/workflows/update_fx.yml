@@ -1,0 +1,32 @@
+name: 為替データ 毎月自動更新
+
+on:
+  schedule:
+    - cron: '0 1 1 * *'   # 毎月1日 AM10:00 JST（UTC+9=1:00 UTC）
+  workflow_dispatch:        # 手動実行ボタンも有効
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 依存ライブラリインストール
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: 最新データ取得・HTML再生成
+        run: python update_fx.py
+
+      - name: 変更をコミット＆プッシュ
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html fx_data.json
+          git diff --staged --quiet || git commit -m "Auto update FX data $(date +'%Y-%m-%d')"
+          git push
