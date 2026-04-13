@@ -3,83 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>為替3ヶ月平均・差損益分析</title>
+<title>為替3ヶ月平均 計算ツール</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2128;
-  --border:#30363d; --text:#e6edf3; --text2:#8b949e;
-  --accent:#f0a500; --accent2:#58a6ff;
-  --green:#3fb950; --red:#f85149; --yellow:#d29922;
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;
+  --border:#30363d;--text:#e6edf3;--text2:#8b949e;
+  --accent:#f0a500;--accent2:#58a6ff;--green:#3fb950;--red:#f85149;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding:20px 16px;}
-header{max-width:980px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+a{color:var(--accent2);}
+header{max-width:860px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
 h1{font-size:1.1rem;font-weight:700;}
-.subtitle{font-size:0.7rem;color:var(--text2);margin-top:2px;}
-.main{max-width:980px;margin:0 auto;}
-.section-title{font-size:0.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:12px;border-left:3px solid var(--accent);padding-left:8px;}
+.sub{font-size:.68rem;color:var(--text2);margin-top:2px;}
+.main{max-width:860px;margin:0 auto;}
+.sec{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:10px;border-left:3px solid var(--accent);padding-left:8px;}
 
-/* 入力パネル */
-.panel{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:20px;}
-.panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;align-items:end;}
-.field label{display:block;font-size:0.7rem;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;}
-.field select,.field input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:0.85rem;font-family:'Noto Sans JP',sans-serif;}
-.field select:focus,.field input:focus{outline:none;border-color:var(--accent);}
-.btn-calc{background:var(--accent);color:#000;border:none;padding:9px 22px;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;width:100%;}
+/* 入力 */
+.panel{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end;}
+.field label{display:block;font-size:.68rem;color:var(--text2);margin-bottom:5px;}
+.field input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;font-size:.88rem;font-family:'JetBrains Mono',monospace;}
+.field input:focus{outline:none;border-color:var(--accent);}
+.btn{border:none;padding:8px 18px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;width:100%;}
+.btn-calc{background:var(--accent);color:#000;}
 .btn-calc:hover{opacity:.85;}
+.btn-csv{background:var(--bg2);color:var(--accent2);border:1px solid var(--accent2);}
+.btn-csv:hover{background:var(--accent2);color:#000;}
 
 /* 結果カード */
-.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
-.rcard{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;position:relative;overflow:hidden;}
-.rcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
-.rcard.blue::before{background:var(--accent2);}
-.rcard.green::before{background:var(--green);}
-.rcard.red::before{background:var(--red);}
-.rcard-label{font-size:.65rem;color:var(--text2);letter-spacing:.04em;margin-bottom:6px;}
-.rcard-val{font-size:1.4rem;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1;}
-.rcard-sub{font-size:.68rem;color:var(--text2);margin-top:4px;font-family:'JetBrains Mono',monospace;}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:16px;}
+.rc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;position:relative;overflow:hidden;}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
+.rc.b::before{background:var(--accent2);}
+.rc.g::before{background:var(--green);}
+.rc-lbl{font-size:.62rem;color:var(--text2);margin-bottom:5px;}
+.rc-val{font-size:1.35rem;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1;}
+.rc-unit{font-size:.65rem;color:var(--text2);margin-top:3px;font-family:'JetBrains Mono',monospace;}
 
-/* 月別内訳テーブル */
-.tbl-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
-table{width:100%;border-collapse:collapse;font-size:.82rem;}
-th{background:var(--bg2);padding:9px 14px;text-align:left;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);}
-td{padding:10px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
+/* 内訳テーブル */
+.tw{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{background:var(--bg2);padding:8px 12px;text-align:left;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
 tr:last-child td{border-bottom:none;}
-tr:hover td{background:rgba(255,255,255,.03);}
-td.label{font-family:'Noto Sans JP',sans-serif;font-size:.8rem;}
+tr:hover td{background:rgba(255,255,255,.025);}
+td.lbl{font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
 
 /* 差損益 */
-.diff-section{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:20px;}
-.diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px;}
-.diff-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
-.diff-title{font-size:.68rem;color:var(--text2);margin-bottom:8px;}
-.diff-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:.8rem;}
-.diff-row .key{color:var(--text2);font-size:.72rem;}
-.diff-row .val{font-family:'JetBrains Mono',monospace;font-weight:600;}
-.up{color:var(--red);}
-.down{color:var(--green);}
-.sim-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;}
-.sim-row label{font-size:.72rem;color:var(--text2);}
-.sim-row input{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:5px;width:130px;font-family:'JetBrains Mono',monospace;font-size:.85rem;}
-.sim-result{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:.82rem;}
-.sim-result .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);}
-.sim-result .row:last-child{border-bottom:none;}
-.sim-result .row .k{color:var(--text2);}
-.sim-result .row .v{font-family:'JetBrains Mono',monospace;font-weight:600;}
+.dcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px;}
+.dc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.dc-title{font-size:.65rem;color:var(--text2);margin-bottom:8px;font-weight:700;letter-spacing:.04em;}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:.78rem;border-bottom:1px solid var(--border);}
+.drow:last-child{border-bottom:none;}
+.drow .k{color:var(--text2);font-size:.7rem;}
+.drow .v{font-family:'JetBrains Mono',monospace;font-weight:600;}
+.up{color:var(--red);} .dn{color:var(--green);}
 
-/* 全データテーブル */
-.data-table-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:400px;margin-bottom:20px;}
-.data-table-wrap table{font-size:.75rem;}
-.data-table-wrap th{position:sticky;top:0;z-index:1;}
+/* シム */
+.sim{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.srow{display:flex;justify-content:space-between;padding:4px 0;font-size:.8rem;border-bottom:1px solid var(--border);}
+.srow:last-child{border-bottom:none;}
+.srow .k{color:var(--text2);font-size:.72rem;}
+.srow .v{font-family:'JetBrains Mono',monospace;font-weight:600;}
 
-.source-note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:6px;padding:10px 14px;font-size:.72rem;color:var(--text2);line-height:1.7;}
-.source-note strong{color:var(--text);}
+/* 全データ */
+.atw{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:360px;margin-bottom:16px;}
+.atw table{font-size:.75rem;}
+.atw th{position:sticky;top:0;z-index:1;}
 
+.note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:6px;padding:10px 14px;font-size:.7rem;color:var(--text2);line-height:1.7;}
+.note strong{color:var(--text);}
 .hidden{display:none;}
-.tag{font-size:.62rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--text2);margin-left:4px;}
+.tag{display:inline-block;font-size:.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--text2);margin-left:4px;vertical-align:middle;}
+.dl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;}
 </style>
 </head>
 <body>
@@ -88,7 +88,7 @@ td.label{font-family:'Noto Sans JP',sans-serif;font-size:.8rem;}
     <div class="logo-icon">📊</div>
     <div>
       <h1>為替3ヶ月平均 計算ツール</h1>
-      <div class="subtitle">三菱UFJリサーチ&コンサルティング 月末・月中平均TTS/TTB | Sunnys Corporation</div>
+      <div class="sub">三菱UFJリサーチ&コンサルティング 月末・月中平均 TTS | Sunnys Corporation</div>
     </div>
   </div>
 </header>
@@ -96,296 +96,203 @@ td.label{font-family:'Noto Sans JP',sans-serif;font-size:.8rem;}
 <div class="main">
 
   <!-- 入力 -->
-  <div class="section-title">計算条件入力</div>
+  <div class="sec">計算条件</div>
   <div class="panel">
-    <div class="panel-grid">
-      <div class="field">
-        <label>【A】見積月（YYYYMM）</label>
-        <input type="text" id="inp-a" placeholder="例: 202306" maxlength="6" value="202306">
-      </div>
-      <div class="field">
-        <label>【B】再見積月（YYYYMM）</label>
-        <input type="text" id="inp-b" placeholder="例: 202603" maxlength="6" value="202603">
-      </div>
-      <div class="field">
-        <label>発注金額 USD建て</label>
-        <input type="number" id="inp-usd" value="10000" min="0">
-      </div>
-      <div class="field">
-        <label>発注金額 CNY建て</label>
-        <input type="number" id="inp-cny" value="70000" min="0">
-      </div>
-      <div class="field">
-        <label>&nbsp;</label>
-        <button class="btn-calc" onclick="calc()">▶ 計算する</button>
-      </div>
+    <div class="pgrid">
+      <div class="field"><label>【A】見積月（YYYYMM）</label><input id="inp-a" placeholder="例: 202306" maxlength="6" value="202306"></div>
+      <div class="field"><label>【B】再見積月（YYYYMM）</label><input id="inp-b" placeholder="例: 202603" maxlength="6" value="202603"></div>
+      <div class="field"><label>発注金額 USD建て</label><input id="inp-usd" type="number" value="10000" min="0"></div>
+      <div class="field"><label>発注金額 CNY建て</label><input id="inp-cny" type="number" value="70000" min="0"></div>
+      <div class="field"><label>&nbsp;</label><button class="btn btn-calc" onclick="calc()">▶ 計算する</button></div>
     </div>
+  </div>
+
+  <!-- CSVダウンロード -->
+  <div class="dl-row">
+    <button class="btn btn-csv" style="width:auto;padding:7px 18px;" onclick="downloadCSV()">⬇ 直近3年データ CSV ダウンロード</button>
+    <span style="font-size:.7rem;color:var(--text2)">※ 月別TTS生データ（直近36ヶ月）</span>
   </div>
 
   <!-- 結果 -->
   <div id="result-section" class="hidden">
-    <div class="section-title">【A】見積時 3ヶ月平均 <span class="tag" id="label-a"></span></div>
-    <div class="result-grid" id="cards-a"></div>
+    <div class="sec">【A】見積時 3ヶ月平均 <span class="tag" id="lbl-a"></span></div>
+    <div class="rgrid" id="cards-a"></div>
 
-    <div class="section-title">【B】再見積時 3ヶ月平均 <span class="tag" id="label-b"></span></div>
-    <div class="result-grid" id="cards-b"></div>
+    <div class="sec">【B】再見積時 3ヶ月平均 <span class="tag" id="lbl-b"></span></div>
+    <div class="rgrid" id="cards-b"></div>
 
-    <div class="section-title">月別データ内訳</div>
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>区分</th><th>対象月</th>
-            <th>USD TTS</th><th>USD TTB</th><th>USD TTM</th>
-            <th>CNY TTS</th><th>CNY TTB</th><th>CNY TTM</th>
-          </tr>
-        </thead>
-        <tbody id="breakdown-tbody"></tbody>
-      </table>
-    </div>
+    <div class="sec">月別データ内訳</div>
+    <div class="tw"><table><thead><tr>
+      <th>区分</th><th>年月</th><th>USD TTS</th><th>CNY TTS</th><th>USD/CNY</th>
+    </tr></thead><tbody id="bk-tbody"></tbody></table></div>
 
-    <div class="section-title">【C】為替差損益</div>
-    <div class="diff-section">
-      <div class="diff-grid" id="diff-cards"></div>
-      <div style="margin-top:16px;">
-        <div class="section-title" style="margin-bottom:8px;">【D】差損益シミュレーション</div>
-        <div id="sim-result-wrap"></div>
-      </div>
-    </div>
+    <div class="sec">【C】為替差損益</div>
+    <div class="dcards" id="diff-cards"></div>
+
+    <div class="sec">【D】差損益シミュレーション</div>
+    <div class="sim" id="sim-result" style="margin-bottom:18px;"></div>
   </div>
 
   <!-- 全データ -->
-  <div class="section-title" style="margin-top:8px;">全月別データ（2005年〜）</div>
-  <div class="data-table-wrap">
-    <table id="all-data-table">
-      <thead>
-        <tr>
-          <th>年月</th>
-          <th>USD TTS</th><th>USD TTB</th><th>USD TTM</th>
-          <th>CNY TTS</th><th>CNY TTB</th><th>CNY TTM</th>
-          <th>USD 3M平均TTS</th><th>CNY 3M平均TTS</th>
-        </tr>
-      </thead>
-      <tbody id="all-tbody"></tbody>
-    </table>
+  <div class="sec">全月別データ（新しい順）</div>
+  <div class="atw">
+    <table><thead><tr>
+      <th>年月</th><th>USD TTS</th><th>CNY TTS</th><th>USD/CNY</th><th>USD 3M平均TTS</th><th>CNY 3M平均TTS</th>
+    </tr></thead><tbody id="all-tbody"></tbody></table>
   </div>
 
-  <div class="source-note">
-    <strong>【データ出所】</strong> 三菱UFJリサーチ&コンサルティング 月末・月中平均TTS・TTB
-    <a href="https://www.murc-kawasesouba.jp/fx/monthend/index.php" target="_blank" style="color:var(--accent2)">公式サイト</a>
-    ／ CNY（人民元）はオフショア人民元相場に基づく公表相場 ／ TTM＝(TTS+TTB)÷2<br>
-    <strong>最新データ:</strong> 2026年3月まで収録。新月データは三菱UFJ公式サイトで確認後、管理者がExcelを更新・再アップロードが必要です。
+  <div class="note">
+    <strong>【データ出所】</strong>
+    三菱UFJリサーチ&コンサルティング 月末・月中平均TTS
+    <a href="https://www.murc-kawasesouba.jp/fx/monthend/index.php" target="_blank">公式サイト</a>
+    ／ CNYはオフショア人民元相場 ／ 収録: 2005年9月〜最新月 ／ 毎月1日自動更新
   </div>
-
 </div>
 
 <script>
-const FX_DATA = 
-[{"ym": "2005-09", "usd_tts": 112.09, "usd_ttb": 110.09, "usd_ttm": 111.09, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2005-10", "usd_tts": 115.91, "usd_ttb": 113.91, "usd_ttm": 114.91, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2005-11", "usd_tts": 119.44, "usd_ttb": 117.44, "usd_ttm": 118.44, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2005-12", "usd_tts": 119.7, "usd_ttb": 117.7, "usd_ttm": 118.7, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-01", "usd_tts": 116.49, "usd_ttb": 114.49, "usd_ttm": 115.49, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-02", "usd_tts": 118.97, "usd_ttb": 116.97, "usd_ttm": 117.97, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-03", "usd_tts": 118.36, "usd_ttb": 116.36, "usd_ttm": 117.36, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-04", "usd_tts": 118.19, "usd_ttb": 116.19, "usd_ttm": 117.19, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-05", "usd_tts": 112.69, "usd_ttb": 110.69, "usd_ttm": 111.69, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-06", "usd_tts": 115.62, "usd_ttb": 113.62, "usd_ttm": 114.62, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-07", "usd_tts": 116.75, "usd_ttb": 114.75, "usd_ttm": 115.75, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-08", "usd_tts": 116.91, "usd_ttb": 114.91, "usd_ttm": 115.91, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-09", "usd_tts": 118.11, "usd_ttb": 116.11, "usd_ttm": 117.11, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-10", "usd_tts": 119.71, "usd_ttb": 117.71, "usd_ttm": 118.71, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-11", "usd_tts": 118.41, "usd_ttb": 116.41, "usd_ttm": 117.41, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-12", "usd_tts": 118.34, "usd_ttb": 116.34, "usd_ttm": 117.34, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-01", "usd_tts": 121.68, "usd_ttb": 119.68, "usd_ttm": 120.68, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-02", "usd_tts": 121.54, "usd_ttb": 119.54, "usd_ttm": 120.54, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-03", "usd_tts": 118.34, "usd_ttb": 116.34, "usd_ttm": 117.34, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-04", "usd_tts": 119.89, "usd_ttb": 117.89, "usd_ttm": 118.89, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-05", "usd_tts": 121.82, "usd_ttb": 119.82, "usd_ttm": 120.82, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-06", "usd_tts": 123.65, "usd_ttb": 121.65, "usd_ttm": 122.65, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-07", "usd_tts": 122.67, "usd_ttb": 120.67, "usd_ttm": 121.67, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-08", "usd_tts": 117.88, "usd_ttb": 115.88, "usd_ttm": 116.88, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-09", "usd_tts": 116.06, "usd_ttb": 114.06, "usd_ttm": 115.06, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-10", "usd_tts": 116.8, "usd_ttb": 114.8, "usd_ttm": 115.8, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-11", "usd_tts": 112.34, "usd_ttb": 110.34, "usd_ttm": 111.34, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-12", "usd_tts": 113.43, "usd_ttb": 111.43, "usd_ttm": 112.43, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-01", "usd_tts": 108.68, "usd_ttb": 106.68, "usd_ttm": 107.68, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-02", "usd_tts": 108.24, "usd_ttb": 106.24, "usd_ttm": 107.24, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-03", "usd_tts": 101.95, "usd_ttb": 99.95, "usd_ttm": 100.95, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-04", "usd_tts": 103.52, "usd_ttb": 101.52, "usd_ttm": 102.52, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-05", "usd_tts": 105.21, "usd_ttb": 103.21, "usd_ttm": 104.21, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-06", "usd_tts": 107.93, "usd_ttb": 105.93, "usd_ttm": 106.93, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-07", "usd_tts": 107.83, "usd_ttb": 105.83, "usd_ttm": 106.83, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-08", "usd_tts": 110.33, "usd_ttb": 108.33, "usd_ttm": 109.33, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-09", "usd_tts": 107.82, "usd_ttb": 105.82, "usd_ttm": 106.82, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-10", "usd_tts": 101.58, "usd_ttb": 99.58, "usd_ttm": 100.58, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-11", "usd_tts": 97.85, "usd_ttb": 95.85, "usd_ttm": 96.85, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-12", "usd_tts": 92.53, "usd_ttb": 90.53, "usd_ttm": 91.53, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-01", "usd_tts": 91.41, "usd_ttb": 89.41, "usd_ttm": 90.41, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-02", "usd_tts": 93.43, "usd_ttb": 91.43, "usd_ttm": 92.43, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-03", "usd_tts": 98.98, "usd_ttb": 96.98, "usd_ttm": 97.98, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-04", "usd_tts": 100.12, "usd_ttb": 98.12, "usd_ttm": 99.12, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-05", "usd_tts": 97.28, "usd_ttb": 95.28, "usd_ttm": 96.28, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-06", "usd_tts": 97.57, "usd_ttb": 95.57, "usd_ttm": 96.57, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-07", "usd_tts": 95.51, "usd_ttb": 93.51, "usd_ttm": 94.51, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-08", "usd_tts": 95.91, "usd_ttb": 93.91, "usd_ttm": 94.91, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-09", "usd_tts": 92.53, "usd_ttb": 90.53, "usd_ttm": 91.53, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-10", "usd_tts": 91.36, "usd_ttb": 89.36, "usd_ttm": 90.36, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-11", "usd_tts": 90.22, "usd_ttb": 88.22, "usd_ttm": 89.22, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-12", "usd_tts": 90.57, "usd_ttb": 88.57, "usd_ttm": 89.57, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-01", "usd_tts": 92.22, "usd_ttb": 90.22, "usd_ttm": 91.22, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-02", "usd_tts": 91.37, "usd_ttb": 89.37, "usd_ttm": 90.37, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-03", "usd_tts": 91.52, "usd_ttb": 89.52, "usd_ttm": 90.52, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-04", "usd_tts": 94.41, "usd_ttb": 92.41, "usd_ttm": 93.41, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-05", "usd_tts": 92.69, "usd_ttb": 90.69, "usd_ttm": 91.69, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-06", "usd_tts": 91.92, "usd_ttb": 89.92, "usd_ttm": 90.92, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-07", "usd_tts": 88.75, "usd_ttb": 86.75, "usd_ttm": 87.75, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-08", "usd_tts": 86.5, "usd_ttb": 84.5, "usd_ttm": 85.5, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-09", "usd_tts": 85.45, "usd_ttb": 83.45, "usd_ttm": 84.45, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-10", "usd_tts": 82.93, "usd_ttb": 80.93, "usd_ttm": 81.93, "cny_tts": 12.67, "cny_ttb": 11.87, "cny_ttm": 12.27}, {"ym": "2010-11", "usd_tts": 83.54, "usd_ttb": 81.54, "usd_ttm": 82.54, "cny_tts": 12.8, "cny_ttb": 12, "cny_ttm": 12.4}, {"ym": "2010-12", "usd_tts": 84.45, "usd_ttb": 82.45, "usd_ttm": 83.45, "cny_tts": 12.94, "cny_ttb": 12.14, "cny_ttm": 12.54}, {"ym": "2011-01", "usd_tts": 83.66, "usd_ttb": 81.66, "usd_ttm": 82.66, "cny_tts": 12.92, "cny_ttb": 12.12, "cny_ttm": 12.52}, {"ym": "2011-02", "usd_tts": 83.54, "usd_ttb": 81.54, "usd_ttm": 82.54, "cny_tts": 12.93, "cny_ttb": 12.13, "cny_ttm": 12.53}, {"ym": "2011-03", "usd_tts": 82.81, "usd_ttb": 80.81, "usd_ttm": 81.81, "cny_tts": 12.86, "cny_ttb": 12.06, "cny_ttm": 12.46}, {"ym": "2011-04", "usd_tts": 84.44, "usd_ttb": 82.44, "usd_ttm": 83.44, "cny_tts": 13.17, "cny_ttb": 12.37, "cny_ttm": 12.77}, {"ym": "2011-05", "usd_tts": 82.23, "usd_ttb": 80.23, "usd_ttm": 81.23, "cny_tts": 12.9, "cny_ttb": 12.1, "cny_ttm": 12.5}, {"ym": "2011-06", "usd_tts": 81.56, "usd_ttb": 79.56, "usd_ttm": 80.56, "cny_tts": 12.83, "cny_ttb": 12.03, "cny_ttm": 12.43}, {"ym": "2011-07", "usd_tts": 80.51, "usd_ttb": 78.51, "usd_ttm": 79.51, "cny_tts": 12.7, "cny_ttb": 11.9, "cny_ttm": 12.3}, {"ym": "2011-08", "usd_tts": 78.27, "usd_ttb": 76.27, "usd_ttm": 77.27, "cny_tts": 12.45, "cny_ttb": 11.65, "cny_ttm": 12.05}, {"ym": "2011-09", "usd_tts": 77.88, "usd_ttb": 75.88, "usd_ttm": 76.88, "cny_tts": 12.44, "cny_ttb": 11.64, "cny_ttm": 12.04}, {"ym": "2011-10", "usd_tts": 77.75, "usd_ttb": 75.75, "usd_ttm": 76.75, "cny_tts": 12.47, "cny_ttb": 11.67, "cny_ttm": 12.07}, {"ym": "2011-11", "usd_tts": 78.6, "usd_ttb": 76.6, "usd_ttm": 77.6, "cny_tts": 12.64, "cny_ttb": 11.84, "cny_ttm": 12.24}, {"ym": "2011-12", "usd_tts": 78.88, "usd_ttb": 76.88, "usd_ttm": 77.88, "cny_tts": 12.7, "cny_ttb": 11.9, "cny_ttm": 12.3}, {"ym": "2012-01", "usd_tts": 77.98, "usd_ttb": 75.98, "usd_ttm": 76.98, "cny_tts": 12.59, "cny_ttb": 11.79, "cny_ttm": 12.19}, {"ym": "2012-02", "usd_tts": 79.4, "usd_ttb": 77.4, "usd_ttm": 78.4, "cny_tts": 12.84, "cny_ttb": 12.04, "cny_ttm": 12.44}, {"ym": "2012-03", "usd_tts": 83.46, "usd_ttb": 81.46, "usd_ttm": 82.46, "cny_tts": 13.47, "cny_ttb": 12.67, "cny_ttm": 13.07}, {"ym": "2012-04", "usd_tts": 82.55, "usd_ttb": 80.55, "usd_ttm": 81.55, "cny_tts": 13.35, "cny_ttb": 12.55, "cny_ttm": 12.95}, {"ym": "2012-05", "usd_tts": 80.75, "usd_ttb": 78.75, "usd_ttm": 79.75, "cny_tts": 13.05, "cny_ttb": 12.25, "cny_ttm": 12.65}, {"ym": "2012-06", "usd_tts": 80.3, "usd_ttb": 78.3, "usd_ttm": 79.3, "cny_tts": 12.95, "cny_ttb": 12.15, "cny_ttm": 12.55}, {"ym": "2012-07", "usd_tts": 80.02, "usd_ttb": 78.02, "usd_ttm": 79.02, "cny_tts": 12.8, "cny_ttb": 12.1, "cny_ttm": 12.45}, {"ym": "2012-08", "usd_tts": 79.68, "usd_ttb": 77.68, "usd_ttm": 78.68, "cny_tts": 12.66, "cny_ttb": 12.06, "cny_ttm": 12.36}, {"ym": "2012-09", "usd_tts": 79.17, "usd_ttb": 77.17, "usd_ttm": 78.17, "cny_tts": 12.66, "cny_ttb": 12.06, "cny_ttm": 12.36}, {"ym": "2012-10", "usd_tts": 79.98, "usd_ttb": 77.98, "usd_ttm": 78.98, "cny_tts": 12.91, "cny_ttb": 12.31, "cny_ttm": 12.61}, {"ym": "2012-11", "usd_tts": 81.89, "usd_ttb": 79.89, "usd_ttm": 80.89, "cny_tts": 13.29, "cny_ttb": 12.69, "cny_ttm": 12.99}, {"ym": "2012-12", "usd_tts": 84.64, "usd_ttb": 82.64, "usd_ttm": 83.64, "cny_tts": 13.76, "cny_ttb": 13.16, "cny_ttm": 13.46}, {"ym": "2013-01", "usd_tts": 90.24, "usd_ttb": 88.24, "usd_ttm": 89.24, "cny_tts": 14.69, "cny_ttb": 14.09, "cny_ttm": 14.39}, {"ym": "2013-02", "usd_tts": 94.23, "usd_ttb": 92.23, "usd_ttm": 93.23, "cny_tts": 15.28, "cny_ttb": 14.68, "cny_ttm": 14.98}, {"ym": "2013-03", "usd_tts": 95.8, "usd_ttb": 93.8, "usd_ttm": 94.8, "cny_tts": 15.57, "cny_ttb": 14.97, "cny_ttm": 15.27}, {"ym": "2013-04", "usd_tts": 98.73, "usd_ttb": 96.73, "usd_ttm": 97.73, "cny_tts": 16.1, "cny_ttb": 15.5, "cny_ttm": 15.8}, {"ym": "2013-05", "usd_tts": 102.1, "usd_ttb": 100.1, "usd_ttm": 101.1, "cny_tts": 16.77, "cny_ttb": 16.17, "cny_ttm": 16.47}, {"ym": "2013-06", "usd_tts": 98.44, "usd_ttb": 96.44, "usd_ttm": 97.44, "cny_tts": 16.18, "cny_ttb": 15.58, "cny_ttm": 15.88}, {"ym": "2013-07", "usd_tts": 100.77, "usd_ttb": 98.77, "usd_ttm": 99.77, "cny_tts": 16.56, "cny_ttb": 15.96, "cny_ttm": 16.26}, {"ym": "2013-08", "usd_tts": 98.85, "usd_ttb": 96.85, "usd_ttm": 97.85, "cny_tts": 16.3, "cny_ttb": 15.7, "cny_ttm": 16}, {"ym": "2013-09", "usd_tts": 100.23, "usd_ttb": 98.23, "usd_ttm": 99.23, "cny_tts": 16.54, "cny_ttb": 15.94, "cny_ttm": 16.24}, {"ym": "2013-10", "usd_tts": 98.87, "usd_ttb": 96.87, "usd_ttm": 97.87, "cny_tts": 16.36, "cny_ttb": 15.76, "cny_ttm": 16.06}, {"ym": "2013-11", "usd_tts": 101.02, "usd_ttb": 99.02, "usd_ttm": 100.02, "cny_tts": 16.76, "cny_ttb": 16.16, "cny_ttm": 16.46}, {"ym": "2013-12", "usd_tts": 104.48, "usd_ttb": 102.48, "usd_ttm": 103.48, "cny_tts": 17.34, "cny_ttb": 16.74, "cny_ttm": 17.04}, {"ym": "2014-01", "usd_tts": 104.92, "usd_ttb": 102.92, "usd_ttm": 103.92, "cny_tts": 17.53, "cny_ttb": 16.93, "cny_ttm": 17.23}, {"ym": "2014-02", "usd_tts": 103.14, "usd_ttb": 101.14, "usd_ttm": 102.14, "cny_tts": 17.17, "cny_ttb": 16.57, "cny_ttm": 16.87}, {"ym": "2014-03", "usd_tts": 103.27, "usd_ttb": 101.27, "usd_ttm": 102.27, "cny_tts": 16.91, "cny_ttb": 16.31, "cny_ttm": 16.61}, {"ym": "2014-04", "usd_tts": 103.58, "usd_ttb": 101.58, "usd_ttm": 102.58, "cny_tts": 16.79, "cny_ttb": 16.19, "cny_ttm": 16.49}, {"ym": "2014-05", "usd_tts": 102.83, "usd_ttb": 100.83, "usd_ttm": 101.83, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2014-06", "usd_tts": 103.08, "usd_ttb": 101.08, "usd_ttm": 102.08, "cny_tts": 16.69, "cny_ttb": 16.09, "cny_ttm": 16.39}, {"ym": "2014-07", "usd_tts": 102.73, "usd_ttb": 100.73, "usd_ttm": 101.73, "cny_tts": 16.71, "cny_ttb": 16.11, "cny_ttm": 16.41}, {"ym": "2014-08", "usd_tts": 103.97, "usd_ttb": 101.97, "usd_ttm": 102.97, "cny_tts": 17.03, "cny_ttb": 16.43, "cny_ttm": 16.73}, {"ym": "2014-09", "usd_tts": 108.07, "usd_ttb": 106.07, "usd_ttm": 107.07, "cny_tts": 17.72, "cny_ttb": 17.12, "cny_ttm": 17.42}, {"ym": "2014-10", "usd_tts": 108.99, "usd_ttb": 106.99, "usd_ttm": 107.99, "cny_tts": 17.9, "cny_ttb": 17.3, "cny_ttm": 17.6}, {"ym": "2014-11", "usd_tts": 117.21, "usd_ttb": 115.21, "usd_ttm": 116.21, "cny_tts": 19.26, "cny_ttb": 18.66, "cny_ttm": 18.96}, {"ym": "2014-12", "usd_tts": 120.41, "usd_ttb": 118.41, "usd_ttm": 119.41, "cny_tts": 19.6, "cny_ttb": 19, "cny_ttm": 19.3}, {"ym": "2015-01", "usd_tts": 119.33, "usd_ttb": 117.33, "usd_ttm": 118.33, "cny_tts": 19.32, "cny_ttb": 18.72, "cny_ttm": 19.02}, {"ym": "2015-02", "usd_tts": 119.59, "usd_ttb": 117.59, "usd_ttm": 118.59, "cny_tts": 19.25, "cny_ttb": 18.65, "cny_ttm": 18.95}, {"ym": "2015-03", "usd_tts": 121.36, "usd_ttb": 119.36, "usd_ttm": 120.36, "cny_tts": 19.56, "cny_ttb": 18.96, "cny_ttm": 19.26}, {"ym": "2015-04", "usd_tts": 120.58, "usd_ttb": 118.58, "usd_ttm": 119.58, "cny_tts": 19.59, "cny_ttb": 18.99, "cny_ttm": 19.29}, {"ym": "2015-05", "usd_tts": 121.75, "usd_ttb": 119.75, "usd_ttm": 120.75, "cny_tts": 19.76, "cny_ttb": 19.16, "cny_ttm": 19.46}, {"ym": "2015-06", "usd_tts": 124.75, "usd_ttb": 122.75, "usd_ttm": 123.75, "cny_tts": 20.24, "cny_ttb": 19.64, "cny_ttm": 19.94}, {"ym": "2015-07", "usd_tts": 124.25, "usd_ttb": 122.25, "usd_ttm": 123.25, "cny_tts": 20.14, "cny_ttb": 19.54, "cny_ttm": 19.84}, {"ym": "2015-08", "usd_tts": 124.21, "usd_ttb": 122.21, "usd_ttm": 123.21, "cny_tts": 19.64, "cny_ttb": 19.04, "cny_ttm": 19.34}, {"ym": "2015-09", "usd_tts": 121.23, "usd_ttb": 119.23, "usd_ttm": 120.23, "cny_tts": 19.04, "cny_ttb": 18.44, "cny_ttm": 18.74}, {"ym": "2015-10", "usd_tts": 121.07, "usd_ttb": 119.07, "usd_ttm": 120.07, "cny_tts": 19.18, "cny_ttb": 18.58, "cny_ttm": 18.88}, {"ym": "2015-11", "usd_tts": 123.58, "usd_ttb": 121.58, "usd_ttm": 122.58, "cny_tts": 19.47, "cny_ttb": 18.87, "cny_ttm": 19.17}, {"ym": "2015-12", "usd_tts": 122.85, "usd_ttb": 120.85, "usd_ttm": 121.85, "cny_tts": 19.02, "cny_ttb": 18.42, "cny_ttm": 18.72}, {"ym": "2016-01", "usd_tts": 119.34, "usd_ttb": 117.34, "usd_ttm": 118.34, "cny_tts": 18.21, "cny_ttb": 17.61, "cny_ttm": 17.91}, {"ym": "2016-02", "usd_tts": 116.08, "usd_ttb": 114.08, "usd_ttm": 115.08, "cny_tts": 17.86, "cny_ttb": 17.26, "cny_ttm": 17.56}, {"ym": "2016-03", "usd_tts": 114.03, "usd_ttb": 112.03, "usd_ttm": 113.03, "cny_tts": 17.67, "cny_ttb": 17.07, "cny_ttm": 17.37}, {"ym": "2016-04", "usd_tts": 110.83, "usd_ttb": 108.83, "usd_ttm": 109.83, "cny_tts": 17.24, "cny_ttb": 16.64, "cny_ttm": 16.94}, {"ym": "2016-05", "usd_tts": 110.12, "usd_ttb": 108.12, "usd_ttm": 109.12, "cny_tts": 16.96, "cny_ttb": 16.36, "cny_ttm": 16.66}, {"ym": "2016-06", "usd_tts": 106.48, "usd_ttb": 104.48, "usd_ttm": 105.48, "cny_tts": 16.28, "cny_ttb": 15.68, "cny_ttm": 15.98}, {"ym": "2016-07", "usd_tts": 104.98, "usd_ttb": 102.98, "usd_ttm": 103.98, "cny_tts": 15.85, "cny_ttb": 15.25, "cny_ttm": 15.55}, {"ym": "2016-08", "usd_tts": 102.34, "usd_ttb": 100.34, "usd_ttm": 101.34, "cny_tts": 15.53, "cny_ttb": 14.93, "cny_ttm": 15.23}, {"ym": "2016-09", "usd_tts": 102.98, "usd_ttb": 100.98, "usd_ttm": 101.98, "cny_tts": 15.57, "cny_ttb": 14.97, "cny_ttm": 15.27}, {"ym": "2016-10", "usd_tts": 104.81, "usd_ttb": 102.81, "usd_ttm": 103.81, "cny_tts": 15.71, "cny_ttb": 15.11, "cny_ttm": 15.41}, {"ym": "2016-11", "usd_tts": 109.12, "usd_ttb": 107.12, "usd_ttm": 108.12, "cny_tts": 16.06, "cny_ttb": 15.46, "cny_ttm": 15.76}, {"ym": "2016-12", "usd_tts": 116.98, "usd_ttb": 114.98, "usd_ttm": 115.98, "cny_tts": 17.05, "cny_ttb": 16.45, "cny_ttm": 16.75}, {"ym": "2017-01", "usd_tts": 115.77, "usd_ttb": 113.77, "usd_ttm": 114.77, "cny_tts": 17.06, "cny_ttb": 16.46, "cny_ttm": 16.76}, {"ym": "2017-02", "usd_tts": 114.11, "usd_ttb": 112.11, "usd_ttm": 113.11, "cny_tts": 16.82, "cny_ttb": 16.22, "cny_ttm": 16.52}, {"ym": "2017-03", "usd_tts": 114.04, "usd_ttb": 112.04, "usd_ttm": 113.04, "cny_tts": 16.73, "cny_ttb": 16.13, "cny_ttm": 16.43}, {"ym": "2017-04", "usd_tts": 111.11, "usd_ttb": 109.11, "usd_ttm": 110.11, "cny_tts": 16.29, "cny_ttb": 15.69, "cny_ttm": 15.99}, {"ym": "2017-05", "usd_tts": 113.25, "usd_ttb": 111.25, "usd_ttm": 112.25, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2017-06", "usd_tts": 111.92, "usd_ttb": 109.92, "usd_ttm": 110.92, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2017-07", "usd_tts": 113.43, "usd_ttb": 111.43, "usd_ttm": 112.43, "cny_tts": 16.9, "cny_ttb": 16.3, "cny_ttm": 16.6}, {"ym": "2017-08", "usd_tts": 110.93, "usd_ttb": 108.93, "usd_ttm": 109.93, "cny_tts": 16.75, "cny_ttb": 16.15, "cny_ttm": 16.45}, {"ym": "2017-09", "usd_tts": 111.74, "usd_ttb": 109.74, "usd_ttm": 110.74, "cny_tts": 17.16, "cny_ttb": 16.56, "cny_ttm": 16.86}, {"ym": "2017-10", "usd_tts": 113.95, "usd_ttb": 111.95, "usd_ttm": 112.95, "cny_tts": 17.36, "cny_ttb": 16.76, "cny_ttm": 17.06}, {"ym": "2017-11", "usd_tts": 113.96, "usd_ttb": 111.96, "usd_ttm": 112.96, "cny_tts": 17.35, "cny_ttb": 16.75, "cny_ttm": 17.05}, {"ym": "2017-12", "usd_tts": 114.02, "usd_ttb": 112.02, "usd_ttm": 113.02, "cny_tts": 17.44, "cny_ttb": 16.84, "cny_ttm": 17.14}, {"ym": "2018-01", "usd_tts": 111.86, "usd_ttb": 109.86, "usd_ttm": 110.86, "cny_tts": 17.56, "cny_ttb": 16.96, "cny_ttm": 17.26}, {"ym": "2018-02", "usd_tts": 108.96, "usd_ttb": 106.96, "usd_ttm": 107.96, "cny_tts": 17.4, "cny_ttb": 16.8, "cny_ttm": 17.1}, {"ym": "2018-03", "usd_tts": 107.07, "usd_ttb": 105.07, "usd_ttm": 106.07, "cny_tts": 17.1, "cny_ttb": 16.5, "cny_ttm": 16.8}, {"ym": "2018-04", "usd_tts": 108.44, "usd_ttb": 106.44, "usd_ttm": 107.44, "cny_tts": 17.39, "cny_ttb": 16.79, "cny_ttm": 17.09}, {"ym": "2018-05", "usd_tts": 110.74, "usd_ttb": 108.74, "usd_ttm": 109.74, "cny_tts": 17.55, "cny_ttb": 16.95, "cny_ttm": 17.25}, {"ym": "2018-06", "usd_tts": 111.03, "usd_ttb": 109.03, "usd_ttm": 110.03, "cny_tts": 17.34, "cny_ttb": 16.74, "cny_ttm": 17.04}, {"ym": "2018-07", "usd_tts": 112.38, "usd_ttb": 110.38, "usd_ttm": 111.38, "cny_tts": 16.86, "cny_ttb": 16.26, "cny_ttm": 16.56}, {"ym": "2018-08", "usd_tts": 112.08, "usd_ttb": 110.08, "usd_ttm": 111.08, "cny_tts": 16.52, "cny_ttb": 15.92, "cny_ttm": 16.22}, {"ym": "2018-09", "usd_tts": 112.91, "usd_ttb": 110.91, "usd_ttm": 111.91, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2018-10", "usd_tts": 113.82, "usd_ttb": 111.82, "usd_ttm": 112.82, "cny_tts": 16.59, "cny_ttb": 15.99, "cny_ttm": 16.29}, {"ym": "2018-11", "usd_tts": 114.36, "usd_ttb": 112.36, "usd_ttm": 113.36, "cny_tts": 16.65, "cny_ttb": 16.05, "cny_ttm": 16.35}, {"ym": "2018-12", "usd_tts": 113.51, "usd_ttb": 111.51, "usd_ttm": 112.51, "cny_tts": 16.63, "cny_ttb": 16.03, "cny_ttm": 16.33}, {"ym": "2019-01", "usd_tts": 109.98, "usd_ttb": 107.98, "usd_ttm": 108.98, "cny_tts": 16.35, "cny_ttb": 15.75, "cny_ttm": 16.05}, {"ym": "2019-02", "usd_tts": 111.38, "usd_ttb": 109.38, "usd_ttm": 110.38, "cny_tts": 16.67, "cny_ttb": 16.07, "cny_ttm": 16.37}, {"ym": "2019-03", "usd_tts": 112.24, "usd_ttb": 110.24, "usd_ttm": 111.24, "cny_tts": 16.86, "cny_ttb": 16.26, "cny_ttm": 16.56}, {"ym": "2019-04", "usd_tts": 112.73, "usd_ttb": 110.73, "usd_ttm": 111.73, "cny_tts": 16.94, "cny_ttb": 16.34, "cny_ttm": 16.64}, {"ym": "2019-05", "usd_tts": 110.86, "usd_ttb": 108.86, "usd_ttm": 109.86, "cny_tts": 16.23, "cny_ttb": 15.63, "cny_ttm": 15.93}, {"ym": "2019-06", "usd_tts": 109.12, "usd_ttb": 107.12, "usd_ttm": 108.12, "cny_tts": 15.95, "cny_ttb": 15.35, "cny_ttm": 15.65}, {"ym": "2019-07", "usd_tts": 109.28, "usd_ttb": 107.28, "usd_ttm": 108.28, "cny_tts": 16.04, "cny_ttb": 15.44, "cny_ttm": 15.74}, {"ym": "2019-08", "usd_tts": 107.32, "usd_ttb": 105.32, "usd_ttm": 106.32, "cny_tts": 15.33, "cny_ttb": 14.73, "cny_ttm": 15.03}, {"ym": "2019-09", "usd_tts": 108.45, "usd_ttb": 106.45, "usd_ttm": 107.45, "cny_tts": 15.39, "cny_ttb": 14.79, "cny_ttm": 15.09}, {"ym": "2019-10", "usd_tts": 109.15, "usd_ttb": 107.15, "usd_ttm": 108.15, "cny_tts": 15.54, "cny_ttb": 14.94, "cny_ttm": 15.24}, {"ym": "2019-11", "usd_tts": 109.9, "usd_ttb": 107.9, "usd_ttm": 108.9, "cny_tts": 15.82, "cny_ttb": 15.22, "cny_ttm": 15.52}, {"ym": "2019-12", "usd_tts": 110.24, "usd_ttb": 108.24, "usd_ttm": 109.24, "cny_tts": 15.88, "cny_ttb": 15.28, "cny_ttm": 15.58}, {"ym": "2020-01", "usd_tts": 110.38, "usd_ttb": 108.38, "usd_ttm": 109.38, "cny_tts": 16.1, "cny_ttb": 15.5, "cny_ttm": 15.8}, {"ym": "2020-02", "usd_tts": 110.98, "usd_ttb": 108.98, "usd_ttm": 109.98, "cny_tts": 16.01, "cny_ttb": 15.41, "cny_ttm": 15.71}, {"ym": "2020-03", "usd_tts": 108.41, "usd_ttb": 106.41, "usd_ttm": 107.41, "cny_tts": 15.59, "cny_ttb": 14.99, "cny_ttm": 15.29}, {"ym": "2020-04", "usd_tts": 108.96, "usd_ttb": 106.96, "usd_ttm": 107.96, "cny_tts": 15.55, "cny_ttb": 14.95, "cny_ttm": 15.25}, {"ym": "2020-05", "usd_tts": 108.35, "usd_ttb": 106.35, "usd_ttm": 107.35, "cny_tts": 15.37, "cny_ttb": 14.77, "cny_ttm": 15.07}, {"ym": "2020-06", "usd_tts": 108.55, "usd_ttb": 106.55, "usd_ttm": 107.55, "cny_tts": 15.49, "cny_ttb": 14.89, "cny_ttm": 15.19}, {"ym": "2020-07", "usd_tts": 107.84, "usd_ttb": 105.84, "usd_ttm": 106.84, "cny_tts": 15.54, "cny_ttb": 14.94, "cny_ttm": 15.24}, {"ym": "2020-08", "usd_tts": 107.05, "usd_ttb": 105.05, "usd_ttm": 106.05, "cny_tts": 15.61, "cny_ttb": 15.01, "cny_ttm": 15.31}, {"ym": "2020-09", "usd_tts": 106.76, "usd_ttb": 104.76, "usd_ttm": 105.76, "cny_tts": 15.81, "cny_ttb": 15.21, "cny_ttm": 15.51}, {"ym": "2020-10", "usd_tts": 106.27, "usd_ttb": 104.27, "usd_ttm": 105.27, "cny_tts": 15.98, "cny_ttb": 15.38, "cny_ttm": 15.68}, {"ym": "2020-11", "usd_tts": 105.41, "usd_ttb": 103.41, "usd_ttm": 104.41, "cny_tts": 16.13, "cny_ttb": 15.53, "cny_ttm": 15.83}, {"ym": "2020-12", "usd_tts": 104.84, "usd_ttb": 102.84, "usd_ttm": 103.84, "cny_tts": 16.21, "cny_ttb": 15.61, "cny_ttm": 15.91}, {"ym": "2021-01", "usd_tts": 104.69, "usd_ttb": 102.69, "usd_ttm": 103.69, "cny_tts": 16.33, "cny_ttb": 15.73, "cny_ttm": 16.03}, {"ym": "2021-02", "usd_tts": 106.37, "usd_ttb": 104.37, "usd_ttm": 105.37, "cny_tts": 16.65, "cny_ttb": 16.05, "cny_ttm": 16.35}, {"ym": "2021-03", "usd_tts": 109.63, "usd_ttb": 107.63, "usd_ttm": 108.63, "cny_tts": 16.99, "cny_ttb": 16.39, "cny_ttm": 16.69}, {"ym": "2021-04", "usd_tts": 110.14, "usd_ttb": 108.14, "usd_ttm": 109.14, "cny_tts": 17.03, "cny_ttb": 16.43, "cny_ttm": 16.73}, {"ym": "2021-05", "usd_tts": 110.2, "usd_ttb": 108.2, "usd_ttm": 109.2, "cny_tts": 17.29, "cny_ttb": 16.69, "cny_ttm": 16.99}, {"ym": "2021-06", "usd_tts": 111.13, "usd_ttb": 109.13, "usd_ttm": 110.13, "cny_tts": 17.45, "cny_ttb": 16.85, "cny_ttm": 17.15}, {"ym": "2021-07", "usd_tts": 111.31, "usd_ttb": 109.31, "usd_ttm": 110.31, "cny_tts": 17.33, "cny_ttb": 16.73, "cny_ttm": 17.03}, {"ym": "2021-08", "usd_tts": 110.85, "usd_ttb": 108.85, "usd_ttm": 109.85, "cny_tts": 17.27, "cny_ttb": 16.67, "cny_ttm": 16.97}, {"ym": "2021-09", "usd_tts": 111.17, "usd_ttb": 109.17, "usd_ttm": 110.17, "cny_tts": 17.37, "cny_ttb": 16.77, "cny_ttm": 17.07}, {"ym": "2021-10", "usd_tts": 114.11, "usd_ttb": 112.11, "usd_ttm": 113.11, "cny_tts": 17.92, "cny_ttb": 17.32, "cny_ttm": 17.62}, {"ym": "2021-11", "usd_tts": 115.14, "usd_ttb": 113.14, "usd_ttm": 114.14, "cny_tts": 18.16, "cny_ttb": 17.56, "cny_ttm": 17.86}, {"ym": "2021-12", "usd_tts": 114.88, "usd_ttb": 112.88, "usd_ttm": 113.88, "cny_tts": 18.17, "cny_ttb": 17.57, "cny_ttm": 17.87}, {"ym": "2022-01", "usd_tts": 115.85, "usd_ttb": 113.85, "usd_ttm": 114.85, "cny_tts": 18.36, "cny_ttb": 17.76, "cny_ttm": 18.06}, {"ym": "2022-02", "usd_tts": 116.22, "usd_ttb": 114.22, "usd_ttm": 115.22, "cny_tts": 18.46, "cny_ttb": 17.86, "cny_ttm": 18.16}, {"ym": "2022-03", "usd_tts": 119.53, "usd_ttb": 117.53, "usd_ttm": 118.53, "cny_tts": 18.96, "cny_ttb": 18.36, "cny_ttm": 18.66}, {"ym": "2022-04", "usd_tts": 126.98, "usd_ttb": 124.98, "usd_ttm": 125.98, "cny_tts": 19.91, "cny_ttb": 19.31, "cny_ttm": 19.61}, {"ym": "2022-05", "usd_tts": 129.81, "usd_ttb": 127.81, "usd_ttm": 128.81, "cny_tts": 19.43, "cny_ttb": 18.83, "cny_ttm": 19.13}, {"ym": "2022-06", "usd_tts": 134.93, "usd_ttb": 132.93, "usd_ttm": 133.93, "cny_tts": 20.29, "cny_ttb": 19.69, "cny_ttm": 19.99}, {"ym": "2022-07", "usd_tts": 137.79, "usd_ttb": 135.79, "usd_ttm": 136.79, "cny_tts": 20.61, "cny_ttb": 20.01, "cny_ttm": 20.31}, {"ym": "2022-08", "usd_tts": 136.24, "usd_ttb": 134.24, "usd_ttm": 135.24, "cny_tts": 20.16, "cny_ttb": 19.56, "cny_ttm": 19.86}, {"ym": "2022-09", "usd_tts": 144.09, "usd_ttb": 142.09, "usd_ttm": 143.09, "cny_tts": 20.7, "cny_ttb": 20.1, "cny_ttm": 20.4}, {"ym": "2022-10", "usd_tts": 148.19, "usd_ttb": 146.19, "usd_ttm": 147.19, "cny_tts": 20.76, "cny_ttb": 20.16, "cny_ttm": 20.46}, {"ym": "2022-11", "usd_tts": 143.48, "usd_ttb": 141.48, "usd_ttm": 142.48, "cny_tts": 20.11, "cny_ttb": 19.51, "cny_ttm": 19.81}, {"ym": "2022-12", "usd_tts": 136.09, "usd_ttb": 134.09, "usd_ttm": 135.09, "cny_tts": 19.64, "cny_ttb": 19.04, "cny_ttm": 19.34}, {"ym": "2023-01", "usd_tts": 131.35, "usd_ttb": 129.35, "usd_ttm": 130.35, "cny_tts": 19.52, "cny_ttb": 18.92, "cny_ttm": 19.22}, {"ym": "2023-02", "usd_tts": 133.75, "usd_ttb": 131.75, "usd_ttm": 132.75, "cny_tts": 19.71, "cny_ttb": 19.11, "cny_ttm": 19.41}, {"ym": "2023-03", "usd_tts": 134.92, "usd_ttb": 132.92, "usd_ttm": 133.92, "cny_tts": 19.7, "cny_ttb": 19.1, "cny_ttm": 19.4}, {"ym": "2023-04", "usd_tts": 134.4, "usd_ttb": 132.4, "usd_ttm": 133.4, "cny_tts": 19.66, "cny_ttb": 19.06, "cny_ttm": 19.36}, {"ym": "2023-05", "usd_tts": 138.43, "usd_ttb": 136.43, "usd_ttm": 137.43, "cny_tts": 19.92, "cny_ttb": 19.32, "cny_ttm": 19.62}, {"ym": "2023-06", "usd_tts": 142.27, "usd_ttb": 140.27, "usd_ttm": 141.27, "cny_tts": 20, "cny_ttb": 19.4, "cny_ttm": 19.7}, {"ym": "2023-07", "usd_tts": 142.3, "usd_ttb": 140.3, "usd_ttm": 141.3, "cny_tts": 19.92, "cny_ttb": 19.32, "cny_ttm": 19.62}, {"ym": "2023-08", "usd_tts": 145.84, "usd_ttb": 143.84, "usd_ttm": 144.84, "cny_tts": 20.26, "cny_ttb": 19.66, "cny_ttm": 19.96}, {"ym": "2023-09", "usd_tts": 148.73, "usd_ttb": 146.73, "usd_ttm": 147.73, "cny_tts": 20.53, "cny_ttb": 19.93, "cny_ttm": 20.23}, {"ym": "2023-10", "usd_tts": 150.6, "usd_ttb": 148.6, "usd_ttm": 149.6, "cny_tts": 20.74, "cny_ttb": 20.14, "cny_ttm": 20.44}, {"ym": "2023-11", "usd_tts": 150.95, "usd_ttb": 148.95, "usd_ttm": 149.95, "cny_tts": 21.03, "cny_ttb": 20.43, "cny_ttm": 20.73}, {"ym": "2023-12", "usd_tts": 145.13, "usd_ttb": 143.13, "usd_ttm": 144.13, "cny_tts": 20.46, "cny_ttb": 19.86, "cny_ttm": 20.16}, {"ym": "2024-01", "usd_tts": 147.65, "usd_ttb": 145.65, "usd_ttm": 146.65, "cny_tts": 20.71, "cny_ttb": 20.11, "cny_ttm": 20.41}, {"ym": "2024-02", "usd_tts": 150.5, "usd_ttb": 148.5, "usd_ttm": 149.5, "cny_tts": 21.03, "cny_ttb": 20.43, "cny_ttm": 20.73}, {"ym": "2024-03", "usd_tts": 150.67, "usd_ttb": 148.67, "usd_ttm": 149.67, "cny_tts": 21.04, "cny_ttb": 20.44, "cny_ttm": 20.74}, {"ym": "2024-04", "usd_tts": 154.51, "usd_ttb": 152.51, "usd_ttm": 153.51, "cny_tts": 21.46, "cny_ttb": 20.86, "cny_ttm": 21.16}, {"ym": "2024-05", "usd_tts": 157.25, "usd_ttb": 155.25, "usd_ttm": 156.25, "cny_tts": 21.87, "cny_ttb": 21.27, "cny_ttm": 21.57}, {"ym": "2024-06", "usd_tts": 158.89, "usd_ttb": 156.89, "usd_ttm": 157.89, "cny_tts": 22, "cny_ttb": 21.4, "cny_ttm": 21.7}, {"ym": "2024-07", "usd_tts": 159.16, "usd_ttb": 157.16, "usd_ttm": 158.16, "cny_tts": 22.02, "cny_ttb": 21.42, "cny_ttm": 21.72}, {"ym": "2024-08", "usd_tts": 147.44, "usd_ttb": 145.44, "usd_ttm": 146.44, "cny_tts": 20.77, "cny_ttb": 20.17, "cny_ttm": 20.47}, {"ym": "2024-09", "usd_tts": 144.55, "usd_ttb": 142.55, "usd_ttm": 143.55, "cny_tts": 20.57, "cny_ttb": 19.97, "cny_ttm": 20.27}, {"ym": "2024-10", "usd_tts": 150.69, "usd_ttb": 148.69, "usd_ttm": 149.69, "cny_tts": 21.37, "cny_ttb": 20.77, "cny_ttm": 21.07}, {"ym": "2024-11", "usd_tts": 154.85, "usd_ttb": 152.85, "usd_ttm": 153.85, "cny_tts": 21.61, "cny_ttb": 21.01, "cny_ttm": 21.31}, {"ym": "2024-12", "usd_tts": 154.77, "usd_ttb": 152.77, "usd_ttm": 153.77, "cny_tts": 21.4, "cny_ttb": 20.8, "cny_ttm": 21.1}, {"ym": "2025-01", "usd_tts": 157.54, "usd_ttb": 155.54, "usd_ttm": 156.54, "cny_tts": 21.7, "cny_ttb": 21.1, "cny_ttm": 21.4}, {"ym": "2025-02", "usd_tts": 153.02, "usd_ttb": 151.02, "usd_ttm": 152.02, "cny_tts": 21.17, "cny_ttb": 20.57, "cny_ttm": 20.87}, {"ym": "2025-03", "usd_tts": 150.25, "usd_ttb": 148.25, "usd_ttm": 149.25, "cny_tts": 20.87, "cny_ttb": 20.27, "cny_ttm": 20.57}, {"ym": "2025-04", "usd_tts": 145.49, "usd_ttb": 143.49, "usd_ttm": 144.49, "cny_tts": 20.08, "cny_ttb": 19.48, "cny_ttm": 19.78}, {"ym": "2025-05", "usd_tts": 145.75, "usd_ttb": 143.75, "usd_ttm": 144.75, "cny_tts": 20.37, "cny_ttb": 19.77, "cny_ttm": 20.07}, {"ym": "2025-06", "usd_tts": 145.54, "usd_ttb": 143.54, "usd_ttm": 144.54, "cny_tts": 20.42, "cny_ttb": 19.82, "cny_ttm": 20.12}, {"ym": "2025-07", "usd_tts": 147.74, "usd_ttb": 145.74, "usd_ttm": 146.74, "cny_tts": 20.76, "cny_ttb": 20.16, "cny_ttm": 20.46}, {"ym": "2025-08", "usd_tts": 148.71, "usd_ttb": 146.71, "usd_ttm": 147.71, "cny_tts": 20.88, "cny_ttb": 20.28, "cny_ttm": 20.58}, {"ym": "2025-09", "usd_tts": 148.99, "usd_ttb": 146.99, "usd_ttm": 147.99, "cny_tts": 21.07, "cny_ttb": 20.47, "cny_ttm": 20.77}, {"ym": "2025-10", "usd_tts": 152.3, "usd_ttb": 150.3, "usd_ttm": 151.3, "cny_tts": 21.53, "cny_ttb": 20.93, "cny_ttm": 21.23}, {"ym": "2025-11", "usd_tts": 156.2, "usd_ttb": 154.2, "usd_ttm": 155.2, "cny_tts": 22.13, "cny_ttb": 21.53, "cny_ttm": 21.83}, {"ym": "2025-12", "usd_tts": 156.95, "usd_ttb": 154.95, "usd_ttm": 155.95, "cny_tts": 22.44, "cny_ttb": 21.84, "cny_ttm": 22.14}, {"ym": "2026-01", "usd_tts": 157.78, "usd_ttb": 155.78, "usd_ttm": 156.78, "cny_tts": 22.81, "cny_ttb": 22.21, "cny_ttm": 22.51}, {"ym": "2026-02", "usd_tts": 156.13, "usd_ttb": 154.13, "usd_ttm": 155.13, "cny_tts": 22.76, "cny_ttb": 22.16, "cny_ttm": 22.46}, {"ym": "2026-03", "usd_tts": 159.68, "usd_ttb": 157.68, "usd_ttm": 158.68, "cny_tts": 23.3, "cny_ttb": 22.7, "cny_ttm": 23}]
-;
+const FX_DATA = [{"ym": "2005-09", "usd_tts": 112.09, "usd_ttb": 110.09, "usd_ttm": 111.09, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2005-10", "usd_tts": 115.91, "usd_ttb": 113.91, "usd_ttm": 114.91, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2005-11", "usd_tts": 119.44, "usd_ttb": 117.44, "usd_ttm": 118.44, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2005-12", "usd_tts": 119.7, "usd_ttb": 117.7, "usd_ttm": 118.7, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-01", "usd_tts": 116.49, "usd_ttb": 114.49, "usd_ttm": 115.49, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-02", "usd_tts": 118.97, "usd_ttb": 116.97, "usd_ttm": 117.97, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-03", "usd_tts": 118.36, "usd_ttb": 116.36, "usd_ttm": 117.36, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-04", "usd_tts": 118.19, "usd_ttb": 116.19, "usd_ttm": 117.19, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-05", "usd_tts": 112.69, "usd_ttb": 110.69, "usd_ttm": 111.69, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-06", "usd_tts": 115.62, "usd_ttb": 113.62, "usd_ttm": 114.62, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-07", "usd_tts": 116.75, "usd_ttb": 114.75, "usd_ttm": 115.75, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-08", "usd_tts": 116.91, "usd_ttb": 114.91, "usd_ttm": 115.91, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-09", "usd_tts": 118.11, "usd_ttb": 116.11, "usd_ttm": 117.11, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-10", "usd_tts": 119.71, "usd_ttb": 117.71, "usd_ttm": 118.71, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-11", "usd_tts": 118.41, "usd_ttb": 116.41, "usd_ttm": 117.41, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2006-12", "usd_tts": 118.34, "usd_ttb": 116.34, "usd_ttm": 117.34, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-01", "usd_tts": 121.68, "usd_ttb": 119.68, "usd_ttm": 120.68, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-02", "usd_tts": 121.54, "usd_ttb": 119.54, "usd_ttm": 120.54, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-03", "usd_tts": 118.34, "usd_ttb": 116.34, "usd_ttm": 117.34, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-04", "usd_tts": 119.89, "usd_ttb": 117.89, "usd_ttm": 118.89, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-05", "usd_tts": 121.82, "usd_ttb": 119.82, "usd_ttm": 120.82, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-06", "usd_tts": 123.65, "usd_ttb": 121.65, "usd_ttm": 122.65, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-07", "usd_tts": 122.67, "usd_ttb": 120.67, "usd_ttm": 121.67, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-08", "usd_tts": 117.88, "usd_ttb": 115.88, "usd_ttm": 116.88, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-09", "usd_tts": 116.06, "usd_ttb": 114.06, "usd_ttm": 115.06, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-10", "usd_tts": 116.8, "usd_ttb": 114.8, "usd_ttm": 115.8, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-11", "usd_tts": 112.34, "usd_ttb": 110.34, "usd_ttm": 111.34, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2007-12", "usd_tts": 113.43, "usd_ttb": 111.43, "usd_ttm": 112.43, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-01", "usd_tts": 108.68, "usd_ttb": 106.68, "usd_ttm": 107.68, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-02", "usd_tts": 108.24, "usd_ttb": 106.24, "usd_ttm": 107.24, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-03", "usd_tts": 101.95, "usd_ttb": 99.95, "usd_ttm": 100.95, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-04", "usd_tts": 103.52, "usd_ttb": 101.52, "usd_ttm": 102.52, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-05", "usd_tts": 105.21, "usd_ttb": 103.21, "usd_ttm": 104.21, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-06", "usd_tts": 107.93, "usd_ttb": 105.93, "usd_ttm": 106.93, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-07", "usd_tts": 107.83, "usd_ttb": 105.83, "usd_ttm": 106.83, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-08", "usd_tts": 110.33, "usd_ttb": 108.33, "usd_ttm": 109.33, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-09", "usd_tts": 107.82, "usd_ttb": 105.82, "usd_ttm": 106.82, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-10", "usd_tts": 101.58, "usd_ttb": 99.58, "usd_ttm": 100.58, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-11", "usd_tts": 97.85, "usd_ttb": 95.85, "usd_ttm": 96.85, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2008-12", "usd_tts": 92.53, "usd_ttb": 90.53, "usd_ttm": 91.53, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-01", "usd_tts": 91.41, "usd_ttb": 89.41, "usd_ttm": 90.41, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-02", "usd_tts": 93.43, "usd_ttb": 91.43, "usd_ttm": 92.43, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-03", "usd_tts": 98.98, "usd_ttb": 96.98, "usd_ttm": 97.98, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-04", "usd_tts": 100.12, "usd_ttb": 98.12, "usd_ttm": 99.12, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-05", "usd_tts": 97.28, "usd_ttb": 95.28, "usd_ttm": 96.28, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-06", "usd_tts": 97.57, "usd_ttb": 95.57, "usd_ttm": 96.57, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-07", "usd_tts": 95.51, "usd_ttb": 93.51, "usd_ttm": 94.51, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-08", "usd_tts": 95.91, "usd_ttb": 93.91, "usd_ttm": 94.91, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-09", "usd_tts": 92.53, "usd_ttb": 90.53, "usd_ttm": 91.53, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-10", "usd_tts": 91.36, "usd_ttb": 89.36, "usd_ttm": 90.36, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-11", "usd_tts": 90.22, "usd_ttb": 88.22, "usd_ttm": 89.22, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2009-12", "usd_tts": 90.57, "usd_ttb": 88.57, "usd_ttm": 89.57, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-01", "usd_tts": 92.22, "usd_ttb": 90.22, "usd_ttm": 91.22, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-02", "usd_tts": 91.37, "usd_ttb": 89.37, "usd_ttm": 90.37, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-03", "usd_tts": 91.52, "usd_ttb": 89.52, "usd_ttm": 90.52, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-04", "usd_tts": 94.41, "usd_ttb": 92.41, "usd_ttm": 93.41, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-05", "usd_tts": 92.69, "usd_ttb": 90.69, "usd_ttm": 91.69, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-06", "usd_tts": 91.92, "usd_ttb": 89.92, "usd_ttm": 90.92, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-07", "usd_tts": 88.75, "usd_ttb": 86.75, "usd_ttm": 87.75, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-08", "usd_tts": 86.5, "usd_ttb": 84.5, "usd_ttm": 85.5, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-09", "usd_tts": 85.45, "usd_ttb": 83.45, "usd_ttm": 84.45, "cny_tts": null, "cny_ttb": null, "cny_ttm": null}, {"ym": "2010-10", "usd_tts": 82.93, "usd_ttb": 80.93, "usd_ttm": 81.93, "cny_tts": 12.67, "cny_ttb": 11.87, "cny_ttm": 12.27}, {"ym": "2010-11", "usd_tts": 83.54, "usd_ttb": 81.54, "usd_ttm": 82.54, "cny_tts": 12.8, "cny_ttb": 12, "cny_ttm": 12.4}, {"ym": "2010-12", "usd_tts": 84.45, "usd_ttb": 82.45, "usd_ttm": 83.45, "cny_tts": 12.94, "cny_ttb": 12.14, "cny_ttm": 12.54}, {"ym": "2011-01", "usd_tts": 83.66, "usd_ttb": 81.66, "usd_ttm": 82.66, "cny_tts": 12.92, "cny_ttb": 12.12, "cny_ttm": 12.52}, {"ym": "2011-02", "usd_tts": 83.54, "usd_ttb": 81.54, "usd_ttm": 82.54, "cny_tts": 12.93, "cny_ttb": 12.13, "cny_ttm": 12.53}, {"ym": "2011-03", "usd_tts": 82.81, "usd_ttb": 80.81, "usd_ttm": 81.81, "cny_tts": 12.86, "cny_ttb": 12.06, "cny_ttm": 12.46}, {"ym": "2011-04", "usd_tts": 84.44, "usd_ttb": 82.44, "usd_ttm": 83.44, "cny_tts": 13.17, "cny_ttb": 12.37, "cny_ttm": 12.77}, {"ym": "2011-05", "usd_tts": 82.23, "usd_ttb": 80.23, "usd_ttm": 81.23, "cny_tts": 12.9, "cny_ttb": 12.1, "cny_ttm": 12.5}, {"ym": "2011-06", "usd_tts": 81.56, "usd_ttb": 79.56, "usd_ttm": 80.56, "cny_tts": 12.83, "cny_ttb": 12.03, "cny_ttm": 12.43}, {"ym": "2011-07", "usd_tts": 80.51, "usd_ttb": 78.51, "usd_ttm": 79.51, "cny_tts": 12.7, "cny_ttb": 11.9, "cny_ttm": 12.3}, {"ym": "2011-08", "usd_tts": 78.27, "usd_ttb": 76.27, "usd_ttm": 77.27, "cny_tts": 12.45, "cny_ttb": 11.65, "cny_ttm": 12.05}, {"ym": "2011-09", "usd_tts": 77.88, "usd_ttb": 75.88, "usd_ttm": 76.88, "cny_tts": 12.44, "cny_ttb": 11.64, "cny_ttm": 12.04}, {"ym": "2011-10", "usd_tts": 77.75, "usd_ttb": 75.75, "usd_ttm": 76.75, "cny_tts": 12.47, "cny_ttb": 11.67, "cny_ttm": 12.07}, {"ym": "2011-11", "usd_tts": 78.6, "usd_ttb": 76.6, "usd_ttm": 77.6, "cny_tts": 12.64, "cny_ttb": 11.84, "cny_ttm": 12.24}, {"ym": "2011-12", "usd_tts": 78.88, "usd_ttb": 76.88, "usd_ttm": 77.88, "cny_tts": 12.7, "cny_ttb": 11.9, "cny_ttm": 12.3}, {"ym": "2012-01", "usd_tts": 77.98, "usd_ttb": 75.98, "usd_ttm": 76.98, "cny_tts": 12.59, "cny_ttb": 11.79, "cny_ttm": 12.19}, {"ym": "2012-02", "usd_tts": 79.4, "usd_ttb": 77.4, "usd_ttm": 78.4, "cny_tts": 12.84, "cny_ttb": 12.04, "cny_ttm": 12.44}, {"ym": "2012-03", "usd_tts": 83.46, "usd_ttb": 81.46, "usd_ttm": 82.46, "cny_tts": 13.47, "cny_ttb": 12.67, "cny_ttm": 13.07}, {"ym": "2012-04", "usd_tts": 82.55, "usd_ttb": 80.55, "usd_ttm": 81.55, "cny_tts": 13.35, "cny_ttb": 12.55, "cny_ttm": 12.95}, {"ym": "2012-05", "usd_tts": 80.75, "usd_ttb": 78.75, "usd_ttm": 79.75, "cny_tts": 13.05, "cny_ttb": 12.25, "cny_ttm": 12.65}, {"ym": "2012-06", "usd_tts": 80.3, "usd_ttb": 78.3, "usd_ttm": 79.3, "cny_tts": 12.95, "cny_ttb": 12.15, "cny_ttm": 12.55}, {"ym": "2012-07", "usd_tts": 80.02, "usd_ttb": 78.02, "usd_ttm": 79.02, "cny_tts": 12.8, "cny_ttb": 12.1, "cny_ttm": 12.45}, {"ym": "2012-08", "usd_tts": 79.68, "usd_ttb": 77.68, "usd_ttm": 78.68, "cny_tts": 12.66, "cny_ttb": 12.06, "cny_ttm": 12.36}, {"ym": "2012-09", "usd_tts": 79.17, "usd_ttb": 77.17, "usd_ttm": 78.17, "cny_tts": 12.66, "cny_ttb": 12.06, "cny_ttm": 12.36}, {"ym": "2012-10", "usd_tts": 79.98, "usd_ttb": 77.98, "usd_ttm": 78.98, "cny_tts": 12.91, "cny_ttb": 12.31, "cny_ttm": 12.61}, {"ym": "2012-11", "usd_tts": 81.89, "usd_ttb": 79.89, "usd_ttm": 80.89, "cny_tts": 13.29, "cny_ttb": 12.69, "cny_ttm": 12.99}, {"ym": "2012-12", "usd_tts": 84.64, "usd_ttb": 82.64, "usd_ttm": 83.64, "cny_tts": 13.76, "cny_ttb": 13.16, "cny_ttm": 13.46}, {"ym": "2013-01", "usd_tts": 90.24, "usd_ttb": 88.24, "usd_ttm": 89.24, "cny_tts": 14.69, "cny_ttb": 14.09, "cny_ttm": 14.39}, {"ym": "2013-02", "usd_tts": 94.23, "usd_ttb": 92.23, "usd_ttm": 93.23, "cny_tts": 15.28, "cny_ttb": 14.68, "cny_ttm": 14.98}, {"ym": "2013-03", "usd_tts": 95.8, "usd_ttb": 93.8, "usd_ttm": 94.8, "cny_tts": 15.57, "cny_ttb": 14.97, "cny_ttm": 15.27}, {"ym": "2013-04", "usd_tts": 98.73, "usd_ttb": 96.73, "usd_ttm": 97.73, "cny_tts": 16.1, "cny_ttb": 15.5, "cny_ttm": 15.8}, {"ym": "2013-05", "usd_tts": 102.1, "usd_ttb": 100.1, "usd_ttm": 101.1, "cny_tts": 16.77, "cny_ttb": 16.17, "cny_ttm": 16.47}, {"ym": "2013-06", "usd_tts": 98.44, "usd_ttb": 96.44, "usd_ttm": 97.44, "cny_tts": 16.18, "cny_ttb": 15.58, "cny_ttm": 15.88}, {"ym": "2013-07", "usd_tts": 100.77, "usd_ttb": 98.77, "usd_ttm": 99.77, "cny_tts": 16.56, "cny_ttb": 15.96, "cny_ttm": 16.26}, {"ym": "2013-08", "usd_tts": 98.85, "usd_ttb": 96.85, "usd_ttm": 97.85, "cny_tts": 16.3, "cny_ttb": 15.7, "cny_ttm": 16}, {"ym": "2013-09", "usd_tts": 100.23, "usd_ttb": 98.23, "usd_ttm": 99.23, "cny_tts": 16.54, "cny_ttb": 15.94, "cny_ttm": 16.24}, {"ym": "2013-10", "usd_tts": 98.87, "usd_ttb": 96.87, "usd_ttm": 97.87, "cny_tts": 16.36, "cny_ttb": 15.76, "cny_ttm": 16.06}, {"ym": "2013-11", "usd_tts": 101.02, "usd_ttb": 99.02, "usd_ttm": 100.02, "cny_tts": 16.76, "cny_ttb": 16.16, "cny_ttm": 16.46}, {"ym": "2013-12", "usd_tts": 104.48, "usd_ttb": 102.48, "usd_ttm": 103.48, "cny_tts": 17.34, "cny_ttb": 16.74, "cny_ttm": 17.04}, {"ym": "2014-01", "usd_tts": 104.92, "usd_ttb": 102.92, "usd_ttm": 103.92, "cny_tts": 17.53, "cny_ttb": 16.93, "cny_ttm": 17.23}, {"ym": "2014-02", "usd_tts": 103.14, "usd_ttb": 101.14, "usd_ttm": 102.14, "cny_tts": 17.17, "cny_ttb": 16.57, "cny_ttm": 16.87}, {"ym": "2014-03", "usd_tts": 103.27, "usd_ttb": 101.27, "usd_ttm": 102.27, "cny_tts": 16.91, "cny_ttb": 16.31, "cny_ttm": 16.61}, {"ym": "2014-04", "usd_tts": 103.58, "usd_ttb": 101.58, "usd_ttm": 102.58, "cny_tts": 16.79, "cny_ttb": 16.19, "cny_ttm": 16.49}, {"ym": "2014-05", "usd_tts": 102.83, "usd_ttb": 100.83, "usd_ttm": 101.83, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2014-06", "usd_tts": 103.08, "usd_ttb": 101.08, "usd_ttm": 102.08, "cny_tts": 16.69, "cny_ttb": 16.09, "cny_ttm": 16.39}, {"ym": "2014-07", "usd_tts": 102.73, "usd_ttb": 100.73, "usd_ttm": 101.73, "cny_tts": 16.71, "cny_ttb": 16.11, "cny_ttm": 16.41}, {"ym": "2014-08", "usd_tts": 103.97, "usd_ttb": 101.97, "usd_ttm": 102.97, "cny_tts": 17.03, "cny_ttb": 16.43, "cny_ttm": 16.73}, {"ym": "2014-09", "usd_tts": 108.07, "usd_ttb": 106.07, "usd_ttm": 107.07, "cny_tts": 17.72, "cny_ttb": 17.12, "cny_ttm": 17.42}, {"ym": "2014-10", "usd_tts": 108.99, "usd_ttb": 106.99, "usd_ttm": 107.99, "cny_tts": 17.9, "cny_ttb": 17.3, "cny_ttm": 17.6}, {"ym": "2014-11", "usd_tts": 117.21, "usd_ttb": 115.21, "usd_ttm": 116.21, "cny_tts": 19.26, "cny_ttb": 18.66, "cny_ttm": 18.96}, {"ym": "2014-12", "usd_tts": 120.41, "usd_ttb": 118.41, "usd_ttm": 119.41, "cny_tts": 19.6, "cny_ttb": 19, "cny_ttm": 19.3}, {"ym": "2015-01", "usd_tts": 119.33, "usd_ttb": 117.33, "usd_ttm": 118.33, "cny_tts": 19.32, "cny_ttb": 18.72, "cny_ttm": 19.02}, {"ym": "2015-02", "usd_tts": 119.59, "usd_ttb": 117.59, "usd_ttm": 118.59, "cny_tts": 19.25, "cny_ttb": 18.65, "cny_ttm": 18.95}, {"ym": "2015-03", "usd_tts": 121.36, "usd_ttb": 119.36, "usd_ttm": 120.36, "cny_tts": 19.56, "cny_ttb": 18.96, "cny_ttm": 19.26}, {"ym": "2015-04", "usd_tts": 120.58, "usd_ttb": 118.58, "usd_ttm": 119.58, "cny_tts": 19.59, "cny_ttb": 18.99, "cny_ttm": 19.29}, {"ym": "2015-05", "usd_tts": 121.75, "usd_ttb": 119.75, "usd_ttm": 120.75, "cny_tts": 19.76, "cny_ttb": 19.16, "cny_ttm": 19.46}, {"ym": "2015-06", "usd_tts": 124.75, "usd_ttb": 122.75, "usd_ttm": 123.75, "cny_tts": 20.24, "cny_ttb": 19.64, "cny_ttm": 19.94}, {"ym": "2015-07", "usd_tts": 124.25, "usd_ttb": 122.25, "usd_ttm": 123.25, "cny_tts": 20.14, "cny_ttb": 19.54, "cny_ttm": 19.84}, {"ym": "2015-08", "usd_tts": 124.21, "usd_ttb": 122.21, "usd_ttm": 123.21, "cny_tts": 19.64, "cny_ttb": 19.04, "cny_ttm": 19.34}, {"ym": "2015-09", "usd_tts": 121.23, "usd_ttb": 119.23, "usd_ttm": 120.23, "cny_tts": 19.04, "cny_ttb": 18.44, "cny_ttm": 18.74}, {"ym": "2015-10", "usd_tts": 121.07, "usd_ttb": 119.07, "usd_ttm": 120.07, "cny_tts": 19.18, "cny_ttb": 18.58, "cny_ttm": 18.88}, {"ym": "2015-11", "usd_tts": 123.58, "usd_ttb": 121.58, "usd_ttm": 122.58, "cny_tts": 19.47, "cny_ttb": 18.87, "cny_ttm": 19.17}, {"ym": "2015-12", "usd_tts": 122.85, "usd_ttb": 120.85, "usd_ttm": 121.85, "cny_tts": 19.02, "cny_ttb": 18.42, "cny_ttm": 18.72}, {"ym": "2016-01", "usd_tts": 119.34, "usd_ttb": 117.34, "usd_ttm": 118.34, "cny_tts": 18.21, "cny_ttb": 17.61, "cny_ttm": 17.91}, {"ym": "2016-02", "usd_tts": 116.08, "usd_ttb": 114.08, "usd_ttm": 115.08, "cny_tts": 17.86, "cny_ttb": 17.26, "cny_ttm": 17.56}, {"ym": "2016-03", "usd_tts": 114.03, "usd_ttb": 112.03, "usd_ttm": 113.03, "cny_tts": 17.67, "cny_ttb": 17.07, "cny_ttm": 17.37}, {"ym": "2016-04", "usd_tts": 110.83, "usd_ttb": 108.83, "usd_ttm": 109.83, "cny_tts": 17.24, "cny_ttb": 16.64, "cny_ttm": 16.94}, {"ym": "2016-05", "usd_tts": 110.12, "usd_ttb": 108.12, "usd_ttm": 109.12, "cny_tts": 16.96, "cny_ttb": 16.36, "cny_ttm": 16.66}, {"ym": "2016-06", "usd_tts": 106.48, "usd_ttb": 104.48, "usd_ttm": 105.48, "cny_tts": 16.28, "cny_ttb": 15.68, "cny_ttm": 15.98}, {"ym": "2016-07", "usd_tts": 104.98, "usd_ttb": 102.98, "usd_ttm": 103.98, "cny_tts": 15.85, "cny_ttb": 15.25, "cny_ttm": 15.55}, {"ym": "2016-08", "usd_tts": 102.34, "usd_ttb": 100.34, "usd_ttm": 101.34, "cny_tts": 15.53, "cny_ttb": 14.93, "cny_ttm": 15.23}, {"ym": "2016-09", "usd_tts": 102.98, "usd_ttb": 100.98, "usd_ttm": 101.98, "cny_tts": 15.57, "cny_ttb": 14.97, "cny_ttm": 15.27}, {"ym": "2016-10", "usd_tts": 104.81, "usd_ttb": 102.81, "usd_ttm": 103.81, "cny_tts": 15.71, "cny_ttb": 15.11, "cny_ttm": 15.41}, {"ym": "2016-11", "usd_tts": 109.12, "usd_ttb": 107.12, "usd_ttm": 108.12, "cny_tts": 16.06, "cny_ttb": 15.46, "cny_ttm": 15.76}, {"ym": "2016-12", "usd_tts": 116.98, "usd_ttb": 114.98, "usd_ttm": 115.98, "cny_tts": 17.05, "cny_ttb": 16.45, "cny_ttm": 16.75}, {"ym": "2017-01", "usd_tts": 115.77, "usd_ttb": 113.77, "usd_ttm": 114.77, "cny_tts": 17.06, "cny_ttb": 16.46, "cny_ttm": 16.76}, {"ym": "2017-02", "usd_tts": 114.11, "usd_ttb": 112.11, "usd_ttm": 113.11, "cny_tts": 16.82, "cny_ttb": 16.22, "cny_ttm": 16.52}, {"ym": "2017-03", "usd_tts": 114.04, "usd_ttb": 112.04, "usd_ttm": 113.04, "cny_tts": 16.73, "cny_ttb": 16.13, "cny_ttm": 16.43}, {"ym": "2017-04", "usd_tts": 111.11, "usd_ttb": 109.11, "usd_ttm": 110.11, "cny_tts": 16.29, "cny_ttb": 15.69, "cny_ttm": 15.99}, {"ym": "2017-05", "usd_tts": 113.25, "usd_ttb": 111.25, "usd_ttm": 112.25, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2017-06", "usd_tts": 111.92, "usd_ttb": 109.92, "usd_ttm": 110.92, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2017-07", "usd_tts": 113.43, "usd_ttb": 111.43, "usd_ttm": 112.43, "cny_tts": 16.9, "cny_ttb": 16.3, "cny_ttm": 16.6}, {"ym": "2017-08", "usd_tts": 110.93, "usd_ttb": 108.93, "usd_ttm": 109.93, "cny_tts": 16.75, "cny_ttb": 16.15, "cny_ttm": 16.45}, {"ym": "2017-09", "usd_tts": 111.74, "usd_ttb": 109.74, "usd_ttm": 110.74, "cny_tts": 17.16, "cny_ttb": 16.56, "cny_ttm": 16.86}, {"ym": "2017-10", "usd_tts": 113.95, "usd_ttb": 111.95, "usd_ttm": 112.95, "cny_tts": 17.36, "cny_ttb": 16.76, "cny_ttm": 17.06}, {"ym": "2017-11", "usd_tts": 113.96, "usd_ttb": 111.96, "usd_ttm": 112.96, "cny_tts": 17.35, "cny_ttb": 16.75, "cny_ttm": 17.05}, {"ym": "2017-12", "usd_tts": 114.02, "usd_ttb": 112.02, "usd_ttm": 113.02, "cny_tts": 17.44, "cny_ttb": 16.84, "cny_ttm": 17.14}, {"ym": "2018-01", "usd_tts": 111.86, "usd_ttb": 109.86, "usd_ttm": 110.86, "cny_tts": 17.56, "cny_ttb": 16.96, "cny_ttm": 17.26}, {"ym": "2018-02", "usd_tts": 108.96, "usd_ttb": 106.96, "usd_ttm": 107.96, "cny_tts": 17.4, "cny_ttb": 16.8, "cny_ttm": 17.1}, {"ym": "2018-03", "usd_tts": 107.07, "usd_ttb": 105.07, "usd_ttm": 106.07, "cny_tts": 17.1, "cny_ttb": 16.5, "cny_ttm": 16.8}, {"ym": "2018-04", "usd_tts": 108.44, "usd_ttb": 106.44, "usd_ttm": 107.44, "cny_tts": 17.39, "cny_ttb": 16.79, "cny_ttm": 17.09}, {"ym": "2018-05", "usd_tts": 110.74, "usd_ttb": 108.74, "usd_ttm": 109.74, "cny_tts": 17.55, "cny_ttb": 16.95, "cny_ttm": 17.25}, {"ym": "2018-06", "usd_tts": 111.03, "usd_ttb": 109.03, "usd_ttm": 110.03, "cny_tts": 17.34, "cny_ttb": 16.74, "cny_ttm": 17.04}, {"ym": "2018-07", "usd_tts": 112.38, "usd_ttb": 110.38, "usd_ttm": 111.38, "cny_tts": 16.86, "cny_ttb": 16.26, "cny_ttm": 16.56}, {"ym": "2018-08", "usd_tts": 112.08, "usd_ttb": 110.08, "usd_ttm": 111.08, "cny_tts": 16.52, "cny_ttb": 15.92, "cny_ttm": 16.22}, {"ym": "2018-09", "usd_tts": 112.91, "usd_ttb": 110.91, "usd_ttm": 111.91, "cny_tts": 16.62, "cny_ttb": 16.02, "cny_ttm": 16.32}, {"ym": "2018-10", "usd_tts": 113.82, "usd_ttb": 111.82, "usd_ttm": 112.82, "cny_tts": 16.59, "cny_ttb": 15.99, "cny_ttm": 16.29}, {"ym": "2018-11", "usd_tts": 114.36, "usd_ttb": 112.36, "usd_ttm": 113.36, "cny_tts": 16.65, "cny_ttb": 16.05, "cny_ttm": 16.35}, {"ym": "2018-12", "usd_tts": 113.51, "usd_ttb": 111.51, "usd_ttm": 112.51, "cny_tts": 16.63, "cny_ttb": 16.03, "cny_ttm": 16.33}, {"ym": "2019-01", "usd_tts": 109.98, "usd_ttb": 107.98, "usd_ttm": 108.98, "cny_tts": 16.35, "cny_ttb": 15.75, "cny_ttm": 16.05}, {"ym": "2019-02", "usd_tts": 111.38, "usd_ttb": 109.38, "usd_ttm": 110.38, "cny_tts": 16.67, "cny_ttb": 16.07, "cny_ttm": 16.37}, {"ym": "2019-03", "usd_tts": 112.24, "usd_ttb": 110.24, "usd_ttm": 111.24, "cny_tts": 16.86, "cny_ttb": 16.26, "cny_ttm": 16.56}, {"ym": "2019-04", "usd_tts": 112.73, "usd_ttb": 110.73, "usd_ttm": 111.73, "cny_tts": 16.94, "cny_ttb": 16.34, "cny_ttm": 16.64}, {"ym": "2019-05", "usd_tts": 110.86, "usd_ttb": 108.86, "usd_ttm": 109.86, "cny_tts": 16.23, "cny_ttb": 15.63, "cny_ttm": 15.93}, {"ym": "2019-06", "usd_tts": 109.12, "usd_ttb": 107.12, "usd_ttm": 108.12, "cny_tts": 15.95, "cny_ttb": 15.35, "cny_ttm": 15.65}, {"ym": "2019-07", "usd_tts": 109.28, "usd_ttb": 107.28, "usd_ttm": 108.28, "cny_tts": 16.04, "cny_ttb": 15.44, "cny_ttm": 15.74}, {"ym": "2019-08", "usd_tts": 107.32, "usd_ttb": 105.32, "usd_ttm": 106.32, "cny_tts": 15.33, "cny_ttb": 14.73, "cny_ttm": 15.03}, {"ym": "2019-09", "usd_tts": 108.45, "usd_ttb": 106.45, "usd_ttm": 107.45, "cny_tts": 15.39, "cny_ttb": 14.79, "cny_ttm": 15.09}, {"ym": "2019-10", "usd_tts": 109.15, "usd_ttb": 107.15, "usd_ttm": 108.15, "cny_tts": 15.54, "cny_ttb": 14.94, "cny_ttm": 15.24}, {"ym": "2019-11", "usd_tts": 109.9, "usd_ttb": 107.9, "usd_ttm": 108.9, "cny_tts": 15.82, "cny_ttb": 15.22, "cny_ttm": 15.52}, {"ym": "2019-12", "usd_tts": 110.24, "usd_ttb": 108.24, "usd_ttm": 109.24, "cny_tts": 15.88, "cny_ttb": 15.28, "cny_ttm": 15.58}, {"ym": "2020-01", "usd_tts": 110.38, "usd_ttb": 108.38, "usd_ttm": 109.38, "cny_tts": 16.1, "cny_ttb": 15.5, "cny_ttm": 15.8}, {"ym": "2020-02", "usd_tts": 110.98, "usd_ttb": 108.98, "usd_ttm": 109.98, "cny_tts": 16.01, "cny_ttb": 15.41, "cny_ttm": 15.71}, {"ym": "2020-03", "usd_tts": 108.41, "usd_ttb": 106.41, "usd_ttm": 107.41, "cny_tts": 15.59, "cny_ttb": 14.99, "cny_ttm": 15.29}, {"ym": "2020-04", "usd_tts": 108.96, "usd_ttb": 106.96, "usd_ttm": 107.96, "cny_tts": 15.55, "cny_ttb": 14.95, "cny_ttm": 15.25}, {"ym": "2020-05", "usd_tts": 108.35, "usd_ttb": 106.35, "usd_ttm": 107.35, "cny_tts": 15.37, "cny_ttb": 14.77, "cny_ttm": 15.07}, {"ym": "2020-06", "usd_tts": 108.55, "usd_ttb": 106.55, "usd_ttm": 107.55, "cny_tts": 15.49, "cny_ttb": 14.89, "cny_ttm": 15.19}, {"ym": "2020-07", "usd_tts": 107.84, "usd_ttb": 105.84, "usd_ttm": 106.84, "cny_tts": 15.54, "cny_ttb": 14.94, "cny_ttm": 15.24}, {"ym": "2020-08", "usd_tts": 107.05, "usd_ttb": 105.05, "usd_ttm": 106.05, "cny_tts": 15.61, "cny_ttb": 15.01, "cny_ttm": 15.31}, {"ym": "2020-09", "usd_tts": 106.76, "usd_ttb": 104.76, "usd_ttm": 105.76, "cny_tts": 15.81, "cny_ttb": 15.21, "cny_ttm": 15.51}, {"ym": "2020-10", "usd_tts": 106.27, "usd_ttb": 104.27, "usd_ttm": 105.27, "cny_tts": 15.98, "cny_ttb": 15.38, "cny_ttm": 15.68}, {"ym": "2020-11", "usd_tts": 105.41, "usd_ttb": 103.41, "usd_ttm": 104.41, "cny_tts": 16.13, "cny_ttb": 15.53, "cny_ttm": 15.83}, {"ym": "2020-12", "usd_tts": 104.84, "usd_ttb": 102.84, "usd_ttm": 103.84, "cny_tts": 16.21, "cny_ttb": 15.61, "cny_ttm": 15.91}, {"ym": "2021-01", "usd_tts": 104.69, "usd_ttb": 102.69, "usd_ttm": 103.69, "cny_tts": 16.33, "cny_ttb": 15.73, "cny_ttm": 16.03}, {"ym": "2021-02", "usd_tts": 106.37, "usd_ttb": 104.37, "usd_ttm": 105.37, "cny_tts": 16.65, "cny_ttb": 16.05, "cny_ttm": 16.35}, {"ym": "2021-03", "usd_tts": 109.63, "usd_ttb": 107.63, "usd_ttm": 108.63, "cny_tts": 16.99, "cny_ttb": 16.39, "cny_ttm": 16.69}, {"ym": "2021-04", "usd_tts": 110.14, "usd_ttb": 108.14, "usd_ttm": 109.14, "cny_tts": 17.03, "cny_ttb": 16.43, "cny_ttm": 16.73}, {"ym": "2021-05", "usd_tts": 110.2, "usd_ttb": 108.2, "usd_ttm": 109.2, "cny_tts": 17.29, "cny_ttb": 16.69, "cny_ttm": 16.99}, {"ym": "2021-06", "usd_tts": 111.13, "usd_ttb": 109.13, "usd_ttm": 110.13, "cny_tts": 17.45, "cny_ttb": 16.85, "cny_ttm": 17.15}, {"ym": "2021-07", "usd_tts": 111.31, "usd_ttb": 109.31, "usd_ttm": 110.31, "cny_tts": 17.33, "cny_ttb": 16.73, "cny_ttm": 17.03}, {"ym": "2021-08", "usd_tts": 110.85, "usd_ttb": 108.85, "usd_ttm": 109.85, "cny_tts": 17.27, "cny_ttb": 16.67, "cny_ttm": 16.97}, {"ym": "2021-09", "usd_tts": 111.17, "usd_ttb": 109.17, "usd_ttm": 110.17, "cny_tts": 17.37, "cny_ttb": 16.77, "cny_ttm": 17.07}, {"ym": "2021-10", "usd_tts": 114.11, "usd_ttb": 112.11, "usd_ttm": 113.11, "cny_tts": 17.92, "cny_ttb": 17.32, "cny_ttm": 17.62}, {"ym": "2021-11", "usd_tts": 115.14, "usd_ttb": 113.14, "usd_ttm": 114.14, "cny_tts": 18.16, "cny_ttb": 17.56, "cny_ttm": 17.86}, {"ym": "2021-12", "usd_tts": 114.88, "usd_ttb": 112.88, "usd_ttm": 113.88, "cny_tts": 18.17, "cny_ttb": 17.57, "cny_ttm": 17.87}, {"ym": "2022-01", "usd_tts": 115.85, "usd_ttb": 113.85, "usd_ttm": 114.85, "cny_tts": 18.36, "cny_ttb": 17.76, "cny_ttm": 18.06}, {"ym": "2022-02", "usd_tts": 116.22, "usd_ttb": 114.22, "usd_ttm": 115.22, "cny_tts": 18.46, "cny_ttb": 17.86, "cny_ttm": 18.16}, {"ym": "2022-03", "usd_tts": 119.53, "usd_ttb": 117.53, "usd_ttm": 118.53, "cny_tts": 18.96, "cny_ttb": 18.36, "cny_ttm": 18.66}, {"ym": "2022-04", "usd_tts": 126.98, "usd_ttb": 124.98, "usd_ttm": 125.98, "cny_tts": 19.91, "cny_ttb": 19.31, "cny_ttm": 19.61}, {"ym": "2022-05", "usd_tts": 129.81, "usd_ttb": 127.81, "usd_ttm": 128.81, "cny_tts": 19.43, "cny_ttb": 18.83, "cny_ttm": 19.13}, {"ym": "2022-06", "usd_tts": 134.93, "usd_ttb": 132.93, "usd_ttm": 133.93, "cny_tts": 20.29, "cny_ttb": 19.69, "cny_ttm": 19.99}, {"ym": "2022-07", "usd_tts": 137.79, "usd_ttb": 135.79, "usd_ttm": 136.79, "cny_tts": 20.61, "cny_ttb": 20.01, "cny_ttm": 20.31}, {"ym": "2022-08", "usd_tts": 136.24, "usd_ttb": 134.24, "usd_ttm": 135.24, "cny_tts": 20.16, "cny_ttb": 19.56, "cny_ttm": 19.86}, {"ym": "2022-09", "usd_tts": 144.09, "usd_ttb": 142.09, "usd_ttm": 143.09, "cny_tts": 20.7, "cny_ttb": 20.1, "cny_ttm": 20.4}, {"ym": "2022-10", "usd_tts": 148.19, "usd_ttb": 146.19, "usd_ttm": 147.19, "cny_tts": 20.76, "cny_ttb": 20.16, "cny_ttm": 20.46}, {"ym": "2022-11", "usd_tts": 143.48, "usd_ttb": 141.48, "usd_ttm": 142.48, "cny_tts": 20.11, "cny_ttb": 19.51, "cny_ttm": 19.81}, {"ym": "2022-12", "usd_tts": 136.09, "usd_ttb": 134.09, "usd_ttm": 135.09, "cny_tts": 19.64, "cny_ttb": 19.04, "cny_ttm": 19.34}, {"ym": "2023-01", "usd_tts": 131.35, "usd_ttb": 129.35, "usd_ttm": 130.35, "cny_tts": 19.52, "cny_ttb": 18.92, "cny_ttm": 19.22}, {"ym": "2023-02", "usd_tts": 133.75, "usd_ttb": 131.75, "usd_ttm": 132.75, "cny_tts": 19.71, "cny_ttb": 19.11, "cny_ttm": 19.41}, {"ym": "2023-03", "usd_tts": 134.92, "usd_ttb": 132.92, "usd_ttm": 133.92, "cny_tts": 19.7, "cny_ttb": 19.1, "cny_ttm": 19.4}, {"ym": "2023-04", "usd_tts": 134.4, "usd_ttb": 132.4, "usd_ttm": 133.4, "cny_tts": 19.66, "cny_ttb": 19.06, "cny_ttm": 19.36}, {"ym": "2023-05", "usd_tts": 138.43, "usd_ttb": 136.43, "usd_ttm": 137.43, "cny_tts": 19.92, "cny_ttb": 19.32, "cny_ttm": 19.62}, {"ym": "2023-06", "usd_tts": 142.27, "usd_ttb": 140.27, "usd_ttm": 141.27, "cny_tts": 20, "cny_ttb": 19.4, "cny_ttm": 19.7}, {"ym": "2023-07", "usd_tts": 142.3, "usd_ttb": 140.3, "usd_ttm": 141.3, "cny_tts": 19.92, "cny_ttb": 19.32, "cny_ttm": 19.62}, {"ym": "2023-08", "usd_tts": 145.84, "usd_ttb": 143.84, "usd_ttm": 144.84, "cny_tts": 20.26, "cny_ttb": 19.66, "cny_ttm": 19.96}, {"ym": "2023-09", "usd_tts": 148.73, "usd_ttb": 146.73, "usd_ttm": 147.73, "cny_tts": 20.53, "cny_ttb": 19.93, "cny_ttm": 20.23}, {"ym": "2023-10", "usd_tts": 150.6, "usd_ttb": 148.6, "usd_ttm": 149.6, "cny_tts": 20.74, "cny_ttb": 20.14, "cny_ttm": 20.44}, {"ym": "2023-11", "usd_tts": 150.95, "usd_ttb": 148.95, "usd_ttm": 149.95, "cny_tts": 21.03, "cny_ttb": 20.43, "cny_ttm": 20.73}, {"ym": "2023-12", "usd_tts": 145.13, "usd_ttb": 143.13, "usd_ttm": 144.13, "cny_tts": 20.46, "cny_ttb": 19.86, "cny_ttm": 20.16}, {"ym": "2024-01", "usd_tts": 147.65, "usd_ttb": 145.65, "usd_ttm": 146.65, "cny_tts": 20.71, "cny_ttb": 20.11, "cny_ttm": 20.41}, {"ym": "2024-02", "usd_tts": 150.5, "usd_ttb": 148.5, "usd_ttm": 149.5, "cny_tts": 21.03, "cny_ttb": 20.43, "cny_ttm": 20.73}, {"ym": "2024-03", "usd_tts": 150.67, "usd_ttb": 148.67, "usd_ttm": 149.67, "cny_tts": 21.04, "cny_ttb": 20.44, "cny_ttm": 20.74}, {"ym": "2024-04", "usd_tts": 154.51, "usd_ttb": 152.51, "usd_ttm": 153.51, "cny_tts": 21.46, "cny_ttb": 20.86, "cny_ttm": 21.16}, {"ym": "2024-05", "usd_tts": 157.25, "usd_ttb": 155.25, "usd_ttm": 156.25, "cny_tts": 21.87, "cny_ttb": 21.27, "cny_ttm": 21.57}, {"ym": "2024-06", "usd_tts": 158.89, "usd_ttb": 156.89, "usd_ttm": 157.89, "cny_tts": 22, "cny_ttb": 21.4, "cny_ttm": 21.7}, {"ym": "2024-07", "usd_tts": 159.16, "usd_ttb": 157.16, "usd_ttm": 158.16, "cny_tts": 22.02, "cny_ttb": 21.42, "cny_ttm": 21.72}, {"ym": "2024-08", "usd_tts": 147.44, "usd_ttb": 145.44, "usd_ttm": 146.44, "cny_tts": 20.77, "cny_ttb": 20.17, "cny_ttm": 20.47}, {"ym": "2024-09", "usd_tts": 144.55, "usd_ttb": 142.55, "usd_ttm": 143.55, "cny_tts": 20.57, "cny_ttb": 19.97, "cny_ttm": 20.27}, {"ym": "2024-10", "usd_tts": 150.69, "usd_ttb": 148.69, "usd_ttm": 149.69, "cny_tts": 21.37, "cny_ttb": 20.77, "cny_ttm": 21.07}, {"ym": "2024-11", "usd_tts": 154.85, "usd_ttb": 152.85, "usd_ttm": 153.85, "cny_tts": 21.61, "cny_ttb": 21.01, "cny_ttm": 21.31}, {"ym": "2024-12", "usd_tts": 154.77, "usd_ttb": 152.77, "usd_ttm": 153.77, "cny_tts": 21.4, "cny_ttb": 20.8, "cny_ttm": 21.1}, {"ym": "2025-01", "usd_tts": 157.54, "usd_ttb": 155.54, "usd_ttm": 156.54, "cny_tts": 21.7, "cny_ttb": 21.1, "cny_ttm": 21.4}, {"ym": "2025-02", "usd_tts": 153.02, "usd_ttb": 151.02, "usd_ttm": 152.02, "cny_tts": 21.17, "cny_ttb": 20.57, "cny_ttm": 20.87}, {"ym": "2025-03", "usd_tts": 150.25, "usd_ttb": 148.25, "usd_ttm": 149.25, "cny_tts": 20.87, "cny_ttb": 20.27, "cny_ttm": 20.57}, {"ym": "2025-04", "usd_tts": 145.49, "usd_ttb": 143.49, "usd_ttm": 144.49, "cny_tts": 20.08, "cny_ttb": 19.48, "cny_ttm": 19.78}, {"ym": "2025-05", "usd_tts": 145.75, "usd_ttb": 143.75, "usd_ttm": 144.75, "cny_tts": 20.37, "cny_ttb": 19.77, "cny_ttm": 20.07}, {"ym": "2025-06", "usd_tts": 145.54, "usd_ttb": 143.54, "usd_ttm": 144.54, "cny_tts": 20.42, "cny_ttb": 19.82, "cny_ttm": 20.12}, {"ym": "2025-07", "usd_tts": 147.74, "usd_ttb": 145.74, "usd_ttm": 146.74, "cny_tts": 20.76, "cny_ttb": 20.16, "cny_ttm": 20.46}, {"ym": "2025-08", "usd_tts": 148.71, "usd_ttb": 146.71, "usd_ttm": 147.71, "cny_tts": 20.88, "cny_ttb": 20.28, "cny_ttm": 20.58}, {"ym": "2025-09", "usd_tts": 148.99, "usd_ttb": 146.99, "usd_ttm": 147.99, "cny_tts": 21.07, "cny_ttb": 20.47, "cny_ttm": 20.77}, {"ym": "2025-10", "usd_tts": 152.3, "usd_ttb": 150.3, "usd_ttm": 151.3, "cny_tts": 21.53, "cny_ttb": 20.93, "cny_ttm": 21.23}, {"ym": "2025-11", "usd_tts": 156.2, "usd_ttb": 154.2, "usd_ttm": 155.2, "cny_tts": 22.13, "cny_ttb": 21.53, "cny_ttm": 21.83}, {"ym": "2025-12", "usd_tts": 156.95, "usd_ttb": 154.95, "usd_ttm": 155.95, "cny_tts": 22.44, "cny_ttb": 21.84, "cny_ttm": 22.14}, {"ym": "2026-01", "usd_tts": 157.78, "usd_ttb": 155.78, "usd_ttm": 156.78, "cny_tts": 22.81, "cny_ttb": 22.21, "cny_ttm": 22.51}, {"ym": "2026-02", "usd_tts": 156.13, "usd_ttb": 154.13, "usd_ttm": 155.13, "cny_tts": 22.76, "cny_ttb": 22.16, "cny_ttm": 22.46}, {"ym": "2026-03", "usd_tts": 159.68, "usd_ttb": 157.68, "usd_ttm": 158.68, "cny_tts": 23.3, "cny_ttb": 22.7, "cny_ttm": 23}];
 
-// インデックス構築
 const dataMap = {};
 FX_DATA.forEach(d => { dataMap[d.ym] = d; });
 
-function ymToKey(yyyymm) {
-  const s = String(yyyymm).trim();
-  if (s.length !== 6) return null;
-  return s.slice(0,4) + '-' + s.slice(4,6);
-}
-
-function get3Months(yyyymm) {
-  // yyyymm の月を含む直近3ヶ月（当月・1ヶ月前・2ヶ月前）
-  const y = parseInt(yyyymm.slice(0,4));
-  const m = parseInt(yyyymm.slice(4,6));
-  const months = [];
-  for (let i = 2; i >= 0; i--) {
-    let mm = m - i;
-    let yy = y;
-    if (mm <= 0) { mm += 12; yy -= 1; }
-    const key = yy + '-' + String(mm).padStart(2,'0');
-    months.push(key);
+function get3m(yyyymm) {
+  const y = parseInt(yyyymm.slice(0,4)), m = parseInt(yyyymm.slice(4,6));
+  const r = [];
+  for (let i=2;i>=0;i--) {
+    let mm=m-i, yy=y;
+    if(mm<=0){mm+=12;yy--;}
+    r.push(yy+'-'+String(mm).padStart(2,'0'));
   }
-  return months;
+  return r;
 }
 
 function avg3(keys, field) {
-  const vals = keys.map(k => dataMap[k]?.[field]).filter(v => v != null);
-  if (vals.length === 0) return null;
-  return vals.reduce((a,b) => a+b, 0) / vals.length;
+  const v = keys.map(k=>dataMap[k]?.[field]).filter(x=>x!=null);
+  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null;
 }
 
-function fmt(v, dec=2) {
-  if (v == null) return '—';
-  return v.toFixed(dec);
-}
+function f(v, d=2) { return v==null ? '—' : v.toFixed(d); }
+function sign(v) { return v>0?'+':''; }
+function cls(v) { return v==null?'': v>0?'up':'dn'; }
 
-function renderCards(containerId, avg_usd_tts, avg_usd_ttb, avg_usd_ttm, avg_cny_tts, avg_cny_ttb, avg_cny_ttm) {
-  const el = document.getElementById(containerId);
-  const cross = (avg_usd_tts && avg_cny_tts) ? (avg_usd_tts / avg_cny_tts) : null;
-  el.innerHTML = `
-    <div class="rcard"><div class="rcard-label">USD TTS（売）★輸入適用</div><div class="rcard-val">${fmt(avg_usd_tts)}</div><div class="rcard-sub">円/ドル</div></div>
-    <div class="rcard blue"><div class="rcard-label">USD TTB（買）</div><div class="rcard-val">${fmt(avg_usd_ttb)}</div><div class="rcard-sub">円/ドル</div></div>
-    <div class="rcard blue"><div class="rcard-label">USD TTM（仲値）</div><div class="rcard-val">${fmt(avg_usd_ttm)}</div><div class="rcard-sub">円/ドル</div></div>
-    <div class="rcard green"><div class="rcard-label">CNY TTS（売）★輸入適用</div><div class="rcard-val">${fmt(avg_cny_tts)}</div><div class="rcard-sub">円/元</div></div>
-    <div class="rcard blue"><div class="rcard-label">CNY TTB（買）</div><div class="rcard-val">${fmt(avg_cny_ttb)}</div><div class="rcard-sub">円/元</div></div>
-    <div class="rcard blue"><div class="rcard-label">CNY TTM（仲値）</div><div class="rcard-val">${fmt(avg_cny_ttm)}</div><div class="rcard-sub">円/元</div></div>
-    <div class="rcard"><div class="rcard-label">USD/CNY クロス</div><div class="rcard-val">${fmt(cross,4)}</div><div class="rcard-sub">1$＝X元</div></div>
+function renderCards(id, usd, cny, cross) {
+  document.getElementById(id).innerHTML = `
+    <div class="rc"><div class="rc-lbl">USD TTS（売）★</div><div class="rc-val">${f(usd)}</div><div class="rc-unit">円/ドル</div></div>
+    <div class="rc g"><div class="rc-lbl">CNY TTS（売）★</div><div class="rc-val">${f(cny)}</div><div class="rc-unit">円/元</div></div>
+    <div class="rc b"><div class="rc-lbl">USD/CNY クロス</div><div class="rc-val">${f(cross,4)}</div><div class="rc-unit">1$＝X元</div></div>
   `;
 }
 
 function calc() {
-  const aStr = document.getElementById('inp-a').value.trim();
-  const bStr = document.getElementById('inp-b').value.trim();
-  const usdAmt = parseFloat(document.getElementById('inp-usd').value) || 0;
-  const cnyAmt = parseFloat(document.getElementById('inp-cny').value) || 0;
+  const aStr=document.getElementById('inp-a').value.trim();
+  const bStr=document.getElementById('inp-b').value.trim();
+  const usdAmt=parseFloat(document.getElementById('inp-usd').value)||0;
+  const cnyAmt=parseFloat(document.getElementById('inp-cny').value)||0;
+  if(aStr.length!==6||bStr.length!==6){alert('YYYYMM形式6桁で入力してください');return;}
 
-  if (aStr.length !== 6 || bStr.length !== 6) {
-    alert('年月をYYYYMM形式（6桁）で入力してください');
-    return;
-  }
+  const am=get3m(aStr), bm=get3m(bStr);
+  const au=avg3(am,'usd_tts'), ac=avg3(am,'cny_tts'), ax=au&&ac?au/ac:null;
+  const bu=avg3(bm,'usd_tts'), bc=avg3(bm,'cny_tts'), bx=bu&&bc?bu/bc:null;
 
-  const aMonths = get3Months(aStr);
-  const bMonths = get3Months(bStr);
+  document.getElementById('lbl-a').textContent=am.join(' ～ ');
+  document.getElementById('lbl-b').textContent=bm.join(' ～ ');
+  renderCards('cards-a',au,ac,ax);
+  renderCards('cards-b',bu,bc,bx);
 
-  // A期間
-  const a_usd_tts = avg3(aMonths, 'usd_tts');
-  const a_usd_ttb = avg3(aMonths, 'usd_ttb');
-  const a_usd_ttm = avg3(aMonths, 'usd_ttm');
-  const a_cny_tts = avg3(aMonths, 'cny_tts');
-  const a_cny_ttb = avg3(aMonths, 'cny_ttb');
-  const a_cny_ttm = avg3(aMonths, 'cny_ttm');
-
-  // B期間
-  const b_usd_tts = avg3(bMonths, 'usd_tts');
-  const b_usd_ttb = avg3(bMonths, 'usd_ttb');
-  const b_usd_ttm = avg3(bMonths, 'usd_ttm');
-  const b_cny_tts = avg3(bMonths, 'cny_tts');
-  const b_cny_ttb = avg3(bMonths, 'cny_ttb');
-  const b_cny_ttm = avg3(bMonths, 'cny_ttm');
-
-  document.getElementById('label-a').textContent = aMonths.join(' ～ ');
-  document.getElementById('label-b').textContent = bMonths.join(' ～ ');
-
-  renderCards('cards-a', a_usd_tts, a_usd_ttb, a_usd_ttm, a_cny_tts, a_cny_ttb, a_cny_ttm);
-  renderCards('cards-b', b_usd_tts, b_usd_ttb, b_usd_ttm, b_cny_tts, b_cny_ttb, b_cny_ttm);
-
-  // 月別内訳テーブル
-  const tbody = document.getElementById('breakdown-tbody');
-  tbody.innerHTML = '';
-  const allMonths = [...aMonths.map(m=>({m,tag:'A'})), ...bMonths.map(m=>({m,tag:'B'}))];
-  allMonths.forEach(({m,tag}) => {
-    const d = dataMap[m];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="label"><span style="background:${tag==='A'?'var(--accent)':'var(--accent2)'};color:#000;border-radius:3px;padding:1px 5px;font-size:.65rem;font-weight:700">${tag}</span></td>
-      <td class="label">${m}</td>
-      <td>${d?.usd_tts ?? '—'}</td><td>${d?.usd_ttb ?? '—'}</td><td>${d?.usd_ttm ?? '—'}</td>
-      <td>${d?.cny_tts ?? '—'}</td><td>${d?.cny_ttb ?? '—'}</td><td>${d?.cny_ttm ?? '—'}</td>
-    `;
-    tbody.appendChild(tr);
+  // 内訳
+  const tb=document.getElementById('bk-tbody'); tb.innerHTML='';
+  [...am.map(m=>{return{m,tag:'A'}}), ...bm.map(m=>{return{m,tag:'B'}})].forEach(({m,tag})=>{
+    const d=dataMap[m];
+    const cross=d?.usd_tts&&d?.cny_tts?d.usd_tts/d.cny_tts:null;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="lbl"><span style="background:${tag==='A'?'var(--accent)':'var(--accent2)'};color:#000;border-radius:3px;padding:1px 5px;font-size:.6rem;font-weight:700">${tag}</span></td>
+      <td class="lbl">${m}</td><td>${d?.usd_tts??'—'}</td><td>${d?.cny_tts??'—'}</td><td>${f(cross,4)}</td>`;
+    tb.appendChild(tr);
   });
   // 平均行
-  ['A','B'].forEach(tag => {
-    const tr = document.createElement('tr');
-    tr.style.background = 'rgba(240,165,0,0.08)';
-    const u_tts = tag==='A' ? a_usd_tts : b_usd_tts;
-    const u_ttb = tag==='A' ? a_usd_ttb : b_usd_ttb;
-    const u_ttm = tag==='A' ? a_usd_ttm : b_usd_ttm;
-    const c_tts = tag==='A' ? a_cny_tts : b_cny_tts;
-    const c_ttb = tag==='A' ? a_cny_ttb : b_cny_ttb;
-    const c_ttm = tag==='A' ? a_cny_ttm : b_cny_ttm;
-    tr.innerHTML = `
-      <td class="label" colspan="2"><strong style="color:var(--accent)">${tag} 3ヶ月平均</strong></td>
-      <td><strong>${fmt(u_tts)}</strong></td><td>${fmt(u_ttb)}</td><td>${fmt(u_ttm)}</td>
-      <td><strong>${fmt(c_tts)}</strong></td><td>${fmt(c_ttb)}</td><td>${fmt(c_ttm)}</td>
-    `;
-    tbody.appendChild(tr);
+  [['A',au,ac,ax],['B',bu,bc,bx]].forEach(([tag,u,c,x])=>{
+    const tr=document.createElement('tr');
+    tr.style.background='rgba(240,165,0,.07)';
+    tr.innerHTML=`<td class="lbl" colspan="2"><strong style="color:var(--accent)">${tag} 3ヶ月平均</strong></td>
+      <td><strong>${f(u)}</strong></td><td><strong>${f(c)}</strong></td><td><strong>${f(x,4)}</strong></td>`;
+    tb.appendChild(tr);
   });
 
-  // C: 差損益
-  const diffUsdTts = (b_usd_tts && a_usd_tts) ? b_usd_tts - a_usd_tts : null;
-  const diffCnyTts = (b_cny_tts && a_cny_tts) ? b_cny_tts - a_cny_tts : null;
-  const rateUsd = (diffUsdTts && a_usd_tts) ? diffUsdTts / a_usd_tts * 100 : null;
-  const rateCny = (diffCnyTts && a_cny_tts) ? diffCnyTts / a_cny_tts * 100 : null;
-  const crossA = (a_usd_tts && a_cny_tts) ? a_usd_tts / a_cny_tts : null;
-  const crossB = (b_usd_tts && b_cny_tts) ? b_usd_tts / b_cny_tts : null;
-  const diffCross = (crossA && crossB) ? crossB - crossA : null;
-
-  const diffEl = document.getElementById('diff-cards');
-  const cls = (v) => v == null ? '' : v > 0 ? 'up' : 'down';
-  const sign = (v) => v > 0 ? '+' : '';
-
-  diffEl.innerHTML = `
-    <div class="diff-card">
-      <div class="diff-title">USD/JPY（円/ドル）</div>
-      <div class="diff-row"><span class="key">見積時A</span><span class="val">${fmt(a_usd_tts)}</span></div>
-      <div class="diff-row"><span class="key">再見積時B</span><span class="val">${fmt(b_usd_tts)}</span></div>
-      <div class="diff-row"><span class="key">差（B−A）</span><span class="val ${cls(diffUsdTts)}">${diffUsdTts != null ? sign(diffUsdTts)+fmt(diffUsdTts) : '—'}</span></div>
-      <div class="diff-row"><span class="key">変動率</span><span class="val ${cls(rateUsd)}">${rateUsd != null ? sign(rateUsd)+fmt(rateUsd,2)+'%' : '—'}</span></div>
+  // 差損益C
+  const du=bu&&au?bu-au:null, dc2=bc&&ac?bc-ac:null, dx=bx&&ax?bx-ax:null;
+  const ru=du&&au?du/au*100:null, rc2=dc2&&ac?dc2/ac*100:null;
+  document.getElementById('diff-cards').innerHTML=`
+    <div class="dc"><div class="dc-title">USD/JPY（円/ドル）</div>
+      <div class="drow"><span class="k">見積時 A</span><span class="v">${f(au)}</span></div>
+      <div class="drow"><span class="k">再見積時 B</span><span class="v">${f(bu)}</span></div>
+      <div class="drow"><span class="k">差（B−A）</span><span class="v ${cls(du)}">${du!=null?sign(du)+f(du):'—'}</span></div>
+      <div class="drow"><span class="k">変動率</span><span class="v ${cls(ru)}">${ru!=null?sign(ru)+f(ru,2)+'%':'—'}</span></div>
     </div>
-    <div class="diff-card">
-      <div class="diff-title">CNY/JPY（円/元）</div>
-      <div class="diff-row"><span class="key">見積時A</span><span class="val">${fmt(a_cny_tts)}</span></div>
-      <div class="diff-row"><span class="key">再見積時B</span><span class="val">${fmt(b_cny_tts)}</span></div>
-      <div class="diff-row"><span class="key">差（B−A）</span><span class="val ${cls(diffCnyTts)}">${diffCnyTts != null ? sign(diffCnyTts)+fmt(diffCnyTts) : '—'}</span></div>
-      <div class="diff-row"><span class="key">変動率</span><span class="val ${cls(rateCny)}">${rateCny != null ? sign(rateCny)+fmt(rateCny,2)+'%' : '—'}</span></div>
+    <div class="dc"><div class="dc-title">CNY/JPY（円/元）</div>
+      <div class="drow"><span class="k">見積時 A</span><span class="v">${f(ac)}</span></div>
+      <div class="drow"><span class="k">再見積時 B</span><span class="v">${f(bc)}</span></div>
+      <div class="drow"><span class="k">差（B−A）</span><span class="v ${cls(dc2)}">${dc2!=null?sign(dc2)+f(dc2):'—'}</span></div>
+      <div class="drow"><span class="k">変動率</span><span class="v ${cls(rc2)}">${rc2!=null?sign(rc2)+f(rc2,2)+'%':'—'}</span></div>
     </div>
-    <div class="diff-card">
-      <div class="diff-title">USD/CNY クロス（1$=X元）</div>
-      <div class="diff-row"><span class="key">見積時A</span><span class="val">${fmt(crossA,4)}</span></div>
-      <div class="diff-row"><span class="key">再見積時B</span><span class="val">${fmt(crossB,4)}</span></div>
-      <div class="diff-row"><span class="key">差（B−A）</span><span class="val ${diffCross != null && diffCross < 0 ? 'up' : 'down'}">${diffCross != null ? sign(diffCross)+fmt(diffCross,4) : '—'}</span></div>
+    <div class="dc"><div class="dc-title">USD/CNY クロス（1$=X元）</div>
+      <div class="drow"><span class="k">見積時 A</span><span class="v">${f(ax,4)}</span></div>
+      <div class="drow"><span class="k">再見積時 B</span><span class="v">${f(bx,4)}</span></div>
+      <div class="drow"><span class="k">差（B−A）</span><span class="v ${dx!=null&&dx<0?'up':'dn'}">${dx!=null?sign(dx)+f(dx,4):'—'}</span></div>
     </div>
   `;
 
-  // D: シミュレーション
-  const simEl = document.getElementById('sim-result-wrap');
-  const usdA = a_usd_tts ? usdAmt * a_usd_tts : null;
-  const usdB = b_usd_tts ? usdAmt * b_usd_tts : null;
-  const usdDiff = (usdA && usdB) ? usdB - usdA : null;
-  const cnyA = a_cny_tts ? cnyAmt * a_cny_tts : null;
-  const cnyB = b_cny_tts ? cnyAmt * b_cny_tts : null;
-  const cnyDiff = (cnyA && cnyB) ? cnyB - cnyA : null;
-
-  simEl.innerHTML = `
-    <div class="sim-result">
-      <div class="row"><span class="k">USD ${usdAmt.toLocaleString()}ドル 見積時（円）</span><span class="v">¥${usdA ? Math.round(usdA).toLocaleString() : '—'}</span></div>
-      <div class="row"><span class="k">USD ${usdAmt.toLocaleString()}ドル 再見積時（円）</span><span class="v">¥${usdB ? Math.round(usdB).toLocaleString() : '—'}</span></div>
-      <div class="row"><span class="k">USD 差損益</span><span class="v ${cls(usdDiff)}">${usdDiff != null ? (sign(usdDiff)+'¥'+Math.round(usdDiff).toLocaleString()) : '—'}</span></div>
-      <div class="row" style="margin-top:8px"><span class="k">CNY ${cnyAmt.toLocaleString()}元 見積時（円）</span><span class="v">¥${cnyA ? Math.round(cnyA).toLocaleString() : '—'}</span></div>
-      <div class="row"><span class="k">CNY ${cnyAmt.toLocaleString()}元 再見積時（円）</span><span class="v">¥${cnyB ? Math.round(cnyB).toLocaleString() : '—'}</span></div>
-      <div class="row"><span class="k">CNY 差損益</span><span class="v ${cls(cnyDiff)}">${cnyDiff != null ? (sign(cnyDiff)+'¥'+Math.round(cnyDiff).toLocaleString()) : '—'}</span></div>
-    </div>
+  // シムD
+  const uA=au?usdAmt*au:null, uB=bu?usdAmt*bu:null, uD=uA&&uB?uB-uA:null;
+  const cA=ac?cnyAmt*ac:null, cB=bc?cnyAmt*bc:null, cD=cA&&cB?cB-cA:null;
+  document.getElementById('sim-result').innerHTML=`
+    <div class="srow"><span class="k">USD ${usdAmt.toLocaleString()} 見積時（円）</span><span class="v">¥${uA?Math.round(uA).toLocaleString():'—'}</span></div>
+    <div class="srow"><span class="k">USD ${usdAmt.toLocaleString()} 再見積時（円）</span><span class="v">¥${uB?Math.round(uB).toLocaleString():'—'}</span></div>
+    <div class="srow"><span class="k">USD 差損益</span><span class="v ${cls(uD)}">${uD!=null?(sign(uD)+'¥'+Math.round(uD).toLocaleString()):'—'}</span></div>
+    <div class="srow" style="margin-top:4px"><span class="k">CNY ¥${cnyAmt.toLocaleString()} 見積時（円）</span><span class="v">¥${cA?Math.round(cA).toLocaleString():'—'}</span></div>
+    <div class="srow"><span class="k">CNY ¥${cnyAmt.toLocaleString()} 再見積時（円）</span><span class="v">¥${cB?Math.round(cB).toLocaleString():'—'}</span></div>
+    <div class="srow"><span class="k">CNY 差損益</span><span class="v ${cls(cD)}">${cD!=null?(sign(cD)+'¥'+Math.round(cD).toLocaleString()):'—'}</span></div>
   `;
-
   document.getElementById('result-section').classList.remove('hidden');
 }
 
-// 全データテーブル描画
-function renderAllData() {
-  const tbody = document.getElementById('all-tbody');
-  const rows = [...FX_DATA].reverse(); // 新しい順
-  rows.forEach((d, i) => {
-    // 3ヶ月平均算出
-    const idx = FX_DATA.indexOf(d);
-    const keys3 = FX_DATA.slice(Math.max(0,idx-2), idx+1).map(x=>x.ym);
-    const avg_usd = avg3(keys3,'usd_tts');
-    const avg_cny = avg3(keys3,'cny_tts');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${d.ym}</td>
-      <td>${d.usd_tts??'—'}</td><td>${d.usd_ttb??'—'}</td><td>${d.usd_ttm??'—'}</td>
-      <td>${d.cny_tts??'—'}</td><td>${d.cny_ttb??'—'}</td><td>${d.cny_ttm??'—'}</td>
-      <td style="color:var(--accent)">${avg_usd?avg_usd.toFixed(2):'—'}</td>
-      <td style="color:var(--green)">${avg_cny?avg_cny.toFixed(2):'—'}</td>
-    `;
-    tbody.appendChild(tr);
+// 全データテーブル
+function renderAll() {
+  const tb=document.getElementById('all-tbody');
+  [...FX_DATA].reverse().forEach((d,_,arr)=>{
+    const idx=FX_DATA.indexOf(d);
+    const keys=FX_DATA.slice(Math.max(0,idx-2),idx+1).map(x=>x.ym);
+    const au=avg3(keys,'usd_tts'), ac=avg3(keys,'cny_tts');
+    const cross=d.usd_tts&&d.cny_tts?d.usd_tts/d.cny_tts:null;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="lbl">${d.ym}</td>
+      <td>${d.usd_tts??'—'}</td><td>${d.cny_tts??'—'}</td>
+      <td>${f(cross,4)}</td>
+      <td style="color:var(--accent)">${au?au.toFixed(2):'—'}</td>
+      <td style="color:var(--green)">${ac?ac.toFixed(2):'—'}</td>`;
+    tb.appendChild(tr);
   });
 }
 
-renderAllData();
-// デフォルト計算実行
+// CSV ダウンロード（直近36ヶ月）
+function downloadCSV() {
+  const recent=FX_DATA.slice(-36);
+  const header='年月,USD_TTS,CNY_TTS,USD_CNY_Cross,USD_3M平均TTS,CNY_3M平均TTS\n';
+  const rows=recent.map((d,i,arr)=>{
+    const base=FX_DATA.indexOf(d);
+    const keys=FX_DATA.slice(Math.max(0,base-2),base+1).map(x=>x.ym);
+    const au=avg3(keys,'usd_tts'), ac=avg3(keys,'cny_tts');
+    const cross=d.usd_tts&&d.cny_tts?(d.usd_tts/d.cny_tts).toFixed(4):'';
+    return `${d.ym},${d.usd_tts??''},${d.cny_tts??''},${cross},${au?au.toFixed(2):''},${ac?ac.toFixed(2):''}`;
+  }).join('\n');
+  const bom='\uFEFF';
+  const blob=new Blob([bom+header+rows],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='fx_tts_3m_avg.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+renderAll();
 calc();
 </script>
 </body>
