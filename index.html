@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>為替・材料価格ダッシュボード</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --accent: #f0a500;
+    --accent2: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --card-bg: #1c2128;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1000px;
+    margin: 0 auto 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+    color: var(--text2);
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #last-updated {
+    font-size: 0.72rem;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .btn-refresh {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-refresh:hover { opacity: 0.85; }
+  .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .main { max-width: 1000px; margin: 0 auto; }
+
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 12px;
+    padding-left: 2px;
+    border-left: 3px solid var(--accent);
+    padding-left: 8px;
+  }
+
+  /* 為替カード */
+  .fx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .fx-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .fx-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .fx-pair {
+    font-size: 0.72rem;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .fx-rate {
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .fx-unit {
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-left: 4px;
+  }
+
+  .fx-change {
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 8px;
+  }
+
+  .up { color: var(--red); }
+  .down { color: var(--green); }
+  .flat { color: var(--text2); }
+
+  /* 材料価格テーブル */
+  .material-table-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  th {
+    background: var(--bg2);
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text2);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(255,255,255,0.03); }
+
+  .material-name {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .price-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .source-badge {
+    font-size: 0.65rem;
+    color: var(--text2);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  /* 注記 */
+  .notes {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .notes strong { color: var(--text); }
+
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(13,17,23,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    font-size: 0.9rem;
+    color: var(--accent);
+    gap: 10px;
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .loading-overlay.show { opacity: 1; pointer-events: all; }
+
+  .error-msg {
+    color: var(--red);
+    font-size: 0.75rem;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 600px) {
+    .fx-rate { font-size: 1.5rem; }
+    th, td { padding: 10px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <span class="spin">⟳</span> データ取得中...
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div>
+      <h1>為替・材料価格ダッシュボード</h1>
+      <div class="subtitle">Sunnys Corporation — 商社実務用リファレンス</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="last-updated">未取得</span>
+    <button class="btn-refresh" id="btn-refresh" onclick="fetchAll()">
+      <span id="refresh-icon">⟳</span> 最新情報に更新
+    </button>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- 為替 -->
+  <div class="section-title">為替レート（FX Rates）</div>
+  <div class="fx-grid">
+    <div class="fx-card" id="card-usdjpy">
+      <div class="fx-pair">USD / JPY</div>
+      <div class="fx-rate" id="val-usdjpy">—</div>
+      <div class="fx-unit" style="display:inline">円</div>
+      <div class="fx-change" id="chg-usdjpy"></div>
+    </div>
+    <div class="fx-card" id="card-cnyjpy">
+      <div class="fx-pair">CNY / JPY</div>
+      <div class="fx-rate" id="val-cnyjpy">—</div>
+      <div class="fx-unit" style="display:inline">円</div>
+      <div class="fx-change" id="chg-cnyjpy"></div>
+    </div>
+    <div class="fx-card" id="card-usdcny">
+      <div class="fx-pair">USD / CNY</div>
+      <div class="fx-rate" id="val-usdcny">—</div>
+      <div class="fx-unit" style="display:inline">元</div>
+      <div class="fx-change" id="chg-usdcny"></div>
+    </div>
+  </div>
+
+  <!-- 材料価格 -->
+  <div class="section-title">中国・国際材料価格（参考値）</div>
+  <div class="material-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>材料</th>
+          <th>価格</th>
+          <th>単位</th>
+          <th>情報源</th>
+          <th>状態</th>
+        </tr>
+      </thead>
+      <tbody id="material-tbody">
+        <tr><td colspan="5" style="text-align:center;color:var(--text2);padding:24px">「最新情報に更新」ボタンを押してください</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 注記 -->
+  <div class="notes">
+    <strong>【ご注意】</strong><br>
+    ・為替レートは <strong>ExchangeRate-API（無料枠）</strong> より取得。リアルタイムではなく当日の基準レートです。<br>
+    ・材料価格（銅・アルミ・ニッケル）は <strong>LME建て参考値</strong> をopen-metalsより取得。実際の中国国内価格（上海有色・SMM等）とは差異があります。<br>
+    ・鉄スクラップは公開APIが限られるため <strong>参考値（Investing.com等手動確認推奨）</strong> です。<br>
+    ・本データは商社実務での参考用途に限ります。取引判断は必ず一次情報を確認してください。
+  </div>
+
+</div>
+
+<script>
+// ==================== 為替取得 ====================
+async function fetchFX() {
+  // USD建てレートを取得（USD/JPY, USD/CNY → CNY/JPY算出）
+  const res = await fetch('https://open.er-api.com/v6/latest/USD');
+  if (!res.ok) throw new Error('FX API error');
+  const data = await res.json();
+  const rates = data.rates;
+
+  const usdJpy = rates['JPY'];
+  const usdCny = rates['CNY'];
+  const cnyJpy = usdJpy / usdCny;
+
+  return { usdJpy, usdCny, cnyJpy };
+}
+
+function setFX(id, val, unit) {
+  document.getElementById('val-' + id).textContent = val.toFixed(2);
+}
+
+// ==================== 材料価格取得 ====================
+// LME公開データ（metals-api無料代替: exchangerate系 or metals.live）
+async function fetchMetals() {
+  // metals.live は無料・CORS対応
+  const res = await fetch('https://api.metals.live/v1/spot');
+  if (!res.ok) throw new Error('Metals API error');
+  const data = await res.json();
+  // レスポンス: [{gold: ...}, {silver:...}, {copper:...}, {aluminum:...}, {nickel:...}, ...]
+  const merged = {};
+  data.forEach(obj => Object.assign(merged, obj));
+  return merged;
+}
+
+// ==================== テーブル描画 ====================
+function renderMaterials(metals, fxUsdJpy, fxUsdCny) {
+  const items = [
+    {
+      name: '銅（Copper）',
+      key: 'copper',
+      dotColor: '#f0a500',
+      unit: 'USD/troy oz',
+      unitJp: '円/kg換算',
+      source: 'metals.live（LME参考）',
+      note: ''
+    },
+    {
+      name: 'アルミ（Aluminum）',
+      key: 'aluminum',
+      dotColor: '#8b949e',
+      unit: 'USD/troy oz',
+      unitJp: '円/kg換算',
+      source: 'metals.live（LME参考）',
+      note: ''
+    },
+    {
+      name: 'ニッケル（Nickel / SUS原料）',
+      key: 'nickel',
+      dotColor: '#58a6ff',
+      unit: 'USD/troy oz',
+      unitJp: '円/kg換算',
+      source: 'metals.live（LME参考）',
+      note: ''
+    },
+    {
+      name: '鉄スクラップ（Steel Scrap）',
+      key: null,
+      dotColor: '#3fb950',
+      unit: '—',
+      unitJp: '要手動確認',
+      source: 'Mysteel / SteelHome推奨',
+      note: '⚠ 自動取得不可'
+    },
+  ];
+
+  const TROY_TO_KG = 32.1507; // 1kg = 32.1507 troy oz
+
+  const tbody = document.getElementById('material-tbody');
+  tbody.innerHTML = '';
+
+  items.forEach(item => {
+    const tr = document.createElement('tr');
+
+    let priceUSD = null;
+    let priceJPY = null;
+    let priceCNY = null;
+
+    if (item.key && metals[item.key] !== undefined) {
+      priceUSD = metals[item.key]; // USD/troy oz
+      const usdPerKg = priceUSD * TROY_TO_KG;
+      priceJPY = usdPerKg * fxUsdJpy;
+      priceCNY = usdPerKg * fxUsdCny;
+    }
+
+    const priceCell = priceUSD !== null
+      ? `<div class="price-val">$${priceUSD.toFixed(2)}<span style="font-size:0.7rem;color:var(--text2)">/troy oz</span></div>
+         <div style="font-size:0.72rem;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:3px">
+           ≈ ¥${Math.round(priceJPY).toLocaleString()}/kg　≈ ¥${Math.round(priceCNY * 7).toLocaleString()}CNY/kg
+         </div>`
+      : `<div style="color:var(--text2);font-size:0.82rem">${item.unitJp}</div>`;
+
+    tr.innerHTML = `
+      <td><div class="material-name"><span class="dot" style="background:${item.dotColor}"></span>${item.name}</div></td>
+      <td>${priceCell}</td>
+      <td style="font-size:0.72rem;color:var(--text2)">${item.unit}</td>
+      <td><span class="source-badge">${item.source}</span></td>
+      <td style="font-size:0.72rem;color:var(--red)">${item.note}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ==================== メイン ====================
+async function fetchAll() {
+  const btn = document.getElementById('btn-refresh');
+  const icon = document.getElementById('refresh-icon');
+  const overlay = document.getElementById('loading');
+
+  btn.disabled = true;
+  icon.classList.add('spin');
+  overlay.classList.add('show');
+
+  try {
+    const [fx, metals] = await Promise.all([fetchFX(), fetchMetals()]);
+
+    // 為替表示
+    setFX('usdjpy', fx.usdJpy);
+    setFX('cnyjpy', fx.cnyJpy);
+    setFX('usdcny', fx.usdCny);
+
+    // 材料表示
+    renderMaterials(metals, fx.usdJpy, fx.usdCny);
+
+    // 更新時刻
+    const now = new Date();
+    const ts = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} 更新`;
+    document.getElementById('last-updated').textContent = ts;
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('last-updated').textContent = '取得失敗 — 再試行してください';
+  } finally {
+    btn.disabled = false;
+    icon.classList.remove('spin');
+    overlay.classList.remove('show');
+  }
+}
+
+// 初回自動取得
+fetchAll();
+</script>
+</body>
+</html>
