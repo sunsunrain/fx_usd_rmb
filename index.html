@@ -80,6 +80,31 @@ td.lbl{font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
 .hidden{display:none;}
 .tag{display:inline-block;font-size:.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--text2);margin-left:4px;vertical-align:middle;}
 .dl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;}
+
+/* 株主優待 */
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:18px;}
+.yt-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;}
+.yt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0;background:var(--green);}
+.yt-card.soon::before{background:var(--accent);}
+.yt-card.expired::before{background:var(--red);}
+.yt-name{font-size:1rem;font-weight:700;margin-bottom:8px;padding-right:28px;}
+.yt-badge{display:inline-block;font-size:.6rem;font-weight:700;border-radius:3px;padding:2px 6px;margin-left:6px;vertical-align:middle;}
+.yt-badge.ok{background:rgba(63,185,80,.2);color:var(--green);}
+.yt-badge.soon{background:rgba(240,165,0,.2);color:var(--accent);}
+.yt-badge.expired{background:rgba(248,81,73,.2);color:var(--red);}
+.yt-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.78rem;border-bottom:1px solid var(--border);}
+.yt-row:last-of-type{border-bottom:none;}
+.yt-row .k{color:var(--text2);font-size:.7rem;flex-shrink:0;}
+.yt-row .v{font-family:'JetBrains Mono',monospace;font-weight:600;text-align:right;}
+.yt-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.yt-tag{font-size:.62rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:2px 6px;color:var(--text2);}
+.yt-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text2);cursor:pointer;font-size:.75rem;padding:2px 6px;border-radius:4px;line-height:1;}
+.yt-del:hover{color:var(--red);background:rgba(248,81,73,.1);}
+.yt-empty{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:32px;text-align:center;color:var(--text2);font-size:.82rem;margin-bottom:18px;}
+.yt-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.yt-sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:120px;}
+.yt-sum-lbl{font-size:.62rem;color:var(--text2);margin-bottom:4px;}
+.yt-sum-val{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
 </style>
 </head>
 <body>
@@ -140,6 +165,21 @@ td.lbl{font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
       <th>年月</th><th>USD TTS</th><th>CNY TTS</th><th>USD/CNY</th><th>USD 3M平均TTS</th><th>CNY 3M平均TTS</th>
     </tr></thead><tbody id="all-tbody"></tbody></table>
   </div>
+
+  <!-- 株主優待管理 -->
+  <div class="sec" style="margin-top:8px">株主優待 管理</div>
+  <div class="panel">
+    <div class="pgrid">
+      <div class="field"><label>銘柄名 / 会社名</label><input id="yt-name" type="text" placeholder="例: マクドナルド"></div>
+      <div class="field"><label>有効期限</label><input id="yt-expiry" type="date"></div>
+      <div class="field"><label>金額（円）</label><input id="yt-amount" type="number" placeholder="例: 3000" min="0"></div>
+      <div class="field"><label>使える場所（カンマ区切り）</label><input id="yt-places" type="text" placeholder="例: 全店舗,EC,アプリ"></div>
+      <div class="field"><label>メモ</label><input id="yt-notes" type="text" placeholder="任意"></div>
+      <div class="field"><label>&nbsp;</label><button class="btn btn-calc" onclick="addYutai()">＋ 追加</button></div>
+    </div>
+  </div>
+  <div id="yt-summary" class="yt-summary"></div>
+  <div id="yutai-list"></div>
 
   <div class="note">
     <strong>【データ出所】</strong>
@@ -292,8 +332,94 @@ function downloadCSV() {
   URL.revokeObjectURL(url);
 }
 
+// 株主優待管理
+let yutaiData = JSON.parse(localStorage.getItem('yutai') || '[]');
+
+function saveYutai() {
+  localStorage.setItem('yutai', JSON.stringify(yutaiData));
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function addYutai() {
+  const name = document.getElementById('yt-name').value.trim();
+  const expiry = document.getElementById('yt-expiry').value;
+  const amount = parseInt(document.getElementById('yt-amount').value) || 0;
+  const placesRaw = document.getElementById('yt-places').value.trim();
+  const notes = document.getElementById('yt-notes').value.trim();
+  if (!name) { alert('銘柄名を入力してください'); return; }
+  if (!expiry) { alert('有効期限を入力してください'); return; }
+  const places = placesRaw ? placesRaw.split(',').map(p=>p.trim()).filter(Boolean) : [];
+  yutaiData.push({ id: Date.now().toString(), name, expiry, amount, places, notes });
+  saveYutai();
+  renderYutai();
+  ['yt-name','yt-expiry','yt-amount','yt-places','yt-notes'].forEach(id=>{ document.getElementById(id).value=''; });
+}
+
+function deleteYutai(id) {
+  if (!confirm('削除してもよろしいですか？')) return;
+  yutaiData = yutaiData.filter(y=>y.id!==id);
+  saveYutai();
+  renderYutai();
+}
+
+function renderYutai() {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const sorted = [...yutaiData].sort((a,b)=>{
+    const da=new Date(a.expiry), db=new Date(b.expiry);
+    const aExp=da<today, bExp=db<today;
+    if (aExp&&!bExp) return 1;
+    if (!aExp&&bExp) return -1;
+    return da-db;
+  });
+
+  const total = yutaiData.reduce((s,y)=>s+y.amount,0);
+  const expiredCount = yutaiData.filter(y=>new Date(y.expiry)<today).length;
+  const soonCount = yutaiData.filter(y=>{ const d=new Date(y.expiry); return d>=today&&Math.round((d-today)/86400000)<=30; }).length;
+
+  const sumEl = document.getElementById('yt-summary');
+  if (yutaiData.length===0) { sumEl.innerHTML=''; } else {
+    sumEl.innerHTML=`
+      <div class="yt-sum-card"><div class="yt-sum-lbl">合計金額</div><div class="yt-sum-val" style="color:var(--accent)">¥${total.toLocaleString()}</div></div>
+      <div class="yt-sum-card"><div class="yt-sum-lbl">登録件数</div><div class="yt-sum-val">${yutaiData.length}件</div></div>
+      <div class="yt-sum-card"><div class="yt-sum-lbl">残り30日以内</div><div class="yt-sum-val" style="color:${soonCount>0?'var(--accent)':'var(--text)'}">${soonCount}件</div></div>
+      <div class="yt-sum-card"><div class="yt-sum-lbl">期限切れ</div><div class="yt-sum-val" style="color:${expiredCount>0?'var(--red)':'var(--text)'}">${expiredCount}件</div></div>
+    `;
+  }
+
+  const container = document.getElementById('yutai-list');
+  if (sorted.length===0) {
+    container.innerHTML='<div class="yt-empty">株主優待が登録されていません。上のフォームから追加してください。</div>';
+    return;
+  }
+
+  container.innerHTML='<div class="yt-grid">'+sorted.map(item=>{
+    const expDate=new Date(item.expiry); expDate.setHours(0,0,0,0);
+    const diffDays=Math.round((expDate-today)/86400000);
+    let sc='ok', bc='ok', bt=`あと${diffDays}日`;
+    if (diffDays<0) { sc='expired'; bc='expired'; bt=`${Math.abs(diffDays)}日超過`; }
+    else if (diffDays<=30) { sc='soon'; bc='soon'; }
+    const tagsHtml=item.places.length
+      ?`<div class="yt-tags">${item.places.map(p=>`<span class="yt-tag">${escHtml(p)}</span>`).join('')}</div>`:'';
+    const notesHtml=item.notes
+      ?`<div class="yt-row"><span class="k">メモ</span><span class="v" style="font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:.72rem;white-space:pre-wrap">${escHtml(item.notes)}</span></div>`:'';
+    const amtHtml=item.amount>0
+      ?`<div class="yt-row"><span class="k">金額</span><span class="v" style="color:var(--accent)">¥${item.amount.toLocaleString()}</span></div>`:'';
+    return `<div class="yt-card ${sc}">
+      <button class="yt-del" onclick="deleteYutai('${escHtml(item.id)}')" title="削除">✕</button>
+      <div class="yt-name">${escHtml(item.name)}<span class="yt-badge ${bc}">${bt}</span></div>
+      <div class="yt-row"><span class="k">有効期限</span><span class="v">${escHtml(item.expiry)}</span></div>
+      ${amtHtml}${notesHtml}${tagsHtml}
+    </div>`;
+  }).join('')+'</div>';
+}
+
 renderAll();
 calc();
+renderYutai();
 </script>
 </body>
 </html>
