@@ -105,6 +105,17 @@ td.lbl{font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
 .yt-sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:120px;}
 .yt-sum-lbl{font-size:.62rem;color:var(--text2);margin-bottom:4px;}
 .yt-sum-val{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.yt-sync-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.yt-sync-status{font-size:.72rem;color:var(--text2);flex:1;}
+.btn-sm{border:none;padding:5px 12px;border-radius:5px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.btn-sync{background:var(--bg2);color:var(--accent2);border:1px solid var(--accent2);}
+.btn-sync:hover{background:var(--accent2);color:#000;}
+.btn-danger{background:var(--bg2);color:var(--red);border:1px solid var(--red);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.gist-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.gist-panel .pgrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+.gist-hint{font-size:.65rem;color:var(--text2);margin-top:8px;line-height:1.6;}
+.gist-hint a{color:var(--accent2);}
 </style>
 </head>
 <body>
@@ -168,6 +179,32 @@ td.lbl{font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
 
   <!-- 株主優待管理 -->
   <div class="sec" style="margin-top:8px">株主優待 管理</div>
+
+  <!-- Gist同期バー -->
+  <div class="yt-sync-bar">
+    <span id="yt-gist-status" class="yt-sync-status">Gist未設定（デバイス間同期なし）</span>
+    <button class="btn-sm btn-sync" onclick="gistPull()" title="Gistから最新データを取得">⬇ 同期</button>
+    <button class="btn-sm btn-sync" onclick="toggleGistPanel()">⚙ Gist設定</button>
+  </div>
+
+  <!-- Gist設定パネル（折りたたみ） -->
+  <div id="yt-gist-panel" class="gist-panel" style="display:none">
+    <div class="pgrid gist-panel">
+      <div class="field"><label>Personal Access Token（gist権限）</label><input id="yt-gist-pat" type="password" placeholder="ghp_xxxx..."></div>
+      <div class="field"><label>Gist ID（空欄で自動作成）</label><input id="yt-gist-id" type="text" placeholder="例: a1b2c3d4e5f6..."></div>
+      <div class="field" style="display:flex;gap:8px;align-items:flex-end">
+        <button class="btn btn-calc" style="flex:1" onclick="applyGistSettings()">接続 / 作成</button>
+        <button class="btn-sm btn-danger" onclick="clearGistSettings()" title="設定を削除">切断</button>
+      </div>
+    </div>
+    <div class="gist-hint">
+      ① <a href="https://github.com/settings/tokens" target="_blank">GitHub › Settings › Developer Settings › Personal access tokens</a> で <strong>gist</strong> スコープのトークンを作成<br>
+      ② Gist IDを空欄にして「接続 / 作成」を押すとプライベートGistを自動作成します<br>
+      ③ PAT・Gist IDはこのブラウザのlocalStorageのみに保存されます（外部送信はGitHub APIのみ）
+    </div>
+  </div>
+
+  <!-- 追加フォーム -->
   <div class="panel">
     <div class="pgrid">
       <div class="field"><label>銘柄名 / 会社名</label><input id="yt-name" type="text" placeholder="例: マクドナルド"></div>
@@ -335,21 +372,112 @@ function downloadCSV() {
 // 株主優待管理
 let yutaiData = JSON.parse(localStorage.getItem('yutai') || '[]');
 
-function saveYutai() {
-  localStorage.setItem('yutai', JSON.stringify(yutaiData));
-}
+// Gist設定
+const GIST_FILE = 'yutai_data.json';
+let gistPat = localStorage.getItem('yutai_gist_pat') || '';
+let gistId  = localStorage.getItem('yutai_gist_id')  || '';
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function saveYutai() {
+  localStorage.setItem('yutai', JSON.stringify(yutaiData));
+  if (gistPat) gistPush();
+}
+
+// ---- Gist API ----
+function gistHeaders() {
+  return { 'Authorization': `Bearer ${gistPat}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json' };
+}
+
+function setGistStatus(state, msg='') {
+  const el = document.getElementById('yt-gist-status');
+  if (!el) return;
+  const t = new Date().toLocaleTimeString('ja-JP');
+  if (state==='saving')  el.innerHTML=`<span style="color:var(--accent2)">⟳ 保存中...</span>`;
+  else if (state==='loading') el.innerHTML=`<span style="color:var(--accent2)">⟳ 読込中...</span>`;
+  else if (state==='ok')    el.innerHTML=`<span style="color:var(--green)">✓ Gist同期済み ${t}</span>`;
+  else if (state==='error') el.innerHTML=`<span style="color:var(--red)">✗ エラー: ${escHtml(msg)}</span>`;
+  else if (state==='none')  el.innerHTML=`Gist未設定（デバイス間同期なし）`;
+}
+
+async function gistPush() {
+  if (!gistPat) return;
+  setGistStatus('saving');
+  try {
+    const body = JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(yutaiData, null, 2) } } });
+    const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+    const method = gistId ? 'PATCH' : 'POST';
+    const res = await fetch(url, { method, headers: gistHeaders(), body: gistId ? body : JSON.stringify({ description:'株主優待データ', public:false, files:{ [GIST_FILE]:{ content: JSON.stringify(yutaiData,null,2) } } }) });
+    if (!res.ok) { const e=await res.json(); throw new Error(e.message||`HTTP ${res.status}`); }
+    const data = await res.json();
+    if (!gistId) {
+      gistId = data.id;
+      localStorage.setItem('yutai_gist_id', gistId);
+      document.getElementById('yt-gist-id').value = gistId;
+    }
+    setGistStatus('ok');
+  } catch(e) { setGistStatus('error', e.message); }
+}
+
+async function gistPull() {
+  if (!gistPat || !gistId) { alert('Gist設定を先に行ってください（⚙ Gist設定）'); return; }
+  setGistStatus('loading');
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: gistHeaders() });
+    if (!res.ok) { const e=await res.json(); throw new Error(e.message||`HTTP ${res.status}`); }
+    const data = await res.json();
+    const content = data.files?.[GIST_FILE]?.content;
+    if (!content) throw new Error(`"${GIST_FILE}" が Gist に見つかりません`);
+    yutaiData = JSON.parse(content);
+    localStorage.setItem('yutai', JSON.stringify(yutaiData));
+    renderYutai();
+    setGistStatus('ok');
+  } catch(e) { setGistStatus('error', e.message); }
+}
+
+async function applyGistSettings() {
+  const pat = document.getElementById('yt-gist-pat').value.trim();
+  const id  = document.getElementById('yt-gist-id').value.trim();
+  if (!pat) { alert('Personal Access Token を入力してください'); return; }
+  gistPat = pat; gistId = id;
+  localStorage.setItem('yutai_gist_pat', pat);
+  localStorage.setItem('yutai_gist_id', id);
+  if (id) {
+    await gistPull();          // 既存Gistから読込
+  } else {
+    await gistPush();          // 新規Gistを作成して保存
+  }
+  document.getElementById('yt-gist-id').value = gistId;
+}
+
+function clearGistSettings() {
+  if (!confirm('Gist設定（PAT・Gist ID）を削除しますか？\nローカルデータは残ります。')) return;
+  gistPat=''; gistId='';
+  ['yutai_gist_pat','yutai_gist_id'].forEach(k=>localStorage.removeItem(k));
+  document.getElementById('yt-gist-pat').value='';
+  document.getElementById('yt-gist-id').value='';
+  setGistStatus('none');
+}
+
+function toggleGistPanel() {
+  const p = document.getElementById('yt-gist-panel');
+  p.style.display = p.style.display==='none' ? 'block' : 'none';
+  if (p.style.display==='block') {
+    document.getElementById('yt-gist-pat').value = gistPat;
+    document.getElementById('yt-gist-id').value  = gistId;
+  }
+}
+
+// ---- 優待データ操作 ----
 function addYutai() {
   const name = document.getElementById('yt-name').value.trim();
   const expiry = document.getElementById('yt-expiry').value;
   const amount = parseInt(document.getElementById('yt-amount').value) || 0;
   const placesRaw = document.getElementById('yt-places').value.trim();
   const notes = document.getElementById('yt-notes').value.trim();
-  if (!name) { alert('銘柄名を入力してください'); return; }
+  if (!name)   { alert('銘柄名を入力してください'); return; }
   if (!expiry) { alert('有効期限を入力してください'); return; }
   const places = placesRaw ? placesRaw.split(',').map(p=>p.trim()).filter(Boolean) : [];
   yutaiData.push({ id: Date.now().toString(), name, expiry, amount, places, notes });
@@ -367,7 +495,6 @@ function deleteYutai(id) {
 
 function renderYutai() {
   const today = new Date(); today.setHours(0,0,0,0);
-
   const sorted = [...yutaiData].sort((a,b)=>{
     const da=new Date(a.expiry), db=new Date(b.expiry);
     const aExp=da<today, bExp=db<today;
@@ -375,39 +502,32 @@ function renderYutai() {
     if (!aExp&&bExp) return -1;
     return da-db;
   });
-
   const total = yutaiData.reduce((s,y)=>s+y.amount,0);
   const expiredCount = yutaiData.filter(y=>new Date(y.expiry)<today).length;
   const soonCount = yutaiData.filter(y=>{ const d=new Date(y.expiry); return d>=today&&Math.round((d-today)/86400000)<=30; }).length;
 
   const sumEl = document.getElementById('yt-summary');
-  if (yutaiData.length===0) { sumEl.innerHTML=''; } else {
-    sumEl.innerHTML=`
-      <div class="yt-sum-card"><div class="yt-sum-lbl">合計金額</div><div class="yt-sum-val" style="color:var(--accent)">¥${total.toLocaleString()}</div></div>
-      <div class="yt-sum-card"><div class="yt-sum-lbl">登録件数</div><div class="yt-sum-val">${yutaiData.length}件</div></div>
-      <div class="yt-sum-card"><div class="yt-sum-lbl">残り30日以内</div><div class="yt-sum-val" style="color:${soonCount>0?'var(--accent)':'var(--text)'}">${soonCount}件</div></div>
-      <div class="yt-sum-card"><div class="yt-sum-lbl">期限切れ</div><div class="yt-sum-val" style="color:${expiredCount>0?'var(--red)':'var(--text)'}">${expiredCount}件</div></div>
-    `;
-  }
+  sumEl.innerHTML = yutaiData.length===0 ? '' : `
+    <div class="yt-sum-card"><div class="yt-sum-lbl">合計金額</div><div class="yt-sum-val" style="color:var(--accent)">¥${total.toLocaleString()}</div></div>
+    <div class="yt-sum-card"><div class="yt-sum-lbl">登録件数</div><div class="yt-sum-val">${yutaiData.length}件</div></div>
+    <div class="yt-sum-card"><div class="yt-sum-lbl">残り30日以内</div><div class="yt-sum-val" style="color:${soonCount>0?'var(--accent)':'var(--text)'}">${soonCount}件</div></div>
+    <div class="yt-sum-card"><div class="yt-sum-lbl">期限切れ</div><div class="yt-sum-val" style="color:${expiredCount>0?'var(--red)':'var(--text)'}">${expiredCount}件</div></div>
+  `;
 
   const container = document.getElementById('yutai-list');
   if (sorted.length===0) {
     container.innerHTML='<div class="yt-empty">株主優待が登録されていません。上のフォームから追加してください。</div>';
     return;
   }
-
   container.innerHTML='<div class="yt-grid">'+sorted.map(item=>{
     const expDate=new Date(item.expiry); expDate.setHours(0,0,0,0);
     const diffDays=Math.round((expDate-today)/86400000);
     let sc='ok', bc='ok', bt=`あと${diffDays}日`;
     if (diffDays<0) { sc='expired'; bc='expired'; bt=`${Math.abs(diffDays)}日超過`; }
     else if (diffDays<=30) { sc='soon'; bc='soon'; }
-    const tagsHtml=item.places.length
-      ?`<div class="yt-tags">${item.places.map(p=>`<span class="yt-tag">${escHtml(p)}</span>`).join('')}</div>`:'';
-    const notesHtml=item.notes
-      ?`<div class="yt-row"><span class="k">メモ</span><span class="v" style="font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:.72rem;white-space:pre-wrap">${escHtml(item.notes)}</span></div>`:'';
-    const amtHtml=item.amount>0
-      ?`<div class="yt-row"><span class="k">金額</span><span class="v" style="color:var(--accent)">¥${item.amount.toLocaleString()}</span></div>`:'';
+    const tagsHtml=item.places.length?`<div class="yt-tags">${item.places.map(p=>`<span class="yt-tag">${escHtml(p)}</span>`).join('')}</div>`:'';
+    const notesHtml=item.notes?`<div class="yt-row"><span class="k">メモ</span><span class="v" style="font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:.72rem">${escHtml(item.notes)}</span></div>`:'';
+    const amtHtml=item.amount>0?`<div class="yt-row"><span class="k">金額</span><span class="v" style="color:var(--accent)">¥${item.amount.toLocaleString()}</span></div>`:'';
     return `<div class="yt-card ${sc}">
       <button class="yt-del" onclick="deleteYutai('${escHtml(item.id)}')" title="削除">✕</button>
       <div class="yt-name">${escHtml(item.name)}<span class="yt-badge ${bc}">${bt}</span></div>
@@ -420,6 +540,8 @@ function renderYutai() {
 renderAll();
 calc();
 renderYutai();
+// Gist設定済みなら自動ロード
+if (gistPat && gistId) gistPull(); else setGistStatus('none');
 </script>
 </body>
 </html>
