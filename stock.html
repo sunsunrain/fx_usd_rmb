@@ -209,27 +209,25 @@ async function loadStock() {
   btn.disabled = true;
   setStatus('データ取得中...', '');
 
-  // stooq symbol: 4桁コード → 7203.jp
-  const sym = tickerRaw.replace(/\.jp$/i, '') + '.jp';
+  // Yahoo Finance symbol: 4桁コード → 7203.T
+  const code = tickerRaw.replace(/\.(T|jp)$/i, '');
+  const sym = code + '.T';
 
-  // 期間→日数
-  const days = { '1mo': 35, '3mo': 100, '6mo': 190, '1y': 375 };
-  const d = days[activePeriod] || 100;
+  // 期間→秒
+  const rangeMap = { '1mo': '1mo', '3mo': '3mo', '6mo': '6mo', '1y': '1y' };
+  const range = rangeMap[activePeriod] || '3mo';
 
-  const toDate = new Date();
-  const fromDate = new Date();
-  fromDate.setDate(toDate.getDate() - d);
-  const fmt = dt => `${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}`;
-
-  const stooqUrl = `https://stooq.com/q/d/l/?s=${sym}&d1=${fmt(fromDate)}&d2=${fmt(toDate)}&i=d`;
-  const url = `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`;
+  const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=${range}&includePrePost=false`;
+  const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(yfUrl)}`;
 
   try {
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
-    const rows = parseCSV(text);
-    if (rows.length < 5) throw new Error('データが少なすぎます。コードを確認してください。');
+    const json = await resp.json();
+    const result = json?.chart?.result?.[0];
+    if (!result) throw new Error('データが取得できませんでした。証券コードを確認してください。');
+    const rows = parseYahooFinance(result);
+    if (rows.length < 5) throw new Error('データが少なすぎます。証券コードを確認してください。');
 
     renderAll(rows, tickerRaw);
     setStatus(`${tickerRaw} — ${rows.length}営業日分のデータを取得しました。（データ遅延: 約20分）`, 'ok');
@@ -240,18 +238,18 @@ async function loadStock() {
   }
 }
 
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
+function parseYahooFinance(result) {
+  const timestamps = result.timestamp || [];
+  const q = result.indicators.quote[0];
   const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(',');
-    if (cols.length < 5) continue;
-    const [date, open, high, low, close, volume] = cols;
-    const o = parseFloat(open), h = parseFloat(high), l = parseFloat(low), c = parseFloat(close);
-    if (isNaN(o) || isNaN(c)) continue;
-    rows.push({ date: date.trim(), time: date.trim(), open: o, high: h, low: l, close: c, volume: parseFloat(volume)||0 });
+  for (let i = 0; i < timestamps.length; i++) {
+    const o = q.open[i], h = q.high[i], l = q.low[i], c = q.close[i], v = q.volume[i];
+    if (o == null || c == null || isNaN(o) || isNaN(c)) continue;
+    const d = new Date(timestamps[i] * 1000);
+    const date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    rows.push({ date, time: date, open: o, high: h, low: l, close: c, volume: v || 0 });
   }
-  return rows.sort((a,b) => a.date < b.date ? -1 : 1);
+  return rows.sort((a, b) => a.date < b.date ? -1 : 1);
 }
 
 // ---- 指標計算 ----
