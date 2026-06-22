@@ -221,7 +221,8 @@ async function loadStock() {
   fromDate.setDate(toDate.getDate() - d);
   const fmt = dt => `${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}`;
 
-  const url = `https://stooq.com/q/d/l/?s=${sym}&d1=${fmt(fromDate)}&d2=${fmt(toDate)}&i=d`;
+  const stooqUrl = `https://stooq.com/q/d/l/?s=${sym}&d1=${fmt(fromDate)}&d2=${fmt(toDate)}&i=d`;
+  const url = `https://corsproxy.io/?${encodeURIComponent(stooqUrl)}`;
 
   try {
     const resp = await fetch(url);
