@@ -218,11 +218,26 @@ async function loadStock() {
   const range = rangeMap[activePeriod] || '3mo';
 
   const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=${range}&includePrePost=false`;
-  const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(yfUrl)}`;
+
+  // プロキシを順番に試す
+  const proxies = [
+    u => u,  // 直接アクセス
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  ];
+
+  let resp = null;
+  let lastErr = '';
+  for (const proxy of proxies) {
+    try {
+      const r = await fetch(proxy(yfUrl), { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { resp = r; break; }
+      lastErr = `HTTP ${r.status}`;
+    } catch(e) { lastErr = e.message; }
+  }
+  if (!resp) throw new Error(`取得失敗: ${lastErr}`);
 
   try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const json = await resp.json();
     const result = json?.chart?.result?.[0];
     if (!result) throw new Error('データが取得できませんでした。証券コードを確認してください。');
