@@ -11,144 +11,177 @@
   --bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;
   --border:#30363d;--text:#e6edf3;--text2:#8b949e;
   --accent:#f0a500;--accent2:#58a6ff;--green:#3fb950;--red:#f85149;
-  --purple:#bc8cff;--orange:#ffa657;
-  --tap:44px;
+  --purple:#bc8cff;--orange:#ffa657;--tap:44px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding:12px;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding:10px;}
 a{color:var(--accent2);}
 
 /* ヘッダー */
-header{max-width:1100px;margin:0 auto 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+header{max-width:1200px;margin:0 auto 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .logo{display:flex;align-items:center;gap:8px;}
-.logo-icon{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-h1{font-size:1rem;font-weight:700;line-height:1.2;}
-.sub{font-size:.62rem;color:var(--text2);}
-.main{max-width:1100px;margin:0 auto;}
+.logo-icon{width:28px;height:28px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+h1{font-size:.95rem;font-weight:700;}
+.sub{font-size:.6rem;color:var(--text2);}
+.main{max-width:1200px;margin:0 auto;}
 
-/* コントロールパネル */
-.ctrl{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
+/* タブ */
+.tabs{display:flex;gap:2px;margin-bottom:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.tab{flex:1;padding:8px;text-align:center;border:none;background:none;color:var(--text2);
+  font-size:.82rem;font-weight:700;cursor:pointer;border-radius:6px;font-family:'Noto Sans JP',sans-serif;}
+.tab.active{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
+
+/* コントロール */
+.ctrl{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px;}
 
 /* 検索 */
-.search-wrap{position:relative;margin-bottom:10px;}
-.search-row{display:flex;gap:6px;}
+.search-row{display:flex;gap:6px;margin-bottom:8px;}
 .search-input-wrap{position:relative;flex:1;}
-#search-input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);
-  padding:0 40px 0 12px;height:var(--tap);border-radius:8px;font-size:.95rem;font-family:'Noto Sans JP',sans-serif;}
-#search-input:focus{outline:none;border-color:var(--accent);}
-.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);
-  background:none;border:none;color:var(--text2);font-size:1.1rem;cursor:pointer;padding:4px;display:none;}
-.btn-load{background:var(--accent);color:#000;border:none;height:var(--tap);padding:0 18px;
-  border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;flex-shrink:0;}
-.btn-load:hover{opacity:.85;}
-.btn-load:disabled{opacity:.4;cursor:not-allowed;}
+.search-input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  padding:0 36px 0 10px;height:var(--tap);border-radius:7px;font-size:.9rem;font-family:'Noto Sans JP',sans-serif;}
+.search-input:focus{outline:none;border-color:var(--accent);}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text2);font-size:1rem;cursor:pointer;padding:4px;display:none;}
+.btn{border:none;height:var(--tap);padding:0 14px;border-radius:7px;font-size:.84rem;
+  font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;flex-shrink:0;}
+.btn-primary{background:var(--accent);color:#000;}
+.btn-primary:hover{opacity:.85;}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+.btn-secondary{background:var(--bg2);color:var(--text2);border:1px solid var(--border);}
+.btn-secondary:hover{border-color:var(--accent2);color:var(--accent2);}
+.btn-secondary.active{background:rgba(88,166,255,.15);border-color:var(--accent2);color:var(--accent2);}
+.btn-green{background:rgba(63,185,80,.2);color:var(--green);border:1px solid var(--green);}
+.btn-green:hover{background:var(--green);color:#000;}
 
-/* オートコンプリートドロップダウン */
-#autocomplete{position:absolute;top:calc(var(--tap) + 4px);left:0;right:0;
+/* オートコンプリート */
+.autocomplete{position:absolute;top:calc(var(--tap) + 3px);left:0;right:0;
   background:var(--bg2);border:1px solid var(--accent);border-radius:8px;
-  z-index:100;max-height:280px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);}
-.ac-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+  z-index:200;max-height:260px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.6);}
+.ac-item{padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
 .ac-item:last-child{border-bottom:none;}
 .ac-item:hover,.ac-item.active{background:var(--bg3);}
-.ac-code{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);min-width:50px;}
-.ac-name{font-size:.88rem;}
-.ac-sector{font-size:.68rem;color:var(--text2);margin-left:auto;}
+.ac-code{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);min-width:46px;}
+.ac-name{font-size:.86rem;flex:1;}
+.ac-sector{font-size:.65rem;color:var(--text2);}
+.ac-hint{padding:8px 12px;font-size:.72rem;color:var(--text2);}
 
 /* お気に入り */
 .fav-section{margin-bottom:8px;}
-.fav-label{font-size:.65rem;color:var(--text2);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
-.fav-chips{display:flex;flex-wrap:wrap;gap:5px;}
-.fav-chip{display:flex;align-items:center;gap:0;background:var(--bg2);border:1px solid var(--border);
-  border-radius:20px;overflow:hidden;font-size:.78rem;}
-.fav-chip-btn{padding:5px 10px;cursor:pointer;background:none;border:none;color:var(--text);
-  font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
+.fav-label{font-size:.63rem;color:var(--text2);margin-bottom:4px;}
+.fav-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.fav-chip{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+.fav-chip-btn{padding:4px 10px;cursor:pointer;background:none;border:none;color:var(--text);
+  font-family:'Noto Sans JP',sans-serif;font-size:.75rem;line-height:1.3;}
 .fav-chip-btn:hover{color:var(--accent);}
-.fav-chip-del{padding:4px 7px;cursor:pointer;background:none;border:none;color:var(--text2);font-size:.75rem;}
+.fav-chip-del{padding:3px 7px;cursor:pointer;background:none;border:none;color:var(--text2);font-size:.7rem;}
 .fav-chip-del:hover{color:var(--red);}
-.fav-add-btn{background:none;border:1px dashed var(--border);border-radius:20px;color:var(--text2);
-  padding:5px 12px;font-size:.75rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
-.fav-add-btn:hover{border-color:var(--accent);color:var(--accent);}
 
-/* 期間ボタン */
+/* 期間 */
 .period-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.period-label{font-size:.65rem;color:var(--text2);}
-.period-btns{display:flex;gap:4px;}
+.period-label{font-size:.63rem;color:var(--text2);}
+.period-btns{display:flex;gap:3px;}
 .period-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text2);
-  padding:0 14px;height:36px;border-radius:6px;font-size:.82rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+  padding:0 12px;height:34px;border-radius:6px;font-size:.8rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 .period-btn.active,.period-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);}
 
 /* ステータス */
-#status-bar{font-size:.75rem;color:var(--text2);padding:5px 0;min-height:22px;}
+#status-bar{font-size:.72rem;color:var(--text2);padding:4px 0;min-height:20px;}
 #status-bar.err{color:var(--red);}
 #status-bar.ok{color:var(--green);}
 
 /* シグナルバッジ */
-.signals{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:28px;}
-.sig{padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;border:1px solid;}
+.signals{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;min-height:24px;}
+.sig{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;border:1px solid;}
 .sig.buy{background:rgba(63,185,80,.15);border-color:var(--green);color:var(--green);}
 .sig.sell{background:rgba(248,81,73,.15);border-color:var(--red);color:var(--red);}
-.sig.neutral{background:rgba(139,148,158,.12);border-color:var(--border);color:var(--text2);}
+.sig.neutral{background:rgba(139,148,158,.1);border-color:var(--border);color:var(--text2);}
 
-/* 価格サマリー */
-.price-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
-.pc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
-.pc-lbl{font-size:.58rem;color:var(--text2);margin-bottom:3px;}
-.pc-val{font-size:1rem;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1.2;}
+/* 価格 */
+.price-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;}
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:7px 9px;}
+.pc-lbl{font-size:.56rem;color:var(--text2);margin-bottom:2px;}
+.pc-val{font-size:.95rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
 .pc-val.up{color:var(--green);}
 .pc-val.dn{color:var(--red);}
 
-/* チャートコンテナ */
-.chart-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;}
-.chart-header{padding:8px 12px;border-bottom:1px solid var(--border);}
-.chart-title{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:4px;}
-.legend{display:flex;gap:8px;flex-wrap:wrap;}
-.leg-item{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--text2);}
-.leg-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0;}
-#chart-main{height:320px;}
-#chart-rsi{height:130px;}
-#chart-macd{height:130px;}
+/* チャートグリッド（2銘柄比較用）*/
+.charts-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.charts-grid.dual{grid-template-columns:1fr;}
+@media(min-width:900px){.charts-grid.dual{grid-template-columns:1fr 1fr;}}
+
+/* チャートラッパー */
+.chart-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.chart-header{padding:7px 12px;border-bottom:1px solid var(--border);}
+.chart-title{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:3px;}
+.legend{display:flex;gap:7px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:3px;font-size:.6rem;color:var(--text2);}
+.leg-dot{width:9px;height:3px;border-radius:2px;flex-shrink:0;}
+.chart-area{height:280px;}
+.chart-area.sub{height:120px;}
 
 /* テクニカル値 */
-.tech-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
-.tc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 10px;}
-.tc-lbl{font-size:.58rem;color:var(--text2);margin-bottom:2px;}
-.tc-val{font-size:.9rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.tech-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;}
+.tc{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 9px;}
+.tc-lbl{font-size:.56rem;color:var(--text2);margin-bottom:2px;}
+.tc-val{font-size:.88rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
 
 /* シグナル解説 */
-.sig-guide{background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
-.sig-guide summary{padding:10px 14px;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--text2);list-style:none;user-select:none;}
+.sig-guide{background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;}
+.sig-guide summary{padding:9px 12px;cursor:pointer;font-size:.75rem;font-weight:700;color:var(--text2);list-style:none;user-select:none;}
 .sig-guide summary::-webkit-details-marker{display:none;}
 .sig-guide[open] summary{border-bottom:1px solid var(--border);color:var(--text);}
-.sig-guide-body{padding:14px;}
-.sg-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:.8rem;line-height:1.6;}
-.sg-arrow{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
-.sg-arrow.buy{color:#3fb950;}
-.sg-arrow.weak-buy{color:#e6b422;}
-.sg-arrow.sell{color:#f85149;}
-.sg-arrow.weak-sell{color:#ffa657;}
-.sg-terms{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
-.sg-term{font-size:.76rem;line-height:1.6;display:flex;gap:8px;align-items:baseline;}
-.sg-key{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+.sig-guide-body{padding:12px;}
+.sg-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:.77rem;line-height:1.6;}
+.sg-arrow{font-size:1.1rem;flex-shrink:0;}
+.sg-arrow.buy{color:#3fb950;} .sg-arrow.wbuy{color:#e6b422;}
+.sg-arrow.sell{color:#f85149;} .sg-arrow.wsell{color:#ffa657;}
+.sg-terms{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+.sg-term{font-size:.74rem;line-height:1.6;display:flex;gap:7px;align-items:baseline;}
+.sg-key{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+
+/* ========= ウォッチリストタブ ========= */
+.wl-section{margin-bottom:12px;}
+.wl-title{font-size:.7rem;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:8px;border-left:3px solid var(--accent);padding-left:8px;}
+.wl-add-row{display:flex;gap:6px;margin-bottom:8px;}
+.wl-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
+.wl-item{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:7px;padding:7px 10px;}
+.wl-item-name{flex:1;font-size:.82rem;}
+.wl-item-code{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);}
+.wl-item-del{background:none;border:none;color:var(--text2);cursor:pointer;font-size:.8rem;padding:2px 6px;}
+.wl-item-del:hover{color:var(--red);}
+.wl-empty{font-size:.78rem;color:var(--text2);padding:10px 0;}
+
+/* スキャン結果 */
+.scan-result-row{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:7px;padding:8px 10px;margin-bottom:5px;cursor:pointer;}
+.scan-result-row:hover{border-color:var(--accent2);}
+.scan-name{flex:1;font-size:.82rem;}
+.scan-code{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text2);}
+.scan-price{font-family:'JetBrains Mono',monospace;font-size:.82rem;min-width:70px;text-align:right;}
+.scan-chg{font-family:'JetBrains Mono',monospace;font-size:.72rem;min-width:80px;text-align:right;}
+.scan-sigs{display:flex;flex-wrap:wrap;gap:3px;min-width:120px;justify-content:flex-end;}
+.scan-sig{padding:2px 7px;border-radius:10px;font-size:.65rem;font-weight:700;border:1px solid;}
+.scan-sig.buy{background:rgba(63,185,80,.15);border-color:var(--green);color:var(--green);}
+.scan-sig.sell{background:rgba(248,81,73,.15);border-color:var(--red);color:var(--red);}
+.scan-sig.none{color:var(--text2);}
+.scan-loading{font-size:.75rem;color:var(--text2);padding:4px 0;}
+.notif-bar{background:rgba(88,166,255,.1);border:1px solid var(--accent2);border-radius:7px;
+  padding:8px 12px;font-size:.75rem;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.notif-bar button{background:var(--accent2);color:#000;border:none;padding:3px 10px;border-radius:4px;font-size:.72rem;cursor:pointer;font-weight:700;}
 
 /* フッター */
-.disclaimer{font-size:.6rem;color:var(--text2);margin-top:16px;line-height:1.7;
-  padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
+.disclaimer{font-size:.58rem;color:var(--text2);margin-top:14px;line-height:1.7;
+  padding:8px 10px;background:var(--bg3);border-radius:7px;border:1px solid var(--border);}
 
-/* ===== PC用レイアウト ===== */
 @media(min-width:600px){
-  body{padding:20px 16px;}
-  h1{font-size:1.1rem;}
-  .ctrl{padding:14px 18px;}
-  .search-row{max-width:560px;}
-  #search-input{font-family:'JetBrains Mono',monospace;}
-  .price-row{grid-template-columns:repeat(6,1fr);}
-  .tech-row{grid-template-columns:repeat(6,1fr);}
-  #chart-main{height:380px;}
-  #chart-rsi{height:150px;}
-  #chart-macd{height:150px;}
-  .pc-val{font-size:1.2rem;}
-  .legend{gap:12px;}
-  .leg-item{font-size:.68rem;}
+  body{padding:16px;}
+  .price-row,.tech-row{grid-template-columns:repeat(6,1fr);}
+  .chart-area{height:340px;}
+  .chart-area.sub{height:140px;}
+  .pc-val{font-size:1.1rem;}
 }
 </style>
 </head>
@@ -156,161 +189,211 @@ h1{font-size:1rem;font-weight:700;line-height:1.2;}
 <header>
   <div class="logo">
     <div class="logo-icon">📈</div>
-    <div>
-      <h1>株価チャート 買い時分析</h1>
-      <div class="sub">東証上場株 テクニカル分析 / データ遅延約20分</div>
-    </div>
+    <div><h1>株価チャート 買い時分析</h1><div class="sub">東証全銘柄対応 / データ遅延約20分</div></div>
   </div>
-  <a href="index.html" style="font-size:.78rem;white-space:nowrap;">← 為替</a>
+  <a href="index.html" style="font-size:.75rem;white-space:nowrap;">← 為替</a>
 </header>
 
 <div class="main">
-  <div class="ctrl">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('chart')">📊 チャート</button>
+    <button class="tab" onclick="switchTab('watchlist')">🔔 ウォッチリスト</button>
+  </div>
 
-    <!-- 銘柄検索 -->
-    <div class="search-wrap">
+  <!-- ======= チャートタブ ======= -->
+  <div id="tab-chart">
+    <div class="ctrl">
+      <!-- 銘柄1 -->
       <div class="search-row">
         <div class="search-input-wrap">
-          <input type="text" id="search-input" placeholder="銘柄名 or コード（例: トヨタ / 7203）" autocomplete="off" autocorrect="off" spellcheck="false">
-          <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
-          <div id="autocomplete"></div>
+          <input type="text" class="search-input" id="search1" placeholder="銘柄名 or コード（例: トヨタ / 7203 / 285A）" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="search-clear" id="clear1" onclick="clearSearch(1)">✕</button>
+          <div class="autocomplete" id="ac1"></div>
         </div>
-        <button class="btn-load" id="btn-load" onclick="loadStock()">表示</button>
+        <button class="btn btn-primary" id="btn-load" onclick="loadCharts()">表示</button>
+        <button class="btn btn-secondary" id="btn-compare" onclick="toggleCompare()">＋比較</button>
       </div>
-    </div>
-
-    <!-- お気に入り -->
-    <div class="fav-section" id="fav-section" style="display:none">
-      <div class="fav-label">⭐ お気に入り</div>
-      <div class="fav-chips" id="fav-chips"></div>
-    </div>
-
-    <!-- 期間 -->
-    <div class="period-row">
-      <span class="period-label">期間</span>
-      <div class="period-btns">
-        <button class="period-btn" data-p="1mo">1ヶ月</button>
-        <button class="period-btn active" data-p="3mo">3ヶ月</button>
-        <button class="period-btn" data-p="6mo">6ヶ月</button>
-        <button class="period-btn" data-p="1y">1年</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="status-bar">銘柄名またはコードを入力してください。</div>
-
-  <div class="signals" id="signals"></div>
-
-  <div class="price-row" id="price-row" style="display:none">
-    <div class="pc"><div class="pc-lbl">現在値</div><div class="pc-val" id="p-last">—</div></div>
-    <div class="pc"><div class="pc-lbl">前日比</div><div class="pc-val" id="p-chg">—</div></div>
-    <div class="pc"><div class="pc-lbl">始値</div><div class="pc-val" id="p-open">—</div></div>
-    <div class="pc"><div class="pc-lbl">高値</div><div class="pc-val" id="p-high">—</div></div>
-    <div class="pc"><div class="pc-lbl">安値</div><div class="pc-val" id="p-low">—</div></div>
-    <div class="pc"><div class="pc-lbl">出来高</div><div class="pc-val" id="p-vol">—</div></div>
-  </div>
-
-  <div class="chart-wrap" id="wrap-main" style="display:none">
-    <div class="chart-header">
-      <div class="chart-title" id="chart-label">ローソク足 / MA / ボリンジャーバンド</div>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:#e6b422"></div>MA5</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MA25</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#bc8cff"></div>MA75</div>
-        <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.6)"></div>BB±2σ</div>
-        <div class="leg-item" style="color:var(--green)">▲買い</div>
-        <div class="leg-item" style="color:var(--red)">▼売り</div>
-      </div>
-    </div>
-    <div id="chart-main"></div>
-  </div>
-
-  <!-- シグナル凡例 -->
-  <div class="sig-legend" id="wrap-main" style="display:none"><!-- placeholder --></div>
-  <details class="sig-guide" id="sig-guide" style="display:none">
-    <summary>▶ チャート上のシグナルマーカーの見方</summary>
-    <div class="sig-guide-body">
-      <div class="sg-row">
-        <span class="sg-arrow buy">▲</span>
-        <div>
-          <b>緑の▲（強い買いシグナル）</b>：複数の買いサインが同時に出ているポイント。より信頼度が高い。
+      <!-- 銘柄2（比較モード） -->
+      <div id="search2-wrap" style="display:none" class="search-row">
+        <div class="search-input-wrap">
+          <input type="text" class="search-input" id="search2" placeholder="比較銘柄2（例: ソニー / 6758）" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="search-clear" id="clear2" onclick="clearSearch(2)">✕</button>
+          <div class="autocomplete" id="ac2"></div>
         </div>
       </div>
-      <div class="sg-row">
-        <span class="sg-arrow weak-buy">▲</span>
-        <div>
-          <b>黄の▲（買いサイン1つ）</b>：1つの指標が買いを示しているポイント。参考程度に。
+      <!-- お気に入り -->
+      <div class="fav-section" id="fav-section" style="display:none">
+        <div class="fav-label">⭐ お気に入り</div>
+        <div class="fav-chips" id="fav-chips"></div>
+      </div>
+      <!-- 期間 -->
+      <div class="period-row">
+        <span class="period-label">期間</span>
+        <div class="period-btns">
+          <button class="period-btn" data-p="1mo">1ヶ月</button>
+          <button class="period-btn active" data-p="3mo">3ヶ月</button>
+          <button class="period-btn" data-p="6mo">6ヶ月</button>
+          <button class="period-btn" data-p="1y">1年</button>
         </div>
       </div>
-      <div class="sg-row">
-        <span class="sg-arrow sell">▼</span>
-        <div>
-          <b>赤の▼（強い売りシグナル）</b>：複数の売りサインが同時に出ているポイント。利確・損切りの目安。
+    </div>
+
+    <div id="status-bar">銘柄名またはコードを入力してください。東証全銘柄のコード直入力も可。</div>
+    <div class="signals" id="signals1"></div>
+
+    <div id="price-row1" class="price-row" style="display:none">
+      <div class="pc"><div class="pc-lbl">現在値</div><div class="pc-val" id="p-last1">—</div></div>
+      <div class="pc"><div class="pc-lbl">前日比</div><div class="pc-val" id="p-chg1">—</div></div>
+      <div class="pc"><div class="pc-lbl">始値</div><div class="pc-val" id="p-open1">—</div></div>
+      <div class="pc"><div class="pc-lbl">高値</div><div class="pc-val" id="p-high1">—</div></div>
+      <div class="pc"><div class="pc-lbl">安値</div><div class="pc-val" id="p-low1">—</div></div>
+      <div class="pc"><div class="pc-lbl">出来高</div><div class="pc-val" id="p-vol1">—</div></div>
+    </div>
+
+    <!-- チャートグリッド（1枚 or 2枚並列）-->
+    <div class="charts-grid" id="charts-grid">
+      <div>
+        <div class="chart-wrap" id="wrap-main1" style="display:none">
+          <div class="chart-header">
+            <div class="chart-title" id="chart-label1">ローソク足 / MA / BB</div>
+            <div class="legend">
+              <div class="leg-item"><div class="leg-dot" style="background:#e6b422"></div>MA5</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MA25</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#bc8cff"></div>MA75</div>
+              <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.5)"></div>BB±2σ</div>
+              <div class="leg-item" style="color:var(--green)">▲買い</div>
+              <div class="leg-item" style="color:var(--red)">▼売り</div>
+            </div>
+          </div>
+          <div class="chart-area" id="chart-main1"></div>
         </div>
       </div>
-      <div class="sg-row">
-        <span class="sg-arrow weak-sell">▼</span>
-        <div>
-          <b>橙の▼（売りサイン1つ）</b>：1つの指標が売りを示しているポイント。
+      <div id="col2" style="display:none">
+        <div class="signals" id="signals2"></div>
+        <div id="price-row2" class="price-row" style="display:none">
+          <div class="pc"><div class="pc-lbl">現在値</div><div class="pc-val" id="p-last2">—</div></div>
+          <div class="pc"><div class="pc-lbl">前日比</div><div class="pc-val" id="p-chg2">—</div></div>
+          <div class="pc"><div class="pc-lbl">始値</div><div class="pc-val" id="p-open2">—</div></div>
+          <div class="pc"><div class="pc-lbl">高値</div><div class="pc-val" id="p-high2">—</div></div>
+          <div class="pc"><div class="pc-lbl">安値</div><div class="pc-val" id="p-low2">—</div></div>
+          <div class="pc"><div class="pc-lbl">出来高</div><div class="pc-val" id="p-vol2">—</div></div>
+        </div>
+        <div class="chart-wrap" id="wrap-main2" style="display:none">
+          <div class="chart-header">
+            <div class="chart-title" id="chart-label2">比較銘柄</div>
+            <div class="legend">
+              <div class="leg-item"><div class="leg-dot" style="background:#e6b422"></div>MA5</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MA25</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#bc8cff"></div>MA75</div>
+              <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.5)"></div>BB±2σ</div>
+              <div class="leg-item" style="color:var(--green)">▲買い</div>
+              <div class="leg-item" style="color:var(--red)">▼売り</div>
+            </div>
+          </div>
+          <div class="chart-area" id="chart-main2"></div>
         </div>
       </div>
-      <hr style="border-color:var(--border);margin:10px 0">
-      <b style="font-size:.78rem;color:var(--text2)">マーカーに表示される略語：</b>
-      <div class="sg-terms">
-        <div class="sg-term"><span class="sg-key">RSI30</span>RSI（相対力指数）が30以下 → 売られすぎ。反転上昇の可能性。数値が低いほど強い買いサイン。</div>
-        <div class="sg-term"><span class="sg-key">RSI70</span>RSIが70以上 → 買われすぎ。反転下落の可能性。売りの目安。</div>
-        <div class="sg-term"><span class="sg-key">BB↓</span>ボリンジャーバンドの下限（-2σ）付近まで価格が下がった → 統計的に下がりすぎの状態。反発しやすい。</div>
-        <div class="sg-term"><span class="sg-key">BB↑</span>ボリンジャーバンドの上限（+2σ）付近まで価格が上がった → 統計的に上がりすぎの状態。反落しやすい。</div>
-        <div class="sg-term"><span class="sg-key">MACD</span>MACDヒストグラムがマイナス→プラスに転換（ゴールデンクロス）→ 上昇モメンタムの発生。またはプラス→マイナス（デッドクロス）→ 下落モメンタム。</div>
-        <div class="sg-term"><span class="sg-key">MA✕</span>短期移動平均線（MA5）が中期（MA25）を上抜けた（ゴールデンクロス）→ トレンド転換の買いサイン。逆は売りサイン。</div>
-      </div>
-      <div style="font-size:.68rem;color:var(--text2);margin-top:8px">※ シグナルはあくまで参考です。複数のシグナルが重なるほど信頼度が増しますが、必ずしも上昇するわけではありません。</div>
     </div>
-  </details>
 
-  <div class="tech-row" id="tech-row" style="display:none">
-    <div class="tc"><div class="tc-lbl">RSI(14)</div><div class="tc-val" id="tc-rsi">—</div></div>
-    <div class="tc"><div class="tc-lbl">MACD</div><div class="tc-val" id="tc-macd">—</div></div>
-    <div class="tc"><div class="tc-lbl">シグナル</div><div class="tc-val" id="tc-sig">—</div></div>
-    <div class="tc"><div class="tc-lbl">ヒストグラム</div><div class="tc-val" id="tc-hist">—</div></div>
-    <div class="tc"><div class="tc-lbl">BB上限+2σ</div><div class="tc-val" id="tc-bbu">—</div></div>
-    <div class="tc"><div class="tc-lbl">BB下限-2σ</div><div class="tc-val" id="tc-bbl">—</div></div>
+    <!-- RSI/MACD（銘柄1のみ） -->
+    <div class="tech-row" id="tech-row1" style="display:none">
+      <div class="tc"><div class="tc-lbl">RSI(14)</div><div class="tc-val" id="tc-rsi">—</div></div>
+      <div class="tc"><div class="tc-lbl">MACD</div><div class="tc-val" id="tc-macd">—</div></div>
+      <div class="tc"><div class="tc-lbl">シグナル</div><div class="tc-val" id="tc-sig">—</div></div>
+      <div class="tc"><div class="tc-lbl">ヒストグラム</div><div class="tc-val" id="tc-hist">—</div></div>
+      <div class="tc"><div class="tc-lbl">BB上限+2σ</div><div class="tc-val" id="tc-bbu">—</div></div>
+      <div class="tc"><div class="tc-lbl">BB下限-2σ</div><div class="tc-val" id="tc-bbl">—</div></div>
+    </div>
+
+    <div class="chart-wrap" id="wrap-rsi" style="display:none">
+      <div class="chart-header">
+        <div class="chart-title">RSI (14) — 銘柄1</div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#ffa657"></div>RSI</div>
+          <div class="leg-item" style="color:var(--red)">70過買い</div>
+          <div class="leg-item" style="color:var(--green)">30過売り</div>
+        </div>
+      </div>
+      <div class="chart-area sub" id="chart-rsi"></div>
+    </div>
+
+    <div class="chart-wrap" id="wrap-macd" style="display:none">
+      <div class="chart-header">
+        <div class="chart-title">MACD (12, 26, 9) — 銘柄1</div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MACD</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f85149"></div>シグナル</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#3fb950"></div>ヒスト</div>
+        </div>
+      </div>
+      <div class="chart-area sub" id="chart-macd"></div>
+    </div>
+
+    <!-- シグナル解説 -->
+    <details class="sig-guide" id="sig-guide" style="display:none">
+      <summary>▶ チャート上のシグナルマーカーの見方（略語解説）</summary>
+      <div class="sig-guide-body">
+        <div class="sg-row"><span class="sg-arrow buy">▲</span><div><b>緑の▲（強い買いシグナル）</b>：複数の買いサインが同時に出たポイント。信頼度が高い。</div></div>
+        <div class="sg-row"><span class="sg-arrow wbuy">▲</span><div><b>黄の▲（買いサイン1つ）</b>：1指標のみ。参考程度に。</div></div>
+        <div class="sg-row"><span class="sg-arrow sell">▼</span><div><b>赤の▼（強い売りシグナル）</b>：複数の売りサインが重なったポイント。利確・損切りの目安。</div></div>
+        <div class="sg-row"><span class="sg-arrow wsell">▼</span><div><b>橙の▼（売りサイン1つ）</b>：1指標のみ。</div></div>
+        <hr style="border-color:var(--border);margin:8px 0">
+        <div class="sg-terms">
+          <div class="sg-term"><span class="sg-key">RSI28</span>RSI（相対力指数）が28など30以下 → <b>売られすぎ・反発の可能性</b>。数値が低いほど強い買いサイン。逆にRSI70以上は買われすぎ。</div>
+          <div class="sg-term"><span class="sg-key">BB↓</span>ボリンジャーバンド下限（-2σ）に価格が到達 → 統計的に<b>下がりすぎの状態</b>。反発しやすい買いゾーン。</div>
+          <div class="sg-term"><span class="sg-key">BB↑</span>ボリンジャーバンド上限（+2σ）に価格が到達 → <b>上がりすぎ</b>。反落しやすい売りゾーン。</div>
+          <div class="sg-term"><span class="sg-key">GC</span>ゴールデンクロス：短期MA（5日）が中期MA（25日）を<b>上抜け</b> → 上昇トレンドへの転換シグナル。</div>
+          <div class="sg-term"><span class="sg-key">DC</span>デッドクロス：短期MA（5日）が中期MA（25日）を<b>下抜け</b> → 下落トレンドへの転換シグナル。</div>
+          <div class="sg-term"><span class="sg-key">MACD↑</span>MACDヒストグラムがマイナス→プラスに転換（ゴールデンクロス）→ <b>上昇モメンタム発生</b>。</div>
+          <div class="sg-term"><span class="sg-key">MACD↓</span>MACDヒストグラムがプラス→マイナスに転換（デッドクロス）→ <b>下落モメンタム発生</b>。</div>
+        </div>
+        <div style="font-size:.66rem;color:var(--text2);margin-top:8px">※ 複数シグナルが重なるほど信頼度が増しますが、必ずしも予測通りに動くとは限りません。</div>
+      </div>
+    </details>
+
+    <div class="disclaimer">
+      ⚠️ 本ツールは情報提供目的のみです。データはYahoo Finance APIより取得（約20分遅延）。投資判断はご自身の責任で行ってください。
+    </div>
   </div>
 
-  <div class="chart-wrap" id="wrap-rsi" style="display:none">
-    <div class="chart-header">
-      <div class="chart-title">RSI (14)</div>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:#ffa657"></div>RSI</div>
-        <div class="leg-item" style="color:var(--red)">── 70過買い</div>
-        <div class="leg-item" style="color:var(--green)">── 30過売り</div>
+  <!-- ======= ウォッチリストタブ ======= -->
+  <div id="tab-watchlist" style="display:none">
+    <div class="ctrl">
+      <div class="wl-title">ウォッチリスト管理</div>
+      <div class="wl-add-row">
+        <div class="search-input-wrap" style="flex:1">
+          <input type="text" class="search-input" id="wl-search" placeholder="銘柄名 or コードを入力して追加" autocomplete="off" style="height:38px">
+          <div class="autocomplete" id="ac-wl"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="wlAddFromInput()" style="height:38px;padding:0 12px">追加</button>
       </div>
+      <div id="wl-list" class="wl-list"></div>
     </div>
-    <div id="chart-rsi"></div>
-  </div>
 
-  <div class="chart-wrap" id="wrap-macd" style="display:none">
-    <div class="chart-header">
-      <div class="chart-title">MACD (12, 26, 9)</div>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MACD</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#f85149"></div>シグナル</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#3fb950"></div>ヒスト</div>
-      </div>
+    <div id="notif-bar" class="notif-bar" style="display:none">
+      🔔 ブラウザ通知を許可するとシグナル発生時にアラートが届きます。
+      <button onclick="requestNotif()">通知を許可</button>
     </div>
-    <div id="chart-macd"></div>
-  </div>
 
-  <div class="disclaimer">
-    ⚠️ 本ツールは情報提供目的のみです。データはYahoo Finance APIより取得（約20分遅延）。投資判断はご自身の責任で行ってください。
-    買いシグナルは過去データに基づくテクニカル分析であり、将来の値動きを保証するものではありません。
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn btn-green" id="btn-scan" onclick="startScan()" style="height:40px">
+        🔍 シグナルスキャン実行
+      </button>
+      <span style="font-size:.72rem;color:var(--text2)" id="scan-status"></span>
+    </div>
+
+    <div id="scan-results"></div>
+
+    <div class="disclaimer">
+      ⚠️ スキャンは登録銘柄を順次取得するため銘柄数に応じて時間がかかります。<br>
+      ブラウザ通知は「通知を許可」を押してから有効になります。
+    </div>
   </div>
 </div>
 
 <script>
-// ===== 銘柄データベース（東証主要銘柄）a=別名検索キー =====
+// ===== 銘柄DB（別名検索対応）=====
 const STOCKS = [
-  // 自動車
   {c:'7203',n:'トヨタ自動車',s:'自動車',a:'toyota'},
   {c:'7267',n:'本田技研工業',s:'自動車',a:'ホンダ honda'},
   {c:'7269',n:'スズキ',s:'自動車',a:'suzuki'},
@@ -318,7 +401,6 @@ const STOCKS = [
   {c:'7201',n:'日産自動車',s:'自動車',a:'nissan'},
   {c:'7261',n:'マツダ',s:'自動車',a:'mazda'},
   {c:'7272',n:'ヤマハ発動機',s:'自動車',a:'yamaha'},
-  // 電機・半導体
   {c:'6758',n:'ソニーグループ',s:'電機',a:'ソニーG SonyG sony'},
   {c:'8729',n:'ソニーフィナンシャルグループ',s:'金融',a:'ソニーFG ソニー金融 sony financial'},
   {c:'6861',n:'キーエンス',s:'電機',a:'keyence'},
@@ -331,12 +413,12 @@ const STOCKS = [
   {c:'6971',n:'京セラ',s:'電機',a:'kyocera'},
   {c:'6981',n:'村田製作所',s:'電機',a:'murata'},
   {c:'8035',n:'東京エレクトロン',s:'半導体',a:'TEL'},
-  {c:'4063',n:'信越化学工業',s:'半導体',a:'信越化学'},
+  {c:'4063',n:'信越化学工業',s:'半導体',a:''},
   {c:'6146',n:'ディスコ',s:'半導体',a:'disco'},
   {c:'6857',n:'アドバンテスト',s:'半導体',a:'advantest'},
+  {c:'285A',n:'キオクシアHD',s:'半導体',a:'kioxia'},
   {c:'4543',n:'テルモ',s:'医療',a:'terumo'},
   {c:'4519',n:'中外製薬',s:'医薬品',a:'chugai'},
-  // 通信・IT
   {c:'9984',n:'ソフトバンクグループ',s:'通信',a:'SBG ソフトバンクG softbank'},
   {c:'9433',n:'KDDI',s:'通信',a:'au'},
   {c:'9432',n:'日本電信電話',s:'通信',a:'NTT'},
@@ -348,490 +430,592 @@ const STOCKS = [
   {c:'9613',n:'NTTデータグループ',s:'IT',a:'NTTデータ'},
   {c:'4384',n:'ラクスル',s:'IT',a:'raksul'},
   {c:'4478',n:'freee',s:'IT',a:'フリー'},
-  // 金融・銀行
   {c:'7182',n:'ゆうちょ銀行',s:'銀行',a:''},
-  {c:'8411',n:'みずほフィナンシャルグループ',s:'銀行',a:'みずほFG みずほ銀行 mizuho'},
+  {c:'8411',n:'みずほフィナンシャルグループ',s:'銀行',a:'みずほFG mizuho'},
   {c:'8316',n:'三井住友フィナンシャルグループ',s:'銀行',a:'SMFG SMBC 三井住友FG'},
   {c:'8306',n:'三菱UFJフィナンシャル・グループ',s:'銀行',a:'MUFG 三菱UFJ'},
   {c:'8354',n:'ふくおかフィナンシャルグループ',s:'銀行',a:'ふくおかFG'},
   {c:'8253',n:'クレディセゾン',s:'金融',a:'セゾン'},
   {c:'8591',n:'オリックス',s:'金融',a:'orix'},
   {c:'8750',n:'第一生命HD',s:'保険',a:'第一生命'},
-  {c:'8725',n:'MS&ADインシュアランスグループHD',s:'保険',a:'MS&AD 三井住友海上'},
   {c:'8001',n:'伊藤忠商事',s:'商社',a:'itochu'},
   {c:'8002',n:'丸紅',s:'商社',a:'marubeni'},
   {c:'8031',n:'三井物産',s:'商社',a:''},
   {c:'8053',n:'住友商事',s:'商社',a:''},
   {c:'8058',n:'三菱商事',s:'商社',a:''},
-  // 不動産・建設
   {c:'1925',n:'大和ハウス工業',s:'建設',a:'大和ハウス'},
   {c:'1928',n:'積水ハウス',s:'建設',a:''},
   {c:'1801',n:'大成建設',s:'建設',a:''},
   {c:'1802',n:'大林組',s:'建設',a:''},
   {c:'8801',n:'三井不動産',s:'不動産',a:''},
   {c:'8802',n:'三菱地所',s:'不動産',a:''},
-  // 流通・小売
   {c:'3382',n:'セブン&アイ・ホールディングス',s:'小売',a:'セブンイレブン 7&i'},
   {c:'8267',n:'イオン',s:'小売',a:'aeon'},
-  {c:'3086',n:'J.フロント リテイリング',s:'小売',a:'大丸 松坂屋'},
-  {c:'3099',n:'三越伊勢丹HD',s:'小売',a:'三越 伊勢丹'},
-  // ゲーム・エンタメ
+  {c:'9843',n:'ニトリHD',s:'小売',a:'ニトリ'},
   {c:'7974',n:'任天堂',s:'ゲーム',a:'nintendo'},
   {c:'9697',n:'カプコン',s:'ゲーム',a:'capcom'},
-  {c:'7832',n:'バンダイナムコHD',s:'ゲーム',a:'バンナム bandai namco'},
-  {c:'9684',n:'スクウェア・エニックスHD',s:'ゲーム',a:'スクエニ square enix'},
-  {c:'3765',n:'ガンホー・オンライン',s:'ゲーム',a:'ガンホー gungho'},
+  {c:'7832',n:'バンダイナムコHD',s:'ゲーム',a:'バンナム'},
+  {c:'9684',n:'スクウェア・エニックスHD',s:'ゲーム',a:'スクエニ'},
   {c:'2432',n:'DeNA',s:'IT',a:'ディーエヌエー'},
-  {c:'3765',n:'ガンホー',s:'ゲーム',a:''},
-  // 食品・飲料
   {c:'2914',n:'日本たばこ産業',s:'食品',a:'JT'},
-  {c:'2503',n:'キリンHD',s:'食品',a:'キリン kirin'},
-  {c:'2502',n:'アサヒグループHD',s:'食品',a:'アサヒ asahi'},
+  {c:'2503',n:'キリンHD',s:'食品',a:'kirin'},
+  {c:'2502',n:'アサヒグループHD',s:'食品',a:'asahi'},
   {c:'2282',n:'日本ハム',s:'食品',a:''},
   {c:'2802',n:'味の素',s:'食品',a:'ajinomoto'},
-  {c:'2269',n:'明治HD',s:'食品',a:'明治 meiji'},
-  {c:'2871',n:'ニチレイ',s:'食品',a:''},
-  // 医薬品
+  {c:'2269',n:'明治HD',s:'食品',a:'meiji'},
   {c:'4568',n:'第一三共',s:'医薬品',a:'daiichi sankyo'},
   {c:'4523',n:'エーザイ',s:'医薬品',a:'eisai'},
-  {c:'4506',n:'住友ファーマ',s:'医薬品',a:''},
   {c:'4502',n:'武田薬品工業',s:'医薬品',a:'タケダ takeda'},
-  {c:'4151',n:'協和キリン',s:'医薬品',a:''},
-  // エネルギー・資源
-  {c:'5020',n:'ENEOSホールディングス',s:'エネルギー',a:'ENEOS エネオス'},
+  {c:'5020',n:'ENEOSホールディングス',s:'エネルギー',a:'ENEOS'},
   {c:'5019',n:'出光興産',s:'エネルギー',a:'idemitsu'},
-  {c:'5713',n:'住友金属鉱山',s:'資源',a:'住金鉱'},
+  {c:'5713',n:'住友金属鉱山',s:'資源',a:''},
   {c:'5401',n:'日本製鉄',s:'鉄鋼',a:'nippon steel'},
   {c:'5411',n:'JFEホールディングス',s:'鉄鋼',a:'JFE'},
-  // 運輸
-  {c:'9020',n:'東日本旅客鉄道',s:'運輸',a:'JR東日本 JR East'},
-  {c:'9022',n:'東海旅客鉄道',s:'運輸',a:'JR東海 JR Central'},
+  {c:'9020',n:'東日本旅客鉄道',s:'運輸',a:'JR東日本'},
+  {c:'9022',n:'東海旅客鉄道',s:'運輸',a:'JR東海'},
   {c:'9021',n:'西日本旅客鉄道',s:'運輸',a:'JR西日本'},
-  {c:'9064',n:'ヤマトホールディングス',s:'運輸',a:'ヤマト 黒猫'},
-  {c:'9147',n:'NIPPON EXPRESSホールディングス',s:'運輸',a:'日本通運 日通'},
-  {c:'9107',n:'川崎汽船',s:'運輸',a:'Kline'},
+  {c:'9064',n:'ヤマトホールディングス',s:'運輸',a:'ヤマト'},
   {c:'9101',n:'日本郵船',s:'運輸',a:'NYK'},
-  // その他
+  {c:'9107',n:'川崎汽船',s:'運輸',a:''},
   {c:'4452',n:'花王',s:'日用品',a:'kao'},
   {c:'4911',n:'資生堂',s:'化粧品',a:'shiseido'},
   {c:'6367',n:'ダイキン工業',s:'機械',a:'daikin'},
   {c:'6326',n:'クボタ',s:'機械',a:'kubota'},
   {c:'7751',n:'キヤノン',s:'精密機器',a:'canon'},
   {c:'7733',n:'オリンパス',s:'精密機器',a:'olympus'},
-  {c:'9843',n:'ニトリHD',s:'小売',a:'ニトリ nitori'},
-  {c:'3197',n:'すかいらーくHD',s:'外食',a:'ガスト すかいらーく'},
-  {c:'2702',n:'日本マクドナルドHD',s:'外食',a:'マック マクドナルド'},
+  {c:'3197',n:'すかいらーくHD',s:'外食',a:'ガスト'},
+  {c:'2702',n:'日本マクドナルドHD',s:'外食',a:'マック'},
 ];
 
-// ===== お気に入り（localStorage）=====
-function getFavs() { try { return JSON.parse(localStorage.getItem('stock_favs')||'[]'); } catch{ return []; } }
-function saveFavs(f) { localStorage.setItem('stock_favs', JSON.stringify(f)); }
-function addFav(code, name) {
-  const favs = getFavs().filter(f => f.c !== code);
-  favs.unshift({ c: code, n: name });
-  saveFavs(favs.slice(0, 12));
+// ===== ユーティリティ =====
+function getFavs(){ try{return JSON.parse(localStorage.getItem('stock_favs')||'[]');}catch{return[];} }
+function saveFavs(f){ localStorage.setItem('stock_favs',JSON.stringify(f)); }
+function getWL(){ try{return JSON.parse(localStorage.getItem('stock_wl')||'[]');}catch{return[];} }
+function saveWL(w){ localStorage.setItem('stock_wl',JSON.stringify(w)); }
+
+function addFav(code,name){
+  const favs=getFavs().filter(f=>f.c!==code);
+  favs.unshift({c:code,n:name});
+  saveFavs(favs.slice(0,12));
   renderFavs();
 }
-function removeFav(code) { saveFavs(getFavs().filter(f => f.c !== code)); renderFavs(); }
-function renderFavs() {
-  const favs = getFavs();
-  const section = document.getElementById('fav-section');
-  const chips = document.getElementById('fav-chips');
-  if (favs.length === 0) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  chips.innerHTML = favs.map(f => `
+function removeFav(code){ saveFavs(getFavs().filter(f=>f.c!==code)); renderFavs(); }
+function renderFavs(){
+  const favs=getFavs();
+  const sec=document.getElementById('fav-section');
+  const chips=document.getElementById('fav-chips');
+  if(!favs.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  chips.innerHTML=favs.map(f=>`
     <div class="fav-chip">
-      <button class="fav-chip-btn" onclick="loadByCode('${f.c}','${f.n.replace(/'/g,"\\'")}')">
-        ${f.n}<span style="color:var(--text2);font-family:monospace;font-size:.68rem;margin-left:4px">${f.c}</span>
-      </button>
-      <button class="fav-chip-del" onclick="removeFav('${f.c}')" title="削除">✕</button>
+      <button class="fav-chip-btn" onclick="loadByCode('${f.c}','${esc(f.n)}')">${f.n}<span style="color:var(--text2);font-family:monospace;font-size:.65rem;margin-left:3px">${f.c}</span></button>
+      <button class="fav-chip-del" onclick="removeFav('${f.c}')">✕</button>
     </div>`).join('');
 }
+function esc(s){ return s.replace(/'/g,"\\'"); }
 
-// ===== オートコンプリート =====
-let acIndex = -1;
-const searchEl = document.getElementById('search-input');
-const acEl = document.getElementById('autocomplete');
-const clearBtn = document.getElementById('search-clear');
-
-searchEl.addEventListener('input', () => {
-  const q = searchEl.value.trim();
-  clearBtn.style.display = q ? 'block' : 'none';
-  if (!q) { hideAC(); return; }
-  const ql = q.toLowerCase();
-  const hits = STOCKS.filter(s =>
-    s.c.startsWith(q) ||
-    s.n.includes(q) ||
-    (s.a && s.a.toLowerCase().split(' ').some(alias => alias && alias.startsWith(ql)))
-  ).slice(0, 8);
-  if (hits.length === 0) { hideAC(); return; }
-  acEl.innerHTML = hits.map((s,i) =>
-    `<div class="ac-item" data-i="${i}" data-code="${s.c}" data-name="${s.n}" onclick="selectStock('${s.c}','${s.n.replace(/'/g,"\\'")}')">
-      <span class="ac-code">${s.c}</span><span class="ac-name">${s.n}</span><span class="ac-sector">${s.s}</span>
-    </div>`).join('');
-  acEl.style.display = 'block';
-  acIndex = -1;
-});
-
-searchEl.addEventListener('keydown', e => {
-  const items = acEl.querySelectorAll('.ac-item');
-  if (e.key === 'ArrowDown') { e.preventDefault(); acIndex = Math.min(acIndex+1, items.length-1); highlightAC(items); }
-  else if (e.key === 'ArrowUp') { e.preventDefault(); acIndex = Math.max(acIndex-1, -1); highlightAC(items); }
-  else if (e.key === 'Enter') {
-    if (acIndex >= 0 && items[acIndex]) {
-      const el = items[acIndex];
-      selectStock(el.dataset.code, el.dataset.name);
-    } else { loadStock(); }
-  } else if (e.key === 'Escape') { hideAC(); }
-});
-
-document.addEventListener('click', e => { if (!e.target.closest('.search-input-wrap')) hideAC(); });
-
-function highlightAC(items) {
-  items.forEach((el,i) => el.classList.toggle('active', i === acIndex));
-}
-function hideAC() { acEl.style.display = 'none'; acIndex = -1; }
-function clearSearch() {
-  searchEl.value = ''; clearBtn.style.display = 'none'; hideAC(); searchEl.focus();
-}
-function selectStock(code, name) {
-  searchEl.value = `${code}　${name}`;
-  clearBtn.style.display = 'block';
-  hideAC();
-  currentCode = code; currentName = name;
-  loadStock();
-}
-function loadByCode(code, name) {
-  selectStock(code, name);
+// ===== タブ切替 =====
+function switchTab(t){
+  document.getElementById('tab-chart').style.display=t==='chart'?'block':'none';
+  document.getElementById('tab-watchlist').style.display=t==='watchlist'?'block':'none';
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(t==='chart'&&i===0)||(t==='watchlist'&&i===1)));
+  if(t==='watchlist'){renderWL();checkNotifPermission();}
 }
 
-// ===== 期間ボタン =====
-let activePeriod = '3mo';
-document.querySelectorAll('.period-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+// ===== 比較モード =====
+let compareMode=false;
+function toggleCompare(){
+  compareMode=!compareMode;
+  document.getElementById('search2-wrap').style.display=compareMode?'flex':'none';
+  document.getElementById('btn-compare').classList.toggle('active',compareMode);
+  document.getElementById('btn-compare').textContent=compareMode?'× 比較解除':'＋比較';
+  document.getElementById('charts-grid').classList.toggle('dual',compareMode);
+  if(!compareMode){
+    document.getElementById('col2').style.display='none';
+    if(chartMain2){chartMain2.remove();chartMain2=null;}
+  }
+}
+
+// ===== オートコンプリート共通 =====
+function setupAC(inputId, acId, onSelect){
+  const inp=document.getElementById(inputId);
+  const ac=document.getElementById(acId);
+  const clearId=inputId.replace('search','clear').replace('wl-search','clear-wl');
+  let idx=-1;
+
+  inp.addEventListener('input',()=>{
+    const q=inp.value.trim();
+    const clr=document.getElementById(clearId);
+    if(clr)clr.style.display=q?'block':'none';
+    if(!q){ac.style.display='none';return;}
+    const ql=q.toLowerCase();
+    const hits=STOCKS.filter(s=>
+      s.c.toLowerCase().startsWith(ql)||s.n.includes(q)||(s.a&&s.a.toLowerCase().split(' ').some(a=>a&&a.startsWith(ql)))
+    ).slice(0,8);
+
+    // DBにない場合でも4桁コード的入力はそのまま提示
+    const isCode=/^[0-9]{3,4}[0-9A-Za-z]?$/.test(q);
+    let extra='';
+    if(isCode && !hits.find(h=>h.c===q.toUpperCase())){
+      extra=`<div class="ac-hint">「${q}」をコードとして直接検索 →「表示」を押してください</div>`;
+    }
+
+    if(!hits.length&&!isCode){ac.style.display='none';return;}
+    ac.innerHTML=hits.map((s,i)=>
+      `<div class="ac-item" data-i="${i}" data-code="${s.c}" data-name="${esc(s.n)}" onclick="onACSelect_${inputId}('${s.c}','${esc(s.n)}')">`+
+      `<span class="ac-code">${s.c}</span><span class="ac-name">${s.n}</span><span class="ac-sector">${s.s}</span></div>`
+    ).join('')+extra;
+    ac.style.display='block'; idx=-1;
+  });
+
+  inp.addEventListener('keydown',e=>{
+    const items=ac.querySelectorAll('.ac-item');
+    if(e.key==='ArrowDown'){e.preventDefault();idx=Math.min(idx+1,items.length-1);hilite(items);}
+    else if(e.key==='ArrowUp'){e.preventDefault();idx=Math.max(idx-1,-1);hilite(items);}
+    else if(e.key==='Enter'){
+      if(idx>=0&&items[idx]){const el=items[idx];onSelect(el.dataset.code,el.dataset.name);}
+      else onSelect(null,null);
+      ac.style.display='none';
+    }
+    else if(e.key==='Escape'){ac.style.display='none';}
+  });
+
+  function hilite(items){items.forEach((el,i)=>el.classList.toggle('active',i===idx));}
+  window[`onACSelect_${inputId}`]=onSelect;
+  document.addEventListener('click',e=>{if(!e.target.closest(`#${inputId}`)&&!e.target.closest(`#${acId}`))ac.style.display='none';});
+}
+
+function clearSearch(n){
+  const el=document.getElementById('search'+n);
+  el.value='';
+  document.getElementById('clear'+n).style.display='none';
+  document.getElementById('ac'+n).style.display='none';
+  if(n===1){currentCode1='';currentName1='';}
+  else{currentCode2='';currentName2='';}
+  el.focus();
+}
+
+// ===== 状態 =====
+let activePeriod='3mo';
+let currentCode1='',currentName1='',currentCode2='',currentName2='';
+let chartMain1=null,chartMain2=null,chartRsiObj=null,chartMacdObj=null;
+
+document.querySelectorAll('.period-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    activePeriod = btn.dataset.p;
-    if (currentCode) loadStock();
+    activePeriod=btn.dataset.p;
+    if(currentCode1)loadCharts();
   });
 });
 
-// ===== チャートオブジェクト =====
-let chartMain = null, candleSeries = null;
-let chartRsi = null, rsiSeries = null;
-let chartMacd = null, macdLine = null, signalLine = null, histSeries = null;
-let currentCode = '', currentName = '';
+setupAC('search1','ac1',(code,name)=>{
+  if(code){currentCode1=code;currentName1=name;document.getElementById('search1').value=`${name}　${code}`;}
+  document.getElementById('clear1').style.display='block';
+  loadCharts();
+});
+setupAC('search2','ac2',(code,name)=>{
+  if(code){currentCode2=code;currentName2=name;document.getElementById('search2').value=`${name}　${code}`;}
+  document.getElementById('clear2').style.display='block';
+  if(currentCode2)loadChart2();
+});
 
-function setStatus(msg, type='') {
-  const el = document.getElementById('status-bar');
-  el.textContent = msg;
-  el.className = type;
+function loadByCode(code,name){
+  currentCode1=code;currentName1=name;
+  document.getElementById('search1').value=`${name}　${code}`;
+  document.getElementById('clear1').style.display='block';
+  loadCharts();
+}
+
+function setStatus(msg,type=''){
+  const el=document.getElementById('status-bar');
+  el.textContent=msg;el.className=type;
+}
+
+// ===== コード解析 =====
+function parseInputCode(inputId,currentCode,currentName){
+  const raw=document.getElementById(inputId).value.trim();
+  if(!raw)return{code:'',name:''};
+  if(currentCode)return{code:currentCode,name:currentName};
+  const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?)/);
+  if(m){
+    const code=m[1].toUpperCase();
+    const found=STOCKS.find(s=>s.c===code);
+    return{code,name:found?found.n:code};
+  }
+  const found=STOCKS.find(s=>s.n.includes(raw));
+  if(found)return{code:found.c,name:found.n};
+  return{code:'',name:''};
 }
 
 // ===== データ取得 =====
-async function loadStock() {
-  // 入力値からコードを抽出
-  const raw = searchEl.value.trim();
-  if (!raw) { setStatus('銘柄名またはコードを入力してください。', 'err'); return; }
-
-  // コードが直接入力された場合
-  const codeMatch = raw.match(/^(\d{4})/);
-  if (codeMatch && !currentCode) {
-    currentCode = codeMatch[1];
-    const found = STOCKS.find(s => s.c === currentCode);
-    currentName = found ? found.n : currentCode;
+async function fetchStockData(code,range){
+  const sym=encodeURIComponent(code+'.T');
+  const yfUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=${range}&includePrePost=false`;
+  const proxies=[u=>u,u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`];
+  for(const proxy of proxies){
+    try{
+      const r=await fetch(proxy(yfUrl),{signal:AbortSignal.timeout(8000)});
+      if(r.ok){const j=await r.json();return j?.chart?.result?.[0]||null;}
+    }catch(e){}
   }
-  if (!currentCode && codeMatch) currentCode = codeMatch[1];
-  if (!currentCode) {
-    // 名前で検索
-    const found = STOCKS.find(s => s.n.includes(raw));
-    if (found) { currentCode = found.c; currentName = found.n; }
-    else { setStatus('銘柄が見つかりません。コードを直接入力してください。', 'err'); return; }
-  }
-
-  const btn = document.getElementById('btn-load');
-  btn.disabled = true;
-  setStatus(`${currentName}（${currentCode}）のデータ取得中...`, '');
-  hideAC();
-
-  const sym = currentCode + '.T';
-  const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=${activePeriod}&includePrePost=false`;
-
-  const proxies = [
-    u => u,
-    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  ];
-
-  let resp = null, lastErr = '';
-  for (const proxy of proxies) {
-    try {
-      const r = await fetch(proxy(yfUrl), { signal: AbortSignal.timeout(8000) });
-      if (r.ok) { resp = r; break; }
-      lastErr = `HTTP ${r.status}`;
-    } catch(e) { lastErr = e.message; }
-  }
-
-  btn.disabled = false;
-  if (!resp) { setStatus(`取得失敗: ${lastErr}`, 'err'); return; }
-
-  try {
-    const json = await resp.json();
-    const result = json?.chart?.result?.[0];
-    if (!result) { setStatus('データが取得できませんでした。コードを確認してください。', 'err'); return; }
-    const rows = parseYahooFinance(result);
-    if (rows.length < 5) { setStatus('データが少なすぎます。', 'err'); return; }
-
-    renderAll(rows, currentCode, currentName);
-    setStatus(`${currentName}（${currentCode}） — ${rows.length}営業日 取得完了（約20分遅延）`, 'ok');
-    addFav(currentCode, currentName);
-  } catch(e) {
-    setStatus(`解析エラー: ${e.message}`, 'err');
-  }
+  return null;
 }
 
-function parseYahooFinance(result) {
-  const timestamps = result.timestamp || [];
-  const q = result.indicators.quote[0];
-  const rows = [];
-  for (let i = 0; i < timestamps.length; i++) {
-    const o = q.open[i], h = q.high[i], l = q.low[i], c = q.close[i], v = q.volume[i];
-    if (o == null || c == null || isNaN(o) || isNaN(c)) continue;
-    const d = new Date(timestamps[i] * 1000);
-    const date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    rows.push({ date, time: date, open: o, high: h, low: l, close: c, volume: v || 0 });
+function parseYF(result){
+  const ts=result.timestamp||[];
+  const q=result.indicators.quote[0];
+  const rows=[];
+  for(let i=0;i<ts.length;i++){
+    const o=q.open[i],h=q.high[i],l=q.low[i],c=q.close[i],v=q.volume[i];
+    if(o==null||c==null||isNaN(o)||isNaN(c))continue;
+    const d=new Date(ts[i]*1000);
+    const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    rows.push({date,time:date,open:o,high:h,low:l,close:c,volume:v||0});
   }
-  return rows.sort((a,b) => a.date < b.date ? -1 : 1);
+  return rows.sort((a,b)=>a.date<b.date?-1:1);
 }
 
 // ===== 指標計算 =====
-function calcMA(closes, period) {
-  return closes.map((_, i) => {
-    if (i < period - 1) return null;
-    return closes.slice(i-period+1, i+1).reduce((a,b)=>a+b,0) / period;
+function calcMA(cl,p){return cl.map((_,i)=>i<p-1?null:cl.slice(i-p+1,i+1).reduce((a,b)=>a+b,0)/p);}
+function calcEMA(cl,p){
+  const k=2/(p+1),ema=[];let prev=null;
+  for(let i=0;i<cl.length;i++){
+    if(prev===null){if(i<p-1){ema.push(null);continue;}prev=cl.slice(0,p).reduce((a,b)=>a+b,0)/p;ema.push(prev);continue;}
+    prev=cl[i]*k+prev*(1-k);ema.push(prev);
+  }return ema;
+}
+function calcBB(cl,p=20,m=2){
+  return cl.map((_,i)=>{
+    if(i<p-1)return null;
+    const sl=cl.slice(i-p+1,i+1),mean=sl.reduce((a,b)=>a+b,0)/p;
+    const std=Math.sqrt(sl.reduce((a,b)=>a+(b-mean)**2,0)/p);
+    return{upper:mean+m*std,mid:mean,lower:mean-m*std};
   });
 }
-function calcEMA(closes, period) {
-  const k = 2/(period+1); const ema = []; let prev = null;
-  for (let i = 0; i < closes.length; i++) {
-    if (prev === null) {
-      if (i < period-1) { ema.push(null); continue; }
-      prev = closes.slice(0,period).reduce((a,b)=>a+b,0)/period;
-      ema.push(prev); continue;
-    }
-    prev = closes[i]*k + prev*(1-k); ema.push(prev);
-  }
-  return ema;
+function calcRSI(cl,p=14){
+  const r=new Array(cl.length).fill(null);
+  let ag=0,al=0;
+  for(let i=1;i<=p;i++){const d=cl[i]-cl[i-1];if(d>0)ag+=d;else al-=d;}
+  ag/=p;al/=p;r[p]=al===0?100:100-100/(1+ag/al);
+  for(let i=p+1;i<cl.length;i++){
+    const d=cl[i]-cl[i-1],g=d>0?d:0,l=d<0?-d:0;
+    ag=(ag*(p-1)+g)/p;al=(al*(p-1)+l)/p;r[i]=al===0?100:100-100/(1+ag/al);
+  }return r;
 }
-function calcBB(closes, period=20, mult=2) {
-  return closes.map((_,i) => {
-    if (i < period-1) return null;
-    const sl = closes.slice(i-period+1, i+1);
-    const mean = sl.reduce((a,b)=>a+b,0)/period;
-    const std = Math.sqrt(sl.reduce((a,b)=>a+(b-mean)**2,0)/period);
-    return { upper: mean+mult*std, mid: mean, lower: mean-mult*std };
-  });
-}
-function calcRSI(closes, period=14) {
-  const rsi = new Array(closes.length).fill(null);
-  let avgG=0, avgL=0;
-  for (let i=1; i<=period; i++) {
-    const d = closes[i]-closes[i-1];
-    if (d>0) avgG+=d; else avgL-=d;
+function calcMACD(cl,f=12,s=26,sig=9){
+  const ef=calcEMA(cl,f),es=calcEMA(cl,s);
+  const macd=cl.map((_,i)=>ef[i]!==null&&es[i]!==null?ef[i]-es[i]:null);
+  const sl=[];let sp=null,cnt=0,k=2/(sig+1);
+  for(let i=0;i<macd.length;i++){
+    if(macd[i]===null){sl.push(null);continue;}cnt++;
+    if(cnt<sig){sl.push(null);continue;}
+    if(cnt===sig){let s2=0,j2=0;for(let j=i;j2<sig;j--,j2++)s2+=macd[j];sp=s2/sig;sl.push(sp);continue;}
+    sp=macd[i]*k+sp*(1-k);sl.push(sp);
   }
-  avgG/=period; avgL/=period;
-  rsi[period] = avgL===0 ? 100 : 100-100/(1+avgG/avgL);
-  for (let i=period+1; i<closes.length; i++) {
-    const d=closes[i]-closes[i-1], g=d>0?d:0, l=d<0?-d:0;
-    avgG=(avgG*(period-1)+g)/period; avgL=(avgL*(period-1)+l)/period;
-    rsi[i] = avgL===0 ? 100 : 100-100/(1+avgG/avgL);
-  }
-  return rsi;
-}
-function calcMACD(closes, fast=12, slow=26, signal=9) {
-  const emaF=calcEMA(closes,fast), emaS=calcEMA(closes,slow);
-  const macd=closes.map((_,i)=>emaF[i]!==null&&emaS[i]!==null?emaF[i]-emaS[i]:null);
-  const sigLine=[]; let sigPrev=null, cnt=0, k=2/(signal+1);
-  for (let i=0; i<macd.length; i++) {
-    if (macd[i]===null){sigLine.push(null);continue;}
-    cnt++;
-    if (cnt<signal){sigLine.push(null);continue;}
-    if (cnt===signal){
-      let s=0,j2=0;
-      for(let j=i;j2<signal;j--,j2++) s+=macd[j];
-      sigPrev=s/signal; sigLine.push(sigPrev); continue;
-    }
-    sigPrev=macd[i]*k+sigPrev*(1-k); sigLine.push(sigPrev);
-  }
-  const hist=macd.map((v,i)=>v!==null&&sigLine[i]!==null?v-sigLine[i]:null);
-  return {macd, signal:sigLine, hist};
+  return{macd,signal:sl,hist:macd.map((v,i)=>v!==null&&sl[i]!==null?v-sl[i]:null)};
 }
 
-// ===== マーカー生成 =====
-function detectAllMarkers(rows, ma5, ma25, bb, rsi2, macdData) {
-  const markers = [];
-  for (let i=1; i<rows.length; i++) {
-    const r=rows[i]; const buys=[], sells=[];
-    if (rsi2[i]!==null) {
-      if (rsi2[i]<30) buys.push(`RSI${rsi2[i].toFixed(0)}`);
-      else if (rsi2[i]>70) sells.push(`RSI${rsi2[i].toFixed(0)}`);
+// ===== マーカー =====
+function buildMarkers(rows,ma5,ma25,bb,rsi,macdD){
+  const mkrs=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i];const buys=[],sells=[];
+    if(rsi[i]!==null){if(rsi[i]<30)buys.push(`RSI${rsi[i].toFixed(0)}`);else if(rsi[i]>70)sells.push(`RSI${rsi[i].toFixed(0)}`);}
+    if(bb[i]){if(r.close<=bb[i].lower*1.005)buys.push('BB↓');else if(r.close>=bb[i].upper*0.995)sells.push('BB↑');}
+    if(macdD.hist[i]!==null&&macdD.hist[i-1]!==null){
+      if(macdD.hist[i-1]<0&&macdD.hist[i]>=0)buys.push('MACD↑');
+      else if(macdD.hist[i-1]>0&&macdD.hist[i]<=0)sells.push('MACD↓');
     }
-    if (bb[i]) {
-      if (r.close<=bb[i].lower*1.005) buys.push('BB↓');
-      else if (r.close>=bb[i].upper*0.995) sells.push('BB↑');
+    if(ma5[i]!==null&&ma25[i]!==null&&ma5[i-1]!==null&&ma25[i-1]!==null){
+      if(ma5[i-1]<ma25[i-1]&&ma5[i]>=ma25[i])buys.push('GC');
+      else if(ma5[i-1]>ma25[i-1]&&ma5[i]<=ma25[i])sells.push('DC');
     }
-    if (macdData.hist[i]!==null && macdData.hist[i-1]!==null) {
-      if (macdData.hist[i-1]<0 && macdData.hist[i]>=0) buys.push('MACD');
-      else if (macdData.hist[i-1]>0 && macdData.hist[i]<=0) sells.push('MACD');
-    }
-    if (ma5[i]!==null&&ma25[i]!==null&&ma5[i-1]!==null&&ma25[i-1]!==null) {
-      if (ma5[i-1]<ma25[i-1]&&ma5[i]>=ma25[i]) buys.push('MA✕');
-      else if (ma5[i-1]>ma25[i-1]&&ma5[i]<=ma25[i]) sells.push('MA✕');
-    }
-    if (buys.length>=2)
-      markers.push({time:r.time,position:'belowBar',color:'#3fb950',shape:'arrowUp',text:buys.join(' ')});
-    else if (sells.length>=2)
-      markers.push({time:r.time,position:'aboveBar',color:'#f85149',shape:'arrowDown',text:sells.join(' ')});
-    else if (buys.length===1)
-      markers.push({time:r.time,position:'belowBar',color:'#e6b422',shape:'arrowUp',text:buys[0]});
-    else if (sells.length===1)
-      markers.push({time:r.time,position:'aboveBar',color:'#ffa657',shape:'arrowDown',text:sells[0]});
+    if(buys.length>=2)mkrs.push({time:r.time,position:'belowBar',color:'#3fb950',shape:'arrowUp',text:buys.join(' ')});
+    else if(sells.length>=2)mkrs.push({time:r.time,position:'aboveBar',color:'#f85149',shape:'arrowDown',text:sells.join(' ')});
+    else if(buys.length===1)mkrs.push({time:r.time,position:'belowBar',color:'#e6b422',shape:'arrowUp',text:buys[0]});
+    else if(sells.length===1)mkrs.push({time:r.time,position:'aboveBar',color:'#ffa657',shape:'arrowDown',text:sells[0]});
   }
-  return markers;
+  return mkrs;
 }
 
-// ===== 直近シグナル（バッジ）=====
-function detectSignals(rows, ma5, ma25, bb, rsi2, macdData) {
-  const n=rows.length-1, last=rows[n], signals=[];
-  const rsiVal=rsi2[n], bbVal=bb[n], histVal=macdData.hist[n], prevH=macdData.hist[n-1];
-  if (rsiVal!==null&&rsiVal<30) signals.push({label:`RSI過売り(${rsiVal.toFixed(1)})`,type:'buy'});
-  else if (rsiVal!==null&&rsiVal>70) signals.push({label:`RSI過買い(${rsiVal.toFixed(1)})`,type:'sell'});
-  if (bbVal&&last.close<=bbVal.lower*1.005) signals.push({label:'BB下限タッチ',type:'buy'});
-  else if (bbVal&&last.close>=bbVal.upper*0.995) signals.push({label:'BB上限タッチ',type:'sell'});
-  if (histVal!==null&&prevH!==null) {
-    if (prevH<0&&histVal>=0) signals.push({label:'MACDゴールデンクロス',type:'buy'});
-    else if (prevH>0&&histVal<=0) signals.push({label:'MACDデッドクロス',type:'sell'});
+function latestSignals(rows,ma5,ma25,bb,rsi,macdD){
+  const n=rows.length-1,last=rows[n],sigs=[];
+  const rv=rsi[n],bv=bb[n],hv=macdD.hist[n],ph=macdD.hist[n-1];
+  if(rv!==null&&rv<30)sigs.push({label:`RSI過売り(${rv.toFixed(1)})`,type:'buy'});
+  else if(rv!==null&&rv>70)sigs.push({label:`RSI過買い(${rv.toFixed(1)})`,type:'sell'});
+  if(bv&&last.close<=bv.lower*1.005)sigs.push({label:'BB下限タッチ',type:'buy'});
+  else if(bv&&last.close>=bv.upper*0.995)sigs.push({label:'BB上限タッチ',type:'sell'});
+  if(hv!==null&&ph!==null){
+    if(ph<0&&hv>=0)sigs.push({label:'MACDゴールデンクロス',type:'buy'});
+    else if(ph>0&&hv<=0)sigs.push({label:'MACDデッドクロス',type:'sell'});
   }
   const n1=n-1;
-  if (ma5[n]!==null&&ma25[n]!==null&&ma5[n1]!==null&&ma25[n1]!==null) {
-    if (ma5[n1]<ma25[n1]&&ma5[n]>=ma25[n]) signals.push({label:'MAゴールデンクロス',type:'buy'});
-    else if (ma5[n1]>ma25[n1]&&ma5[n]<=ma25[n]) signals.push({label:'MAデッドクロス',type:'sell'});
+  if(ma5[n]!==null&&ma25[n]!==null&&ma5[n1]!==null&&ma25[n1]!==null){
+    if(ma5[n1]<ma25[n1]&&ma5[n]>=ma25[n])sigs.push({label:'MAゴールデンクロス(GC)',type:'buy'});
+    else if(ma5[n1]>ma25[n1]&&ma5[n]<=ma25[n])sigs.push({label:'MAデッドクロス(DC)',type:'sell'});
   }
-  if (signals.length===0) signals.push({label:'明確なシグナルなし',type:'neutral'});
-  return signals;
+  if(!sigs.length)sigs.push({label:'明確なシグナルなし',type:'neutral'});
+  return sigs;
 }
 
-// ===== チャート描画 =====
-function renderAll(rows, code, name) {
-  const closes = rows.map(r=>r.close);
-  const ma5v=calcMA(closes,5), ma25v=calcMA(closes,25), ma75v=calcMA(closes,75);
-  const bbv=calcBB(closes,20,2), rsi2=calcRSI(closes,14), macdData=calcMACD(closes,12,26,9);
+// ===== チャート描画共通設定 =====
+const chartTheme={
+  layout:{background:{color:'#1c2128'},textColor:'#8b949e'},
+  grid:{vertLines:{color:'#30363d'},horzLines:{color:'#30363d'}},
+  crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
+  rightPriceScale:{borderColor:'#30363d'},
+  timeScale:{borderColor:'#30363d',timeVisible:true},
+  handleScroll:{mouseWheel:true,pressedMouseMove:true,touchMove:true},
+  handleScale:{mouseWheel:true,pinch:true},
+};
 
-  // 価格
-  const last=rows[rows.length-1], prev=rows[rows.length-2];
-  const chg=last.close-prev.close, chgPct=chg/prev.close*100;
-  document.getElementById('p-last').textContent=last.close.toLocaleString('ja-JP');
-  const chgEl=document.getElementById('p-chg');
-  chgEl.textContent=`${chg>=0?'+':''}${chg.toFixed(1)}(${chg>=0?'+':''}${chgPct.toFixed(2)}%)`;
-  chgEl.className='pc-val '+(chg>=0?'up':'dn');
-  document.getElementById('p-open').textContent=last.open.toLocaleString('ja-JP');
-  document.getElementById('p-high').textContent=last.high.toLocaleString('ja-JP');
-  document.getElementById('p-low').textContent=last.low.toLocaleString('ja-JP');
-  document.getElementById('p-vol').textContent=last.volume>0?Math.round(last.volume/1000).toLocaleString()+'千':'—';
-  document.getElementById('price-row').style.display='grid';
+function makeCandleChart(containerId,rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD){
+  const el=document.getElementById(containerId);
+  const c=LightweightCharts.createChart(el,{...chartTheme,height:el.clientHeight||280});
+  c.timeScale().fitContent();
+  const cs=c.addCandlestickSeries({upColor:'#3fb950',downColor:'#f85149',borderUpColor:'#3fb950',borderDownColor:'#f85149',wickUpColor:'#3fb950',wickDownColor:'#f85149'});
+  cs.setData(rows.map(r=>({time:r.time,open:r.open,high:r.high,low:r.low,close:r.close})));
+  cs.setMarkers(buildMarkers(rows,ma5v,ma25v,bbv,rsiV,macdD));
+  c.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].upper}:null).filter(Boolean));
+  c.addLineSeries({color:'rgba(63,185,80,.3)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].mid}:null).filter(Boolean));
+  c.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].lower}:null).filter(Boolean));
+  c.addLineSeries({color:'#e6b422',lineWidth:1.5,priceLineVisible:false}).setData(rows.map((r,i)=>ma5v[i]!==null?{time:r.time,value:ma5v[i]}:null).filter(Boolean));
+  c.addLineSeries({color:'#58a6ff',lineWidth:1.5,priceLineVisible:false}).setData(rows.map((r,i)=>ma25v[i]!==null?{time:r.time,value:ma25v[i]}:null).filter(Boolean));
+  c.addLineSeries({color:'#bc8cff',lineWidth:1.5,priceLineVisible:false}).setData(rows.map((r,i)=>ma75v[i]!==null?{time:r.time,value:ma75v[i]}:null).filter(Boolean));
+  new ResizeObserver(()=>c.applyOptions({width:el.clientWidth})).observe(el);
+  return c;
+}
+
+function fillPrice(sfx,rows){
+  const last=rows[rows.length-1],prev=rows[rows.length-2];
+  const chg=last.close-prev.close,pct=chg/prev.close*100;
+  document.getElementById('p-last'+sfx).textContent=last.close.toLocaleString('ja-JP');
+  const ce=document.getElementById('p-chg'+sfx);
+  ce.textContent=`${chg>=0?'+':''}${chg.toFixed(1)}(${chg>=0?'+':''}${pct.toFixed(2)}%)`;
+  ce.className='pc-val '+(chg>=0?'up':'dn');
+  document.getElementById('p-open'+sfx).textContent=last.open.toLocaleString('ja-JP');
+  document.getElementById('p-high'+sfx).textContent=last.high.toLocaleString('ja-JP');
+  document.getElementById('p-low'+sfx).textContent=last.low.toLocaleString('ja-JP');
+  document.getElementById('p-vol'+sfx).textContent=last.volume>0?Math.round(last.volume/1000).toLocaleString()+'千':'—';
+  document.getElementById('price-row'+sfx).style.display='grid';
+}
+
+// ===== メインチャート読み込み =====
+async function loadCharts(){
+  const p=parseInputCode('search1',currentCode1,currentName1);
+  if(!p.code){setStatus('銘柄名またはコードを入力してください。','err');return;}
+  currentCode1=p.code;currentName1=p.name;
+  document.getElementById('btn-load').disabled=true;
+  setStatus(`${currentName1}（${currentCode1}）取得中...`,'');
+
+  const result=await fetchStockData(currentCode1,activePeriod);
+  document.getElementById('btn-load').disabled=false;
+  if(!result){setStatus('データ取得失敗。コードを確認してください。','err');return;}
+
+  const rows=parseYF(result);
+  if(rows.length<5){setStatus('データが少なすぎます。','err');return;}
+
+  const cl=rows.map(r=>r.close);
+  const ma5v=calcMA(cl,5),ma25v=calcMA(cl,25),ma75v=calcMA(cl,75);
+  const bbv=calcBB(cl),rsiV=calcRSI(cl),macdD=calcMACD(cl);
+
+  fillPrice('1',rows);
+  const sigs=latestSignals(rows,ma5v,ma25v,bbv,rsiV,macdD);
+  document.getElementById('signals1').innerHTML=sigs.map(s=>`<div class="sig ${s.type}">${s.label}</div>`).join('');
 
   // テクニカル値
-  const rsiLast=rsi2[rsi2.length-1], macdLast=macdData.macd[macdData.macd.length-1];
-  const sigLast=macdData.signal[macdData.signal.length-1], histLast=macdData.hist[macdData.hist.length-1];
-  const bbLast=bbv[bbv.length-1];
-  document.getElementById('tc-rsi').textContent=rsiLast!==null?rsiLast.toFixed(2):'—';
-  document.getElementById('tc-macd').textContent=macdLast!==null?macdLast.toFixed(2):'—';
-  document.getElementById('tc-sig').textContent=sigLast!==null?sigLast.toFixed(2):'—';
-  document.getElementById('tc-hist').textContent=histLast!==null?histLast.toFixed(2):'—';
-  document.getElementById('tc-bbu').textContent=bbLast?bbLast.upper.toFixed(1):'—';
-  document.getElementById('tc-bbl').textContent=bbLast?bbLast.lower.toFixed(1):'—';
-  document.getElementById('tech-row').style.display='grid';
+  const n=rows.length-1,rsiL=rsiV[n],bvL=bbv[n];
+  const mL=macdD.macd[n],sL=macdD.signal[n],hL=macdD.hist[n];
+  document.getElementById('tc-rsi').textContent=rsiL!==null?rsiL.toFixed(2):'—';
+  document.getElementById('tc-macd').textContent=mL!==null?mL.toFixed(2):'—';
+  document.getElementById('tc-sig').textContent=sL!==null?sL.toFixed(2):'—';
+  document.getElementById('tc-hist').textContent=hL!==null?hL.toFixed(2):'—';
+  document.getElementById('tc-bbu').textContent=bvL?bvL.upper.toFixed(1):'—';
+  document.getElementById('tc-bbl').textContent=bvL?bvL.lower.toFixed(1):'—';
+  document.getElementById('tech-row1').style.display='grid';
 
-  // シグナルバッジ
-  const sigs=detectSignals(rows,ma5v,ma25v,bbv,rsi2,macdData);
-  document.getElementById('signals').innerHTML=sigs.map(s=>`<div class="sig ${s.type}">${s.label}</div>`).join('');
+  document.getElementById('chart-label1').textContent=`${currentName1}（${currentCode1}）`;
+  document.getElementById('wrap-main1').style.display='block';
+  if(chartMain1)chartMain1.remove();
+  chartMain1=makeCandleChart('chart-main1',rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD);
 
-  // チャートラベル
-  document.getElementById('chart-label').textContent=`${name}（${code}） ローソク足 / MA / BB`;
-  document.getElementById('sig-guide').style.display='block';
-
-  const chartOpts = {
-    layout:{background:{color:'#1c2128'},textColor:'#8b949e'},
-    grid:{vertLines:{color:'#30363d'},horzLines:{color:'#30363d'}},
-    crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
-    rightPriceScale:{borderColor:'#30363d'},
-    timeScale:{borderColor:'#30363d',timeVisible:true},
-    handleScroll:{mouseWheel:true,pressedMouseMove:true,touchMove:true},
-    handleScale:{mouseWheel:true,pinch:true},
-  };
-
-  // メインチャート
-  document.getElementById('wrap-main').style.display='block';
-  if (chartMain) chartMain.remove();
-  chartMain=LightweightCharts.createChart(document.getElementById('chart-main'),{...chartOpts,height:document.getElementById('chart-main').clientHeight||320});
-  chartMain.timeScale().fitContent();
-
-  candleSeries=chartMain.addCandlestickSeries({upColor:'#3fb950',downColor:'#f85149',borderUpColor:'#3fb950',borderDownColor:'#f85149',wickUpColor:'#3fb950',wickDownColor:'#f85149'});
-  candleSeries.setData(rows.map(r=>({time:r.time,open:r.open,high:r.high,low:r.low,close:r.close})));
-  const markers=detectAllMarkers(rows,ma5v,ma25v,bbv,rsi2,macdData);
-  candleSeries.setMarkers(markers);
-
-  const bbU=chartMain.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false});
-  const bbM=chartMain.addLineSeries({color:'rgba(63,185,80,.3)',lineWidth:1,lineStyle:2,priceLineVisible:false});
-  const bbL=chartMain.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false});
-  bbU.setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].upper}:null).filter(Boolean));
-  bbM.setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].mid}:null).filter(Boolean));
-  bbL.setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].lower}:null).filter(Boolean));
-
-  const ma5s=chartMain.addLineSeries({color:'#e6b422',lineWidth:1.5,priceLineVisible:false});
-  const ma25s=chartMain.addLineSeries({color:'#58a6ff',lineWidth:1.5,priceLineVisible:false});
-  const ma75s=chartMain.addLineSeries({color:'#bc8cff',lineWidth:1.5,priceLineVisible:false});
-  ma5s.setData(rows.map((r,i)=>ma5v[i]!==null?{time:r.time,value:ma5v[i]}:null).filter(Boolean));
-  ma25s.setData(rows.map((r,i)=>ma25v[i]!==null?{time:r.time,value:ma25v[i]}:null).filter(Boolean));
-  ma75s.setData(rows.map((r,i)=>ma75v[i]!==null?{time:r.time,value:ma75v[i]}:null).filter(Boolean));
-
-  // RSIチャート
+  // RSI
   document.getElementById('wrap-rsi').style.display='block';
-  if (chartRsi) chartRsi.remove();
-  chartRsi=LightweightCharts.createChart(document.getElementById('chart-rsi'),{...chartOpts,height:document.getElementById('chart-rsi').clientHeight||130,rightPriceScale:{...chartOpts.rightPriceScale,scaleMargins:{top:.1,bottom:.1}}});
-  chartRsi.timeScale().fitContent();
-  rsiSeries=chartRsi.addLineSeries({color:'#ffa657',lineWidth:2,priceLineVisible:false});
-  rsiSeries.setData(rows.map((r,i)=>rsi2[i]!==null?{time:r.time,value:rsi2[i]}:null).filter(Boolean));
-  chartRsi.addLineSeries({color:'rgba(248,81,73,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:70})));
-  chartRsi.addLineSeries({color:'rgba(63,185,80,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:30})));
+  if(chartRsiObj)chartRsiObj.remove();
+  const rsiEl=document.getElementById('chart-rsi');
+  chartRsiObj=LightweightCharts.createChart(rsiEl,{...chartTheme,height:rsiEl.clientHeight||120,rightPriceScale:{borderColor:'#30363d',scaleMargins:{top:.1,bottom:.1}}});
+  chartRsiObj.timeScale().fitContent();
+  chartRsiObj.addLineSeries({color:'#ffa657',lineWidth:2,priceLineVisible:false}).setData(rows.map((r,i)=>rsiV[i]!==null?{time:r.time,value:rsiV[i]}:null).filter(Boolean));
+  chartRsiObj.addLineSeries({color:'rgba(248,81,73,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:70})));
+  chartRsiObj.addLineSeries({color:'rgba(63,185,80,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:30})));
+  new ResizeObserver(()=>chartRsiObj.applyOptions({width:rsiEl.clientWidth})).observe(rsiEl);
 
-  // MACDチャート
+  // MACD
   document.getElementById('wrap-macd').style.display='block';
-  if (chartMacd) chartMacd.remove();
-  chartMacd=LightweightCharts.createChart(document.getElementById('chart-macd'),{...chartOpts,height:document.getElementById('chart-macd').clientHeight||130});
-  chartMacd.timeScale().fitContent();
-  histSeries=chartMacd.addHistogramSeries({priceLineVisible:false});
-  histSeries.setData(rows.map((r,i)=>macdData.hist[i]!==null?{time:r.time,value:macdData.hist[i],color:macdData.hist[i]>=0?'#3fb950':'#f85149'}:null).filter(Boolean));
-  macdLine=chartMacd.addLineSeries({color:'#58a6ff',lineWidth:2,priceLineVisible:false});
-  macdLine.setData(rows.map((r,i)=>macdData.macd[i]!==null?{time:r.time,value:macdData.macd[i]}:null).filter(Boolean));
-  signalLine=chartMacd.addLineSeries({color:'#f85149',lineWidth:1.5,lineStyle:1,priceLineVisible:false});
-  signalLine.setData(rows.map((r,i)=>macdData.signal[i]!==null?{time:r.time,value:macdData.signal[i]}:null).filter(Boolean));
+  if(chartMacdObj)chartMacdObj.remove();
+  const macdEl=document.getElementById('chart-macd');
+  chartMacdObj=LightweightCharts.createChart(macdEl,{...chartTheme,height:macdEl.clientHeight||120});
+  chartMacdObj.timeScale().fitContent();
+  chartMacdObj.addHistogramSeries({priceLineVisible:false}).setData(rows.map((r,i)=>macdD.hist[i]!==null?{time:r.time,value:macdD.hist[i],color:macdD.hist[i]>=0?'#3fb950':'#f85149'}:null).filter(Boolean));
+  chartMacdObj.addLineSeries({color:'#58a6ff',lineWidth:2,priceLineVisible:false}).setData(rows.map((r,i)=>macdD.macd[i]!==null?{time:r.time,value:macdD.macd[i]}:null).filter(Boolean));
+  chartMacdObj.addLineSeries({color:'#f85149',lineWidth:1.5,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>macdD.signal[i]!==null?{time:r.time,value:macdD.signal[i]}:null).filter(Boolean));
+  new ResizeObserver(()=>chartMacdObj.applyOptions({width:macdEl.clientWidth})).observe(macdEl);
 
   // 時間軸同期
-  [chartMain,chartRsi,chartMacd].forEach((src,si)=>{
+  [chartMain1,chartRsiObj,chartMacdObj].forEach((src,si)=>{
     src.timeScale().subscribeVisibleLogicalRangeChange(range=>{
       if(!range)return;
-      [chartMain,chartRsi,chartMacd].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
+      [chartMain1,chartRsiObj,chartMacdObj].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
     });
   });
 
-  // リサイズ対応
-  const resizeObserver=new ResizeObserver(()=>{
-    chartMain?.applyOptions({width:document.getElementById('chart-main').clientWidth});
-    chartRsi?.applyOptions({width:document.getElementById('chart-rsi').clientWidth});
-    chartMacd?.applyOptions({width:document.getElementById('chart-macd').clientWidth});
-  });
-  ['chart-main','chart-rsi','chart-macd'].forEach(id=>resizeObserver.observe(document.getElementById(id)));
+  setStatus(`${currentName1}（${currentCode1}） — ${rows.length}営業日 取得完了（約20分遅延）`,'ok');
+  document.getElementById('sig-guide').style.display='block';
+  addFav(currentCode1,currentName1);
+
+  if(compareMode&&currentCode2)loadChart2();
+}
+
+// ===== 比較チャート =====
+async function loadChart2(){
+  const p=parseInputCode('search2',currentCode2,currentName2);
+  if(!p.code)return;
+  currentCode2=p.code;currentName2=p.name;
+
+  const result=await fetchStockData(currentCode2,activePeriod);
+  if(!result)return;
+  const rows=parseYF(result);
+  if(rows.length<5)return;
+
+  const cl=rows.map(r=>r.close);
+  const ma5v=calcMA(cl,5),ma25v=calcMA(cl,25),ma75v=calcMA(cl,75);
+  const bbv=calcBB(cl),rsiV=calcRSI(cl),macdD=calcMACD(cl);
+
+  document.getElementById('col2').style.display='block';
+  fillPrice('2',rows);
+  const sigs=latestSignals(rows,ma5v,ma25v,bbv,rsiV,macdD);
+  document.getElementById('signals2').innerHTML=sigs.map(s=>`<div class="sig ${s.type}">${s.label}</div>`).join('');
+  document.getElementById('chart-label2').textContent=`${currentName2}（${currentCode2}）`;
+  document.getElementById('wrap-main2').style.display='block';
+  if(chartMain2)chartMain2.remove();
+  chartMain2=makeCandleChart('chart-main2',rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD);
+  addFav(currentCode2,currentName2);
+}
+
+// ===== ウォッチリスト =====
+function renderWL(){
+  const wl=getWL();
+  const el=document.getElementById('wl-list');
+  if(!wl.length){el.innerHTML='<div class="wl-empty">銘柄が登録されていません。上の検索欄から追加してください。</div>';return;}
+  el.innerHTML=wl.map(w=>`
+    <div class="wl-item">
+      <span class="wl-item-name">${w.n}</span>
+      <span class="wl-item-code">${w.c}</span>
+      <button class="wl-item-del" onclick="removeWL('${w.c}')">✕ 削除</button>
+    </div>`).join('');
+}
+function addWL(code,name){
+  const wl=getWL().filter(w=>w.c!==code);
+  wl.push({c:code,n:name});
+  saveWL(wl);renderWL();
+}
+function removeWL(code){saveWL(getWL().filter(w=>w.c!==code));renderWL();}
+
+setupAC('wl-search','ac-wl',(code,name)=>{
+  if(!code)return;
+  addWL(code,name);
+  document.getElementById('wl-search').value='';
+  document.getElementById('ac-wl').style.display='none';
+});
+function wlAddFromInput(){
+  const raw=document.getElementById('wl-search').value.trim();
+  if(!raw)return;
+  const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?)/);
+  if(m){const code=m[1].toUpperCase();const found=STOCKS.find(s=>s.c===code);addWL(code,found?found.n:code);}
+  else{const found=STOCKS.find(s=>s.n.includes(raw));if(found)addWL(found.c,found.n);}
+  document.getElementById('wl-search').value='';
+}
+
+// ===== ブラウザ通知 =====
+function checkNotifPermission(){
+  if('Notification' in window && Notification.permission==='default')
+    document.getElementById('notif-bar').style.display='flex';
+  else document.getElementById('notif-bar').style.display='none';
+}
+function requestNotif(){
+  Notification.requestPermission().then(()=>{checkNotifPermission();});
+}
+function sendNotif(title,body){
+  if('Notification' in window && Notification.permission==='granted')
+    new Notification(title,{body,icon:'https://sunsunrain.github.io/fx_usd_rmb/favicon.ico'});
+}
+
+// ===== スキャン =====
+async function startScan(){
+  const wl=getWL();
+  if(!wl.length){document.getElementById('scan-results').innerHTML='<div class="wl-empty">ウォッチリストに銘柄を登録してください。</div>';return;}
+  const btn=document.getElementById('btn-scan');
+  btn.disabled=true;
+  const statusEl=document.getElementById('scan-status');
+  const resEl=document.getElementById('scan-results');
+  resEl.innerHTML='';
+
+  const buyStocks=[],sellStocks=[];
+
+  for(let i=0;i<wl.length;i++){
+    const w=wl[i];
+    statusEl.textContent=`スキャン中... ${i+1}/${wl.length} ${w.n}`;
+    resEl.insertAdjacentHTML('beforeend',`<div class="scan-loading" id="scan-loading-${w.c}">⏳ ${w.n}（${w.c}）取得中...</div>`);
+
+    try{
+      const result=await fetchStockData(w.c,'3mo');
+      const loadingEl=document.getElementById(`scan-loading-${w.c}`);
+      if(loadingEl)loadingEl.remove();
+
+      if(!result){resEl.insertAdjacentHTML('beforeend',`<div class="scan-loading" style="color:var(--red)">✗ ${w.n} — 取得失敗</div>`);continue;}
+      const rows=parseYF(result);
+      if(rows.length<5)continue;
+
+      const cl=rows.map(r=>r.close);
+      const ma5v=calcMA(cl,5),ma25v=calcMA(cl,25);
+      const bbv=calcBB(cl),rsiV=calcRSI(cl),macdD=calcMACD(cl);
+      const sigs=latestSignals(rows,ma5v,ma25v,bbv,rsiV,macdD);
+
+      const last=rows[rows.length-1],prev=rows[rows.length-2];
+      const chg=last.close-prev.close,pct=chg/prev.close*100;
+      const hasBuy=sigs.some(s=>s.type==='buy');
+      const hasSell=sigs.some(s=>s.type==='sell');
+      const sigHtml=sigs.filter(s=>s.type!=='neutral').map(s=>`<span class="scan-sig ${s.type}">${s.label}</span>`).join('');
+
+      const html=`<div class="scan-result-row" onclick="loadByCode('${w.c}','${esc(w.n)}');switchTab('chart')">
+        <div>
+          <div class="scan-name">${w.n}</div>
+          <div class="scan-code">${w.c}</div>
+        </div>
+        <div class="scan-price">${last.close.toLocaleString('ja-JP')}</div>
+        <div class="scan-chg ${chg>=0?'up':'dn'}" style="color:${chg>=0?'var(--green)':'var(--red)'}">${chg>=0?'+':''}${chg.toFixed(1)}(${pct.toFixed(2)}%)</div>
+        <div class="scan-sigs">${sigHtml||'<span class="scan-sig none">—</span>'}</div>
+      </div>`;
+      resEl.insertAdjacentHTML('beforeend',html);
+
+      if(hasBuy)buyStocks.push(w.n);
+      if(hasSell)sellStocks.push(w.n);
+    }catch(e){
+      const loadingEl=document.getElementById(`scan-loading-${w.c}`);
+      if(loadingEl)loadingEl.remove();
+    }
+
+    // レート制限回避のため少し待つ
+    if(i<wl.length-1)await new Promise(r=>setTimeout(r,500));
+  }
+
+  btn.disabled=false;
+  statusEl.textContent=`スキャン完了（${wl.length}銘柄）`;
+
+  // ブラウザ通知
+  if(buyStocks.length)sendNotif('買いシグナル検出',buyStocks.join('、')+'に買いシグナルが出ています');
+  if(sellStocks.length)sendNotif('売りシグナル検出',sellStocks.join('、')+'に売りシグナルが出ています');
 }
 
 // ===== 初期化 =====
