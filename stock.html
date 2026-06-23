@@ -133,8 +133,8 @@ h1{font-size:.95rem;font-weight:700;}
 .sig-guide-body{padding:12px;}
 .sg-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:.77rem;line-height:1.6;}
 .sg-arrow{font-size:1.1rem;flex-shrink:0;}
-.sg-arrow.buy{color:#3fb950;} .sg-arrow.wbuy{color:#e6b422;}
-.sg-arrow.sell{color:#f85149;} .sg-arrow.wsell{color:#ffa657;}
+.sg-arrow.buy{color:#3fb950;} .sg-arrow.wbuy{color:#3fb950;}
+.sg-arrow.sell{color:#f85149;} .sg-arrow.wsell{color:#f85149;}
 .sg-terms{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
 .sg-term{font-size:.74rem;line-height:1.6;display:flex;gap:7px;align-items:baseline;}
 .sg-key{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;
@@ -331,22 +331,21 @@ h1{font-size:.95rem;font-weight:700;}
       <div class="chart-area sub" id="chart-macd"></div>
     </div>
 
-    <!-- 出来高チャート -->
-    <div class="chart-wrap" id="wrap-vol" style="display:none">
-      <div class="chart-header">
-        <div class="chart-title">出来高 — 銘柄1</div>
-      </div>
-      <div class="chart-area sub" id="chart-vol"></div>
+    <!-- インジケーター切替ボタン -->
+    <div id="indicator-btns" style="display:none;margin-bottom:8px;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:.63rem;color:var(--text2)">インジケーター</span>
+      <button class="btn btn-secondary" id="btn-rsi" onclick="toggleIndicator('rsi')" style="height:34px;font-size:.8rem">RSI</button>
+      <button class="btn btn-secondary" id="btn-macd" onclick="toggleIndicator('macd')" style="height:34px;font-size:.8rem">MACD</button>
     </div>
 
     <!-- シグナル解説 -->
     <details class="sig-guide" id="sig-guide" style="display:none">
       <summary>▶ チャート上のシグナルマーカーの見方 / 買い・売りシグナルの定義</summary>
       <div class="sig-guide-body">
-        <div class="sg-row"><span class="sg-arrow buy">▲</span><div><b>緑の▲（強い買いシグナル）</b>：複数の買いサインが同時に出たポイント。信頼度が高い。</div></div>
-        <div class="sg-row"><span class="sg-arrow wbuy">▲</span><div><b>黄の▲（買いサイン1つ）</b>：1指標のみ。参考程度に。</div></div>
-        <div class="sg-row"><span class="sg-arrow sell">▼</span><div><b>赤の▼（強い売りシグナル）</b>：複数の売りサインが重なったポイント。利確・損切りの目安。</div></div>
-        <div class="sg-row"><span class="sg-arrow wsell">▼</span><div><b>橙の▼（売りサイン1つ）</b>：1指標のみ。</div></div>
+        <div class="sg-row"><span class="sg-arrow buy">▲</span><div><b>緑の▲（強い買いシグナル）</b>：複数の買いサインが同時に出たポイント。信頼度が高い（矢印が大きめ）。</div></div>
+        <div class="sg-row"><span class="sg-arrow wbuy">▲</span><div><b>緑の▲（買いサイン1つ）</b>：1指標のみ。参考程度に（矢印が小さめ）。</div></div>
+        <div class="sg-row"><span class="sg-arrow sell">▼</span><div><b>赤の▼（強い売りシグナル）</b>：複数の売りサインが重なったポイント。利確・損切りの目安（矢印が大きめ）。</div></div>
+        <div class="sg-row"><span class="sg-arrow wsell">▼</span><div><b>赤の▼（売りサイン1つ）</b>：1指標のみ（矢印が小さめ）。</div></div>
         <hr style="border-color:var(--border);margin:8px 0">
         <div class="sg-terms">
           <div class="sg-term"><span class="sg-key">RSI28</span>RSI（相対力指数）が28など30以下 → <b>売られすぎ・反発の可能性</b>。数値が低いほど強い買いサイン。逆にRSI70以上は買われすぎ。</div>
@@ -778,8 +777,8 @@ function buildMarkers(rows,ma5,ma25,bb,rsi,macdD){
     }
     if(buys.length>=2)mkrs.push({time:r.time,position:'belowBar',color:'#3fb950',shape:'arrowUp',text:buys.join(' ')});
     else if(sells.length>=2)mkrs.push({time:r.time,position:'aboveBar',color:'#f85149',shape:'arrowDown',text:sells.join(' ')});
-    else if(buys.length===1)mkrs.push({time:r.time,position:'belowBar',color:'#e6b422',shape:'arrowUp',text:buys[0]});
-    else if(sells.length===1)mkrs.push({time:r.time,position:'aboveBar',color:'#ffa657',shape:'arrowDown',text:sells[0]});
+    else if(buys.length===1)mkrs.push({time:r.time,position:'belowBar',color:'#3fb950',shape:'arrowUp',text:buys[0]});
+    else if(sells.length===1)mkrs.push({time:r.time,position:'aboveBar',color:'#f85149',shape:'arrowDown',text:sells[0]});
   }
   return mkrs;
 }
@@ -830,6 +829,10 @@ function makeCandleChart(containerId,rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD){
   c.addLineSeries({color:'#e6b422',lineWidth:1.5,priceLineVisible:false}).setData(rows.map((r,i)=>ma5v[i]!==null?{time:r.time,value:ma5v[i]}:null).filter(Boolean));
   c.addLineSeries({color:'#58a6ff',lineWidth:1.5,priceLineVisible:false}).setData(rows.map((r,i)=>ma25v[i]!==null?{time:r.time,value:ma25v[i]}:null).filter(Boolean));
   c.addLineSeries({color:'#bc8cff',lineWidth:1.5,priceLineVisible:false}).setData(rows.map((r,i)=>ma75v[i]!==null?{time:r.time,value:ma75v[i]}:null).filter(Boolean));
+  // 出来高オーバーレイ（チャート下部20%）
+  const volS=c.addHistogramSeries({priceFormat:{type:'volume'},priceScaleId:'vol'});
+  c.priceScale('vol').applyOptions({scaleMargins:{top:.82,bottom:0},borderVisible:false});
+  volS.setData(rows.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?'rgba(63,185,80,.25)':'rgba(248,81,73,.25)'})).filter(r=>r.value>0));
   new ResizeObserver(()=>c.applyOptions({width:el.clientWidth})).observe(el);
   return c;
 }
@@ -891,43 +894,41 @@ async function loadCharts(){
   if(chartMain1)chartMain1.remove();
   chartMain1=makeCandleChart('chart-main1',rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD);
 
-  // RSI
-  document.getElementById('wrap-rsi').style.display='block';
+  // RSI（ボタンで表示切替、初期非表示）
   if(chartRsiObj)chartRsiObj.remove();
   const rsiEl=document.getElementById('chart-rsi');
-  chartRsiObj=LightweightCharts.createChart(rsiEl,{...chartTheme,height:rsiEl.clientHeight||120,rightPriceScale:{borderColor:'#30363d',scaleMargins:{top:.1,bottom:.1}}});
+  const rsiW=document.getElementById('tab-chart').clientWidth||600;
+  chartRsiObj=LightweightCharts.createChart(rsiEl,{...chartTheme,height:120,width:rsiW,rightPriceScale:{borderColor:'#30363d',scaleMargins:{top:.1,bottom:.1}}});
   chartRsiObj.timeScale().fitContent();
   chartRsiObj.addLineSeries({color:'#ffa657',lineWidth:2,priceLineVisible:false}).setData(rows.map((r,i)=>rsiV[i]!==null?{time:r.time,value:rsiV[i]}:null).filter(Boolean));
   chartRsiObj.addLineSeries({color:'rgba(248,81,73,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:70})));
   chartRsiObj.addLineSeries({color:'rgba(63,185,80,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:30})));
   new ResizeObserver(()=>chartRsiObj.applyOptions({width:rsiEl.clientWidth})).observe(rsiEl);
 
-  // MACD
-  document.getElementById('wrap-macd').style.display='block';
+  // MACD（ボタンで表示切替、初期非表示）
+  document.getElementById('wrap-rsi').style.display='none';
+  document.getElementById('wrap-macd').style.display='none';
+  document.getElementById('btn-rsi').classList.remove('active');
+  document.getElementById('btn-macd').classList.remove('active');
   if(chartMacdObj)chartMacdObj.remove();
   const macdEl=document.getElementById('chart-macd');
-  chartMacdObj=LightweightCharts.createChart(macdEl,{...chartTheme,height:macdEl.clientHeight||120});
+  const macdW=document.getElementById('tab-chart').clientWidth||600;
+  chartMacdObj=LightweightCharts.createChart(macdEl,{...chartTheme,height:120,width:macdW});
   chartMacdObj.timeScale().fitContent();
   chartMacdObj.addHistogramSeries({priceLineVisible:false}).setData(rows.map((r,i)=>macdD.hist[i]!==null?{time:r.time,value:macdD.hist[i],color:macdD.hist[i]>=0?'#3fb950':'#f85149'}:null).filter(Boolean));
   chartMacdObj.addLineSeries({color:'#58a6ff',lineWidth:2,priceLineVisible:false}).setData(rows.map((r,i)=>macdD.macd[i]!==null?{time:r.time,value:macdD.macd[i]}:null).filter(Boolean));
   chartMacdObj.addLineSeries({color:'#f85149',lineWidth:1.5,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>macdD.signal[i]!==null?{time:r.time,value:macdD.signal[i]}:null).filter(Boolean));
   new ResizeObserver(()=>chartMacdObj.applyOptions({width:macdEl.clientWidth})).observe(macdEl);
 
-  // 出来高チャート
-  document.getElementById('wrap-vol').style.display='block';
-  if(window.chartVolObj)window.chartVolObj.remove();
-  const volEl=document.getElementById('chart-vol');
-  window.chartVolObj=LightweightCharts.createChart(volEl,{...chartTheme,height:volEl.clientHeight||100});
-  window.chartVolObj.timeScale().fitContent();
-  const volSeries=window.chartVolObj.addHistogramSeries({color:'rgba(88,166,255,0.5)',priceLineVisible:false,priceFormat:{type:'volume'}});
-  volSeries.setData(rows.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?'rgba(63,185,80,0.5)':'rgba(248,81,73,0.5)'})).filter(r=>r.value>0));
-  new ResizeObserver(()=>window.chartVolObj.applyOptions({width:volEl.clientWidth})).observe(volEl);
+  // インジケーターボタン表示
+  const indBtns=document.getElementById('indicator-btns');
+  indBtns.style.display='flex';
 
-  // 時間軸同期（4チャート）
-  [chartMain1,chartRsiObj,chartMacdObj,window.chartVolObj].forEach((src,si)=>{
+  // 時間軸同期（3チャート）
+  [chartMain1,chartRsiObj,chartMacdObj].forEach((src,si)=>{
     src.timeScale().subscribeVisibleLogicalRangeChange(range=>{
       if(!range)return;
-      [chartMain1,chartRsiObj,chartMacdObj,window.chartVolObj].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
+      [chartMain1,chartRsiObj,chartMacdObj].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
     });
   });
 
@@ -1082,6 +1083,21 @@ async function startScan(){
   // ブラウザ通知
   if(buyStocks.length)sendNotif('買いシグナル検出',buyStocks.join('、')+'に買いシグナルが出ています');
   if(sellStocks.length)sendNotif('売りシグナル検出',sellStocks.join('、')+'に売りシグナルが出ています');
+}
+
+// ===== インジケーター表示切替 =====
+function toggleIndicator(name){
+  const wrap=document.getElementById('wrap-'+name);
+  const btn=document.getElementById('btn-'+name);
+  const showing=wrap.style.display==='block';
+  wrap.style.display=showing?'none':'block';
+  btn.classList.toggle('active',!showing);
+  if(!showing){
+    // 表示時にチャートサイズを正しく調整
+    const el=document.getElementById('chart-'+name);
+    if(name==='rsi'&&chartRsiObj)chartRsiObj.applyOptions({width:el.clientWidth||wrap.clientWidth||600});
+    if(name==='macd'&&chartMacdObj)chartMacdObj.applyOptions({width:el.clientWidth||wrap.clientWidth||600});
+  }
 }
 
 // ===== 初期化 =====
