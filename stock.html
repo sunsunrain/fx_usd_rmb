@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>株価チャート 買い時分析</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
@@ -12,70 +12,128 @@
   --border:#30363d;--text:#e6edf3;--text2:#8b949e;
   --accent:#f0a500;--accent2:#58a6ff;--green:#3fb950;--red:#f85149;
   --purple:#bc8cff;--orange:#ffa657;
+  --tap:44px;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding:20px 16px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding:12px;}
 a{color:var(--accent2);}
-header{max-width:1100px;margin:0 auto 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:34px;height:34px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-h1{font-size:1.1rem;font-weight:700;}
-.sub{font-size:.68rem;color:var(--text2);margin-top:2px;}
+
+/* ヘッダー */
+header{max-width:1100px;margin:0 auto 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo-icon{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+h1{font-size:1rem;font-weight:700;line-height:1.2;}
+.sub{font-size:.62rem;color:var(--text2);}
 .main{max-width:1100px;margin:0 auto;}
 
-/* コントロール */
-.ctrl{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;}
-.ctrl-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
-.field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:.68rem;color:var(--text2);letter-spacing:.06em;}
-.field input{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-size:.9rem;font-family:'JetBrains Mono',monospace;width:160px;}
-.field input:focus{outline:none;border-color:var(--accent);}
-.period-btns{display:flex;gap:4px;}
-.period-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:6px;font-size:.8rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
-.period-btn.active,.period-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);}
-.btn-load{background:var(--accent);color:#000;border:none;padding:8px 22px;border-radius:6px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+/* コントロールパネル */
+.ctrl{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
+
+/* 検索 */
+.search-wrap{position:relative;margin-bottom:10px;}
+.search-row{display:flex;gap:6px;}
+.search-input-wrap{position:relative;flex:1;}
+#search-input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  padding:0 40px 0 12px;height:var(--tap);border-radius:8px;font-size:.95rem;font-family:'Noto Sans JP',sans-serif;}
+#search-input:focus{outline:none;border-color:var(--accent);}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text2);font-size:1.1rem;cursor:pointer;padding:4px;display:none;}
+.btn-load{background:var(--accent);color:#000;border:none;height:var(--tap);padding:0 18px;
+  border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;flex-shrink:0;}
 .btn-load:hover{opacity:.85;}
 .btn-load:disabled{opacity:.4;cursor:not-allowed;}
 
+/* オートコンプリートドロップダウン */
+#autocomplete{position:absolute;top:calc(var(--tap) + 4px);left:0;right:0;
+  background:var(--bg2);border:1px solid var(--accent);border-radius:8px;
+  z-index:100;max-height:280px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.ac-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item.active{background:var(--bg3);}
+.ac-code{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);min-width:50px;}
+.ac-name{font-size:.88rem;}
+.ac-sector{font-size:.68rem;color:var(--text2);margin-left:auto;}
+
+/* お気に入り */
+.fav-section{margin-bottom:8px;}
+.fav-label{font-size:.65rem;color:var(--text2);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.fav-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.fav-chip{display:flex;align-items:center;gap:0;background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;font-size:.78rem;}
+.fav-chip-btn{padding:5px 10px;cursor:pointer;background:none;border:none;color:var(--text);
+  font-family:'Noto Sans JP',sans-serif;font-size:.78rem;}
+.fav-chip-btn:hover{color:var(--accent);}
+.fav-chip-del{padding:4px 7px;cursor:pointer;background:none;border:none;color:var(--text2);font-size:.75rem;}
+.fav-chip-del:hover{color:var(--red);}
+.fav-add-btn{background:none;border:1px dashed var(--border);border-radius:20px;color:var(--text2);
+  padding:5px 12px;font-size:.75rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.fav-add-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* 期間ボタン */
+.period-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.period-label{font-size:.65rem;color:var(--text2);}
+.period-btns{display:flex;gap:4px;}
+.period-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text2);
+  padding:0 14px;height:36px;border-radius:6px;font-size:.82rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.period-btn.active,.period-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);}
+
 /* ステータス */
-#status-bar{font-size:.75rem;color:var(--text2);padding:6px 0;min-height:24px;}
+#status-bar{font-size:.75rem;color:var(--text2);padding:5px 0;min-height:22px;}
 #status-bar.err{color:var(--red);}
 #status-bar.ok{color:var(--green);}
 
 /* シグナルバッジ */
-.signals{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;min-height:32px;}
-.sig{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;border:1px solid;}
+.signals{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:28px;}
+.sig{padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;border:1px solid;}
 .sig.buy{background:rgba(63,185,80,.15);border-color:var(--green);color:var(--green);}
 .sig.sell{background:rgba(248,81,73,.15);border-color:var(--red);color:var(--red);}
 .sig.neutral{background:rgba(139,148,158,.12);border-color:var(--border);color:var(--text2);}
 
 /* 価格サマリー */
-.price-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-.pc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 16px;flex:1;min-width:120px;}
-.pc-lbl{font-size:.62rem;color:var(--text2);margin-bottom:4px;}
-.pc-val{font-size:1.2rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.price-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
+.pc-lbl{font-size:.58rem;color:var(--text2);margin-bottom:3px;}
+.pc-val{font-size:1rem;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1.2;}
 .pc-val.up{color:var(--green);}
 .pc-val.dn{color:var(--red);}
 
 /* チャートコンテナ */
-.chart-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
-.chart-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);}
-.chart-title{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
-.legend{display:flex;gap:12px;flex-wrap:wrap;}
-.leg-item{display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--text2);}
-.leg-dot{width:10px;height:3px;border-radius:2px;}
-#chart-main{height:380px;}
-#chart-rsi{height:150px;}
-#chart-macd{height:150px;}
+.chart-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.chart-header{padding:8px 12px;border-bottom:1px solid var(--border);}
+.chart-title{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:4px;}
+.legend{display:flex;gap:8px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--text2);}
+.leg-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0;}
+#chart-main{height:320px;}
+#chart-rsi{height:130px;}
+#chart-macd{height:130px;}
 
-/* テクニカル値表示 */
-.tech-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.tc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;flex:1;min-width:130px;}
-.tc-lbl{font-size:.62rem;color:var(--text2);margin-bottom:3px;}
-.tc-val{font-size:1rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
+/* テクニカル値 */
+.tech-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.tc{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 10px;}
+.tc-lbl{font-size:.58rem;color:var(--text2);margin-bottom:2px;}
+.tc-val{font-size:.9rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
 
 /* フッター */
-.disclaimer{font-size:.62rem;color:var(--text2);margin-top:20px;line-height:1.7;padding:12px 16px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
+.disclaimer{font-size:.6rem;color:var(--text2);margin-top:16px;line-height:1.7;
+  padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
+
+/* ===== PC用レイアウト ===== */
+@media(min-width:600px){
+  body{padding:20px 16px;}
+  h1{font-size:1.1rem;}
+  .ctrl{padding:14px 18px;}
+  .search-row{max-width:560px;}
+  #search-input{font-family:'JetBrains Mono',monospace;}
+  .price-row{grid-template-columns:repeat(6,1fr);}
+  .tech-row{grid-template-columns:repeat(6,1fr);}
+  #chart-main{height:380px;}
+  #chart-rsi{height:150px;}
+  #chart-macd{height:150px;}
+  .pc-val{font-size:1.2rem;}
+  .legend{gap:12px;}
+  .leg-item{font-size:.68rem;}
+}
 </style>
 </head>
 <body>
@@ -87,30 +145,43 @@ h1{font-size:1.1rem;font-weight:700;}
       <div class="sub">東証上場株 テクニカル分析 / データ遅延約20分</div>
     </div>
   </div>
-  <a href="index.html" style="font-size:.8rem;">← 為替ツールへ</a>
+  <a href="index.html" style="font-size:.78rem;white-space:nowrap;">← 為替</a>
 </header>
 
 <div class="main">
   <div class="ctrl">
-    <div class="ctrl-row">
-      <div class="field">
-        <label>証券コード（例: 7203）</label>
-        <input type="text" id="ticker" placeholder="7203" maxlength="6" value="7203">
-      </div>
-      <div class="field">
-        <label>期間</label>
-        <div class="period-btns">
-          <button class="period-btn" data-p="1mo">1ヶ月</button>
-          <button class="period-btn active" data-p="3mo">3ヶ月</button>
-          <button class="period-btn" data-p="6mo">6ヶ月</button>
-          <button class="period-btn" data-p="1y">1年</button>
+
+    <!-- 銘柄検索 -->
+    <div class="search-wrap">
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <input type="text" id="search-input" placeholder="銘柄名 or コード（例: トヨタ / 7203）" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+          <div id="autocomplete"></div>
         </div>
+        <button class="btn-load" id="btn-load" onclick="loadStock()">表示</button>
       </div>
-      <button class="btn-load" id="btn-load" onclick="loadStock()">読み込む</button>
+    </div>
+
+    <!-- お気に入り -->
+    <div class="fav-section" id="fav-section" style="display:none">
+      <div class="fav-label">⭐ お気に入り</div>
+      <div class="fav-chips" id="fav-chips"></div>
+    </div>
+
+    <!-- 期間 -->
+    <div class="period-row">
+      <span class="period-label">期間</span>
+      <div class="period-btns">
+        <button class="period-btn" data-p="1mo">1ヶ月</button>
+        <button class="period-btn active" data-p="3mo">3ヶ月</button>
+        <button class="period-btn" data-p="6mo">6ヶ月</button>
+        <button class="period-btn" data-p="1y">1年</button>
+      </div>
     </div>
   </div>
 
-  <div id="status-bar">証券コードを入力して「読み込む」を押してください。</div>
+  <div id="status-bar">銘柄名またはコードを入力してください。</div>
 
   <div class="signals" id="signals"></div>
 
@@ -131,8 +202,8 @@ h1{font-size:1.1rem;font-weight:700;}
         <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MA25</div>
         <div class="leg-item"><div class="leg-dot" style="background:#bc8cff"></div>MA75</div>
         <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.6)"></div>BB±2σ</div>
-        <div class="leg-item" style="color:var(--green)">▲ 買いシグナル（緑=複数重複）</div>
-        <div class="leg-item" style="color:var(--red)">▼ 売りシグナル（赤=複数重複）</div>
+        <div class="leg-item" style="color:var(--green)">▲買い</div>
+        <div class="leg-item" style="color:var(--red)">▼売り</div>
       </div>
     </div>
     <div id="chart-main"></div>
@@ -143,8 +214,8 @@ h1{font-size:1.1rem;font-weight:700;}
     <div class="tc"><div class="tc-lbl">MACD</div><div class="tc-val" id="tc-macd">—</div></div>
     <div class="tc"><div class="tc-lbl">シグナル</div><div class="tc-val" id="tc-sig">—</div></div>
     <div class="tc"><div class="tc-lbl">ヒストグラム</div><div class="tc-val" id="tc-hist">—</div></div>
-    <div class="tc"><div class="tc-lbl">BB上限(+2σ)</div><div class="tc-val" id="tc-bbu">—</div></div>
-    <div class="tc"><div class="tc-lbl">BB下限(-2σ)</div><div class="tc-val" id="tc-bbl">—</div></div>
+    <div class="tc"><div class="tc-lbl">BB上限+2σ</div><div class="tc-val" id="tc-bbu">—</div></div>
+    <div class="tc"><div class="tc-lbl">BB下限-2σ</div><div class="tc-val" id="tc-bbl">—</div></div>
   </div>
 
   <div class="chart-wrap" id="wrap-rsi" style="display:none">
@@ -152,8 +223,8 @@ h1{font-size:1.1rem;font-weight:700;}
       <div class="chart-title">RSI (14)</div>
       <div class="legend">
         <div class="leg-item"><div class="leg-dot" style="background:#ffa657"></div>RSI</div>
-        <div class="leg-item" style="color:var(--red)">── 70（過買い）</div>
-        <div class="leg-item" style="color:var(--green)">── 30（過売り）</div>
+        <div class="leg-item" style="color:var(--red)">── 70過買い</div>
+        <div class="leg-item" style="color:var(--green)">── 30過売り</div>
       </div>
     </div>
     <div id="chart-rsi"></div>
@@ -165,37 +236,173 @@ h1{font-size:1.1rem;font-weight:700;}
       <div class="legend">
         <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MACD</div>
         <div class="leg-item"><div class="leg-dot" style="background:#f85149"></div>シグナル</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#3fb950"></div>ヒストグラム</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#3fb950"></div>ヒスト</div>
       </div>
     </div>
     <div id="chart-macd"></div>
   </div>
 
   <div class="disclaimer">
-    ⚠️ 本ツールは情報提供目的のみです。データはstooq.comより取得（約20分遅延）。投資判断はご自身の責任で行ってください。
+    ⚠️ 本ツールは情報提供目的のみです。データはYahoo Finance APIより取得（約20分遅延）。投資判断はご自身の責任で行ってください。
     買いシグナルは過去データに基づくテクニカル分析であり、将来の値動きを保証するものではありません。
   </div>
 </div>
 
 <script>
-let activePeriod = '3mo';
-let chartMain = null, candleSeries = null;
-let chartRsi = null, rsiSeries = null;
-let chartMacd = null, macdLine = null, signalLine = null, histSeries = null;
+// ===== 銘柄データベース（東証主要銘柄）=====
+const STOCKS = [
+  // 自動車
+  {c:'7203',n:'トヨタ自動車',s:'自動車'},{c:'7267',n:'本田技研工業',s:'自動車'},
+  {c:'7269',n:'スズキ',s:'自動車'},{c:'7270',n:'SUBARU',s:'自動車'},
+  {c:'7201',n:'日産自動車',s:'自動車'},{c:'7261',n:'マツダ',s:'自動車'},
+  {c:'7272',n:'ヤマハ発動機',s:'自動車'},{c:'7242',n:'カヤバ',s:'自動車'},
+  // 電機・半導体
+  {c:'6758',n:'ソニーグループ',s:'電機'},{c:'6861',n:'キーエンス',s:'電機'},
+  {c:'6501',n:'日立製作所',s:'電機'},{c:'6503',n:'三菱電機',s:'電機'},
+  {c:'6594',n:'日本電産（ニデック）',s:'電機'},{c:'6702',n:'富士通',s:'電機'},
+  {c:'6752',n:'パナソニック',s:'電機'},{c:'6753',n:'シャープ',s:'電機'},
+  {c:'6971',n:'京セラ',s:'電機'},{c:'6981',n:'村田製作所',s:'電機'},
+  {c:'8035',n:'東京エレクトロン',s:'半導体'},{c:'4063',n:'信越化学工業',s:'半導体'},
+  {c:'6146',n:'ディスコ',s:'半導体'},{c:'6857',n:'アドバンテスト',s:'半導体'},
+  {c:'4543',n:'テルモ',s:'医療'},{c:'4519',n:'中外製薬',s:'医薬品'},
+  // 通信・IT
+  {c:'9984',n:'ソフトバンクグループ',s:'通信'},{c:'9433',n:'KDDI',s:'通信'},
+  {c:'9432',n:'日本電信電話（NTT）',s:'通信'},{c:'9434',n:'ソフトバンク',s:'通信'},
+  {c:'4689',n:'LINEヤフー',s:'IT'},{c:'3659',n:'ネクソン',s:'IT'},
+  {c:'4755',n:'楽天グループ',s:'IT'},{c:'3632',n:'グリー',s:'IT'},
+  {c:'4307',n:'野村総合研究所',s:'IT'},{c:'9613',n:'NTTデータグループ',s:'IT'},
+  // 金融・銀行
+  {c:'7182',n:'ゆうちょ銀行',s:'銀行'},{c:'8411',n:'みずほフィナンシャルグループ',s:'銀行'},
+  {c:'8316',n:'三井住友フィナンシャルグループ',s:'銀行'},{c:'8306',n:'三菱UFJフィナンシャル・グループ',s:'銀行'},
+  {c:'8354',n:'ふくおかフィナンシャルグループ',s:'銀行'},{c:'8253',n:'クレディセゾン',s:'金融'},
+  {c:'8591',n:'オリックス',s:'金融'},{c:'8001',n:'伊藤忠商事',s:'商社'},
+  {c:'8002',n:'丸紅',s:'商社'},{c:'8031',n:'三井物産',s:'商社'},
+  {c:'8053',n:'住友商事',s:'商社'},{c:'8058',n:'三菱商事',s:'商社'},
+  // 不動産・建設
+  {c:'1925',n:'大和ハウス工業',s:'建設'},{c:'1928',n:'積水ハウス',s:'建設'},
+  {c:'1801',n:'大成建設',s:'建設'},{c:'1802',n:'大林組',s:'建設'},
+  {c:'3003',n:'ヒューリック',s:'不動産'},{c:'8801',n:'三井不動産',s:'不動産'},
+  {c:'8802',n:'三菱地所',s:'不動産'},
+  // 流通・小売
+  {c:'3382',n:'セブン&アイ・ホールディングス',s:'小売'},{c:'8267',n:'イオン',s:'小売'},
+  {c:'7974',n:'任天堂',s:'ゲーム'},{c:'9697',n:'カプコン',s:'ゲーム'},
+  {c:'7832',n:'バンダイナムコHD',s:'ゲーム'},{c:'3765',n:'ガンホー',s:'ゲーム'},
+  // 食品・飲料
+  {c:'2914',n:'日本たばこ産業（JT）',s:'食品'},{c:'2503',n:'キリンHD',s:'食品'},
+  {c:'2502',n:'アサヒグループHD',s:'食品'},{c:'2282',n:'日本ハム',s:'食品'},
+  {c:'2802',n:'味の素',s:'食品'},{c:'2269',n:'明治HD',s:'食品'},
+  // 医薬品
+  {c:'4568',n:'第一三共',s:'医薬品'},{c:'4523',n:'エーザイ',s:'医薬品'},
+  {c:'4506',n:'住友ファーマ',s:'医薬品'},{c:'4502',n:'武田薬品工業',s:'医薬品'},
+  // エネルギー・資源
+  {c:'5020',n:'ENEOSホールディングス',s:'エネルギー'},{c:'5019',n:'出光興産',s:'エネルギー'},
+  {c:'5713',n:'住友金属鉱山',s:'資源'},{c:'5401',n:'日本製鉄',s:'鉄鋼'},
+  {c:'5411',n:'JFEホールディングス',s:'鉄鋼'},
+  // 運輸
+  {c:'9020',n:'東日本旅客鉄道（JR東日本）',s:'運輸'},{c:'9022',n:'東海旅客鉄道（JR東海）',s:'運輸'},
+  {c:'9021',n:'西日本旅客鉄道（JR西日本）',s:'運輸'},{c:'9301',n:'三菱倉庫',s:'運輸'},
+  {c:'9064',n:'ヤマトホールディングス',s:'運輸'},{c:'9147',n:'NIPPON EXPRESSホールディングス',s:'運輸'},
+  // その他
+  {c:'4452',n:'花王',s:'日用品'},{c:'4911',n:'資生堂',s:'化粧品'},
+  {c:'6367',n:'ダイキン工業',s:'機械'},{c:'6326',n:'クボタ',s:'機械'},
+  {c:'7751',n:'キヤノン',s:'精密機器'},{c:'7733',n:'オリンパス',s:'精密機器'},
+];
 
-// 期間ボタン
+// ===== お気に入り（localStorage）=====
+function getFavs() { try { return JSON.parse(localStorage.getItem('stock_favs')||'[]'); } catch{ return []; } }
+function saveFavs(f) { localStorage.setItem('stock_favs', JSON.stringify(f)); }
+function addFav(code, name) {
+  const favs = getFavs().filter(f => f.c !== code);
+  favs.unshift({ c: code, n: name });
+  saveFavs(favs.slice(0, 12));
+  renderFavs();
+}
+function removeFav(code) { saveFavs(getFavs().filter(f => f.c !== code)); renderFavs(); }
+function renderFavs() {
+  const favs = getFavs();
+  const section = document.getElementById('fav-section');
+  const chips = document.getElementById('fav-chips');
+  if (favs.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  chips.innerHTML = favs.map(f => `
+    <div class="fav-chip">
+      <button class="fav-chip-btn" onclick="loadByCode('${f.c}','${f.n.replace(/'/g,"\\'")}')">
+        <span style="color:var(--accent);font-family:monospace">${f.c}</span> ${f.n}
+      </button>
+      <button class="fav-chip-del" onclick="removeFav('${f.c}')" title="削除">✕</button>
+    </div>`).join('');
+}
+
+// ===== オートコンプリート =====
+let acIndex = -1;
+const searchEl = document.getElementById('search-input');
+const acEl = document.getElementById('autocomplete');
+const clearBtn = document.getElementById('search-clear');
+
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.trim();
+  clearBtn.style.display = q ? 'block' : 'none';
+  if (!q) { hideAC(); return; }
+  const hits = STOCKS.filter(s =>
+    s.c.startsWith(q) || s.n.includes(q)
+  ).slice(0, 8);
+  if (hits.length === 0) { hideAC(); return; }
+  acEl.innerHTML = hits.map((s,i) =>
+    `<div class="ac-item" data-i="${i}" data-code="${s.c}" data-name="${s.n}" onclick="selectStock('${s.c}','${s.n.replace(/'/g,"\\'")}')">
+      <span class="ac-code">${s.c}</span><span class="ac-name">${s.n}</span><span class="ac-sector">${s.s}</span>
+    </div>`).join('');
+  acEl.style.display = 'block';
+  acIndex = -1;
+});
+
+searchEl.addEventListener('keydown', e => {
+  const items = acEl.querySelectorAll('.ac-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); acIndex = Math.min(acIndex+1, items.length-1); highlightAC(items); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); acIndex = Math.max(acIndex-1, -1); highlightAC(items); }
+  else if (e.key === 'Enter') {
+    if (acIndex >= 0 && items[acIndex]) {
+      const el = items[acIndex];
+      selectStock(el.dataset.code, el.dataset.name);
+    } else { loadStock(); }
+  } else if (e.key === 'Escape') { hideAC(); }
+});
+
+document.addEventListener('click', e => { if (!e.target.closest('.search-input-wrap')) hideAC(); });
+
+function highlightAC(items) {
+  items.forEach((el,i) => el.classList.toggle('active', i === acIndex));
+}
+function hideAC() { acEl.style.display = 'none'; acIndex = -1; }
+function clearSearch() {
+  searchEl.value = ''; clearBtn.style.display = 'none'; hideAC(); searchEl.focus();
+}
+function selectStock(code, name) {
+  searchEl.value = `${code}　${name}`;
+  clearBtn.style.display = 'block';
+  hideAC();
+  currentCode = code; currentName = name;
+  loadStock();
+}
+function loadByCode(code, name) {
+  selectStock(code, name);
+}
+
+// ===== 期間ボタン =====
+let activePeriod = '3mo';
 document.querySelectorAll('.period-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activePeriod = btn.dataset.p;
+    if (currentCode) loadStock();
   });
 });
 
-// Enterキー対応
-document.getElementById('ticker').addEventListener('keydown', e => {
-  if (e.key === 'Enter') loadStock();
-});
+// ===== チャートオブジェクト =====
+let chartMain = null, candleSeries = null;
+let chartRsi = null, rsiSeries = null;
+let chartMacd = null, macdLine = null, signalLine = null, histSeries = null;
+let currentCode = '', currentName = '';
 
 function setStatus(msg, type='') {
   const el = document.getElementById('status-bar');
@@ -203,33 +410,42 @@ function setStatus(msg, type='') {
   el.className = type;
 }
 
+// ===== データ取得 =====
 async function loadStock() {
-  const tickerRaw = document.getElementById('ticker').value.trim();
-  if (!tickerRaw) { setStatus('証券コードを入力してください。', 'err'); return; }
+  // 入力値からコードを抽出
+  const raw = searchEl.value.trim();
+  if (!raw) { setStatus('銘柄名またはコードを入力してください。', 'err'); return; }
+
+  // コードが直接入力された場合
+  const codeMatch = raw.match(/^(\d{4})/);
+  if (codeMatch && !currentCode) {
+    currentCode = codeMatch[1];
+    const found = STOCKS.find(s => s.c === currentCode);
+    currentName = found ? found.n : currentCode;
+  }
+  if (!currentCode && codeMatch) currentCode = codeMatch[1];
+  if (!currentCode) {
+    // 名前で検索
+    const found = STOCKS.find(s => s.n.includes(raw));
+    if (found) { currentCode = found.c; currentName = found.n; }
+    else { setStatus('銘柄が見つかりません。コードを直接入力してください。', 'err'); return; }
+  }
 
   const btn = document.getElementById('btn-load');
   btn.disabled = true;
-  setStatus('データ取得中...', '');
+  setStatus(`${currentName}（${currentCode}）のデータ取得中...`, '');
+  hideAC();
 
-  // Yahoo Finance symbol: 4桁コード → 7203.T
-  const code = tickerRaw.replace(/\.(T|jp)$/i, '');
-  const sym = code + '.T';
+  const sym = currentCode + '.T';
+  const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=${activePeriod}&includePrePost=false`;
 
-  // 期間→秒
-  const rangeMap = { '1mo': '1mo', '3mo': '3mo', '6mo': '6mo', '1y': '1y' };
-  const range = rangeMap[activePeriod] || '3mo';
-
-  const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=${range}&includePrePost=false`;
-
-  // プロキシを順番に試す
   const proxies = [
-    u => u,  // 直接アクセス
+    u => u,
     u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
     u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   ];
 
-  let resp = null;
-  let lastErr = '';
+  let resp = null, lastErr = '';
   for (const proxy of proxies) {
     try {
       const r = await fetch(proxy(yfUrl), { signal: AbortSignal.timeout(8000) });
@@ -237,21 +453,22 @@ async function loadStock() {
       lastErr = `HTTP ${r.status}`;
     } catch(e) { lastErr = e.message; }
   }
-  if (!resp) throw new Error(`取得失敗: ${lastErr}`);
+
+  btn.disabled = false;
+  if (!resp) { setStatus(`取得失敗: ${lastErr}`, 'err'); return; }
 
   try {
     const json = await resp.json();
     const result = json?.chart?.result?.[0];
-    if (!result) throw new Error('データが取得できませんでした。証券コードを確認してください。');
+    if (!result) { setStatus('データが取得できませんでした。コードを確認してください。', 'err'); return; }
     const rows = parseYahooFinance(result);
-    if (rows.length < 5) throw new Error('データが少なすぎます。証券コードを確認してください。');
+    if (rows.length < 5) { setStatus('データが少なすぎます。', 'err'); return; }
 
-    renderAll(rows, tickerRaw);
-    setStatus(`${tickerRaw} — ${rows.length}営業日分のデータを取得しました。（データ遅延: 約20分）`, 'ok');
+    renderAll(rows, currentCode, currentName);
+    setStatus(`${currentName}（${currentCode}） — ${rows.length}営業日 取得完了（約20分遅延）`, 'ok');
+    addFav(currentCode, currentName);
   } catch(e) {
-    setStatus(`取得エラー: ${e.message}`, 'err');
-  } finally {
-    btn.disabled = false;
+    setStatus(`解析エラー: ${e.message}`, 'err');
   }
 }
 
@@ -266,353 +483,240 @@ function parseYahooFinance(result) {
     const date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     rows.push({ date, time: date, open: o, high: h, low: l, close: c, volume: v || 0 });
   }
-  return rows.sort((a, b) => a.date < b.date ? -1 : 1);
+  return rows.sort((a,b) => a.date < b.date ? -1 : 1);
 }
 
-// ---- 指標計算 ----
+// ===== 指標計算 =====
 function calcMA(closes, period) {
   return closes.map((_, i) => {
     if (i < period - 1) return null;
-    const sum = closes.slice(i - period + 1, i + 1).reduce((a,b) => a+b, 0);
-    return sum / period;
+    return closes.slice(i-period+1, i+1).reduce((a,b)=>a+b,0) / period;
   });
 }
-
 function calcEMA(closes, period) {
-  const k = 2 / (period + 1);
-  const ema = [];
-  let prev = null;
+  const k = 2/(period+1); const ema = []; let prev = null;
   for (let i = 0; i < closes.length; i++) {
     if (prev === null) {
-      if (i < period - 1) { ema.push(null); continue; }
-      prev = closes.slice(0, period).reduce((a,b)=>a+b,0) / period;
+      if (i < period-1) { ema.push(null); continue; }
+      prev = closes.slice(0,period).reduce((a,b)=>a+b,0)/period;
       ema.push(prev); continue;
     }
-    prev = closes[i] * k + prev * (1 - k);
-    ema.push(prev);
+    prev = closes[i]*k + prev*(1-k); ema.push(prev);
   }
   return ema;
 }
-
 function calcBB(closes, period=20, mult=2) {
-  return closes.map((_, i) => {
-    if (i < period - 1) return null;
-    const slice = closes.slice(i - period + 1, i + 1);
-    const mean = slice.reduce((a,b)=>a+b,0) / period;
-    const std = Math.sqrt(slice.reduce((a,b)=>a+(b-mean)**2,0) / period);
-    return { upper: mean + mult*std, mid: mean, lower: mean - mult*std };
+  return closes.map((_,i) => {
+    if (i < period-1) return null;
+    const sl = closes.slice(i-period+1, i+1);
+    const mean = sl.reduce((a,b)=>a+b,0)/period;
+    const std = Math.sqrt(sl.reduce((a,b)=>a+(b-mean)**2,0)/period);
+    return { upper: mean+mult*std, mid: mean, lower: mean-mult*std };
   });
 }
-
 function calcRSI(closes, period=14) {
-  const rsi = [];
-  let gains = 0, losses = 0;
-  for (let i = 0; i < closes.length; i++) {
-    if (i === 0) { rsi.push(null); continue; }
-    const diff = closes[i] - closes[i-1];
-    if (i <= period) {
-      if (diff > 0) gains += diff; else losses -= diff;
-      if (i < period) { rsi.push(null); continue; }
-      const avgG = gains / period, avgL = losses / period;
-      rsi.push(avgL === 0 ? 100 : 100 - 100/(1 + avgG/avgL));
-    } else {
-      const g = diff > 0 ? diff : 0, l = diff < 0 ? -diff : 0;
-      const prevRSI = rsi[rsi.length-1];
-      const rs = prevRSI >= 100 ? Infinity : prevRSI <= 0 ? 0 : (100/prevRSI - 1);
-      const avgG = (rs * (period-1) + g) / period;
-      const avgL = ((period-1) + l) / period;
-      // Wilder smoothing
-      const prevAvgG = rs * (losses / period);
-      rsi.push(null); // simplified — recompute below
-    }
+  const rsi = new Array(closes.length).fill(null);
+  let avgG=0, avgL=0;
+  for (let i=1; i<=period; i++) {
+    const d = closes[i]-closes[i-1];
+    if (d>0) avgG+=d; else avgL-=d;
   }
-  // Correct Wilder RSI
-  const rsi2 = new Array(closes.length).fill(null);
-  let avgG = 0, avgL = 0;
-  for (let i = 1; i <= period; i++) {
-    const diff = closes[i] - closes[i-1];
-    if (diff > 0) avgG += diff; else avgL -= diff;
+  avgG/=period; avgL/=period;
+  rsi[period] = avgL===0 ? 100 : 100-100/(1+avgG/avgL);
+  for (let i=period+1; i<closes.length; i++) {
+    const d=closes[i]-closes[i-1], g=d>0?d:0, l=d<0?-d:0;
+    avgG=(avgG*(period-1)+g)/period; avgL=(avgL*(period-1)+l)/period;
+    rsi[i] = avgL===0 ? 100 : 100-100/(1+avgG/avgL);
   }
-  avgG /= period; avgL /= period;
-  rsi2[period] = avgL === 0 ? 100 : 100 - 100/(1 + avgG/avgL);
-  for (let i = period+1; i < closes.length; i++) {
-    const diff = closes[i] - closes[i-1];
-    const g = diff > 0 ? diff : 0, l = diff < 0 ? -diff : 0;
-    avgG = (avgG*(period-1) + g) / period;
-    avgL = (avgL*(period-1) + l) / period;
-    rsi2[i] = avgL === 0 ? 100 : 100 - 100/(1 + avgG/avgL);
-  }
-  return rsi2;
+  return rsi;
 }
-
 function calcMACD(closes, fast=12, slow=26, signal=9) {
-  const emaF = calcEMA(closes, fast);
-  const emaS = calcEMA(closes, slow);
-  const macd = closes.map((_, i) => emaF[i] !== null && emaS[i] !== null ? emaF[i] - emaS[i] : null);
-  // Signal: EMA of MACD
-  const macdVals = macd.filter(v => v !== null);
-  const macdFull = [];
-  let ptr = 0;
-  macd.forEach(v => { if (v === null) macdFull.push(null); else { macdFull.push(macdVals[ptr]); ptr++; } });
-
-  const sigLine = [];
-  let sigPrev = null;
-  const k = 2 / (signal + 1);
-  let cnt = 0;
-  for (let i = 0; i < macd.length; i++) {
-    if (macd[i] === null) { sigLine.push(null); continue; }
+  const emaF=calcEMA(closes,fast), emaS=calcEMA(closes,slow);
+  const macd=closes.map((_,i)=>emaF[i]!==null&&emaS[i]!==null?emaF[i]-emaS[i]:null);
+  const sigLine=[]; let sigPrev=null, cnt=0, k=2/(signal+1);
+  for (let i=0; i<macd.length; i++) {
+    if (macd[i]===null){sigLine.push(null);continue;}
     cnt++;
-    if (cnt < signal) { sigLine.push(null); continue; }
-    if (cnt === signal) {
-      let s = 0; let j2 = 0;
-      for (let j = i; j2 < signal; j--, j2++) s += macd[j];
-      sigPrev = s / signal;
-      sigLine.push(sigPrev); continue;
+    if (cnt<signal){sigLine.push(null);continue;}
+    if (cnt===signal){
+      let s=0,j2=0;
+      for(let j=i;j2<signal;j--,j2++) s+=macd[j];
+      sigPrev=s/signal; sigLine.push(sigPrev); continue;
     }
-    sigPrev = macd[i] * k + sigPrev * (1 - k);
-    sigLine.push(sigPrev);
+    sigPrev=macd[i]*k+sigPrev*(1-k); sigLine.push(sigPrev);
   }
-
-  const hist = macd.map((v, i) => v !== null && sigLine[i] !== null ? v - sigLine[i] : null);
-  return { macd, signal: sigLine, hist };
+  const hist=macd.map((v,i)=>v!==null&&sigLine[i]!==null?v-sigLine[i]:null);
+  return {macd, signal:sigLine, hist};
 }
 
-// ---- 全期間シグナル検出（チャートマーカー用） ----
+// ===== マーカー生成 =====
 function detectAllMarkers(rows, ma5, ma25, bb, rsi2, macdData) {
   const markers = [];
-  for (let i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    const buys = [], sells = [];
-
-    // RSI
-    if (rsi2[i] !== null) {
-      if (rsi2[i] < 30) buys.push(`RSI ${rsi2[i].toFixed(0)}`);
-      else if (rsi2[i] > 70) sells.push(`RSI ${rsi2[i].toFixed(0)}`);
+  for (let i=1; i<rows.length; i++) {
+    const r=rows[i]; const buys=[], sells=[];
+    if (rsi2[i]!==null) {
+      if (rsi2[i]<30) buys.push(`RSI${rsi2[i].toFixed(0)}`);
+      else if (rsi2[i]>70) sells.push(`RSI${rsi2[i].toFixed(0)}`);
     }
-
-    // BB
     if (bb[i]) {
-      if (r.close <= bb[i].lower * 1.005) buys.push('BB↓');
-      else if (r.close >= bb[i].upper * 0.995) sells.push('BB↑');
+      if (r.close<=bb[i].lower*1.005) buys.push('BB↓');
+      else if (r.close>=bb[i].upper*0.995) sells.push('BB↑');
     }
-
-    // MACD ヒストグラム転換
-    if (macdData.hist[i] !== null && macdData.hist[i-1] !== null) {
-      if (macdData.hist[i-1] < 0 && macdData.hist[i] >= 0) buys.push('MACD✕');
-      else if (macdData.hist[i-1] > 0 && macdData.hist[i] <= 0) sells.push('MACD✕');
+    if (macdData.hist[i]!==null && macdData.hist[i-1]!==null) {
+      if (macdData.hist[i-1]<0 && macdData.hist[i]>=0) buys.push('MACD');
+      else if (macdData.hist[i-1]>0 && macdData.hist[i]<=0) sells.push('MACD');
     }
-
-    // MA クロス
-    if (ma5[i] !== null && ma25[i] !== null && ma5[i-1] !== null && ma25[i-1] !== null) {
-      if (ma5[i-1] < ma25[i-1] && ma5[i] >= ma25[i]) buys.push('MA✕');
-      else if (ma5[i-1] > ma25[i-1] && ma5[i] <= ma25[i]) sells.push('MA✕');
+    if (ma5[i]!==null&&ma25[i]!==null&&ma5[i-1]!==null&&ma25[i-1]!==null) {
+      if (ma5[i-1]<ma25[i-1]&&ma5[i]>=ma25[i]) buys.push('MA✕');
+      else if (ma5[i-1]>ma25[i-1]&&ma5[i]<=ma25[i]) sells.push('MA✕');
     }
-
-    // 複数の買いシグナルが重なった場合のみマーカー表示（ノイズ削減）
-    if (buys.length >= 2) {
-      markers.push({ time: r.time, position: 'belowBar', color: '#3fb950', shape: 'arrowUp', text: buys.join(' ') });
-    } else if (sells.length >= 2) {
-      markers.push({ time: r.time, position: 'aboveBar', color: '#f85149', shape: 'arrowDown', text: sells.join(' ') });
-    } else if (buys.length === 1) {
-      markers.push({ time: r.time, position: 'belowBar', color: '#e6b422', shape: 'arrowUp', text: buys[0] });
-    } else if (sells.length === 1) {
-      markers.push({ time: r.time, position: 'aboveBar', color: '#ffa657', shape: 'arrowDown', text: sells[0] });
-    }
+    if (buys.length>=2)
+      markers.push({time:r.time,position:'belowBar',color:'#3fb950',shape:'arrowUp',text:buys.join(' ')});
+    else if (sells.length>=2)
+      markers.push({time:r.time,position:'aboveBar',color:'#f85149',shape:'arrowDown',text:sells.join(' ')});
+    else if (buys.length===1)
+      markers.push({time:r.time,position:'belowBar',color:'#e6b422',shape:'arrowUp',text:buys[0]});
+    else if (sells.length===1)
+      markers.push({time:r.time,position:'aboveBar',color:'#ffa657',shape:'arrowDown',text:sells[0]});
   }
   return markers;
 }
 
-// ---- 直近シグナル判定（バッジ表示用） ----
+// ===== 直近シグナル（バッジ）=====
 function detectSignals(rows, ma5, ma25, bb, rsi2, macdData) {
-  const n = rows.length - 1;
-  const last = rows[n];
-  const signals = [];
-
-  const rsiVal = rsi2[n];
-  const bbVal = bb[n];
-  const histVal = macdData.hist[n];
-  const prevHistVal = macdData.hist[n-1];
-
-  if (rsiVal !== null && rsiVal < 30)
-    signals.push({ label: `RSI過売り (${rsiVal.toFixed(1)})`, type: 'buy' });
-  else if (rsiVal !== null && rsiVal > 70)
-    signals.push({ label: `RSI過買い (${rsiVal.toFixed(1)})`, type: 'sell' });
-
-  if (bbVal && last.close <= bbVal.lower * 1.005)
-    signals.push({ label: 'BB下限タッチ (買いゾーン)', type: 'buy' });
-  else if (bbVal && last.close >= bbVal.upper * 0.995)
-    signals.push({ label: 'BB上限タッチ (売りゾーン)', type: 'sell' });
-
-  if (histVal !== null && prevHistVal !== null) {
-    if (prevHistVal < 0 && histVal >= 0)
-      signals.push({ label: 'MACDゴールデンクロス', type: 'buy' });
-    else if (prevHistVal > 0 && histVal <= 0)
-      signals.push({ label: 'MACDデッドクロス', type: 'sell' });
+  const n=rows.length-1, last=rows[n], signals=[];
+  const rsiVal=rsi2[n], bbVal=bb[n], histVal=macdData.hist[n], prevH=macdData.hist[n-1];
+  if (rsiVal!==null&&rsiVal<30) signals.push({label:`RSI過売り(${rsiVal.toFixed(1)})`,type:'buy'});
+  else if (rsiVal!==null&&rsiVal>70) signals.push({label:`RSI過買い(${rsiVal.toFixed(1)})`,type:'sell'});
+  if (bbVal&&last.close<=bbVal.lower*1.005) signals.push({label:'BB下限タッチ',type:'buy'});
+  else if (bbVal&&last.close>=bbVal.upper*0.995) signals.push({label:'BB上限タッチ',type:'sell'});
+  if (histVal!==null&&prevH!==null) {
+    if (prevH<0&&histVal>=0) signals.push({label:'MACDゴールデンクロス',type:'buy'});
+    else if (prevH>0&&histVal<=0) signals.push({label:'MACDデッドクロス',type:'sell'});
   }
-
-  const n1 = n - 1;
-  if (ma5[n] !== null && ma25[n] !== null && ma5[n1] !== null && ma25[n1] !== null) {
-    if (ma5[n1] < ma25[n1] && ma5[n] >= ma25[n])
-      signals.push({ label: 'MAゴールデンクロス (MA5>MA25)', type: 'buy' });
-    else if (ma5[n1] > ma25[n1] && ma5[n] <= ma25[n])
-      signals.push({ label: 'MAデッドクロス (MA5<MA25)', type: 'sell' });
+  const n1=n-1;
+  if (ma5[n]!==null&&ma25[n]!==null&&ma5[n1]!==null&&ma25[n1]!==null) {
+    if (ma5[n1]<ma25[n1]&&ma5[n]>=ma25[n]) signals.push({label:'MAゴールデンクロス',type:'buy'});
+    else if (ma5[n1]>ma25[n1]&&ma5[n]<=ma25[n]) signals.push({label:'MAデッドクロス',type:'sell'});
   }
-
-  if (signals.length === 0)
-    signals.push({ label: '明確なシグナルなし', type: 'neutral' });
-
+  if (signals.length===0) signals.push({label:'明確なシグナルなし',type:'neutral'});
   return signals;
 }
 
-// ---- チャート描画 ----
-function renderAll(rows, ticker) {
-  const closes = rows.map(r => r.close);
+// ===== チャート描画 =====
+function renderAll(rows, code, name) {
+  const closes = rows.map(r=>r.close);
+  const ma5v=calcMA(closes,5), ma25v=calcMA(closes,25), ma75v=calcMA(closes,75);
+  const bbv=calcBB(closes,20,2), rsi2=calcRSI(closes,14), macdData=calcMACD(closes,12,26,9);
 
-  const ma5v  = calcMA(closes, 5);
-  const ma25v = calcMA(closes, 25);
-  const ma75v = calcMA(closes, 75);
-  const bbv   = calcBB(closes, 20, 2);
-  const rsi2  = calcRSI(closes, 14);
-  const macdData = calcMACD(closes, 12, 26, 9);
+  // 価格
+  const last=rows[rows.length-1], prev=rows[rows.length-2];
+  const chg=last.close-prev.close, chgPct=chg/prev.close*100;
+  document.getElementById('p-last').textContent=last.close.toLocaleString('ja-JP');
+  const chgEl=document.getElementById('p-chg');
+  chgEl.textContent=`${chg>=0?'+':''}${chg.toFixed(1)}(${chg>=0?'+':''}${chgPct.toFixed(2)}%)`;
+  chgEl.className='pc-val '+(chg>=0?'up':'dn');
+  document.getElementById('p-open').textContent=last.open.toLocaleString('ja-JP');
+  document.getElementById('p-high').textContent=last.high.toLocaleString('ja-JP');
+  document.getElementById('p-low').textContent=last.low.toLocaleString('ja-JP');
+  document.getElementById('p-vol').textContent=last.volume>0?Math.round(last.volume/1000).toLocaleString()+'千':'—';
+  document.getElementById('price-row').style.display='grid';
 
-  // 価格表示
-  const last = rows[rows.length - 1];
-  const prev = rows[rows.length - 2];
-  const chg = last.close - prev.close;
-  const chgPct = chg / prev.close * 100;
-  document.getElementById('p-last').textContent = last.close.toLocaleString('ja-JP');
-  const chgEl = document.getElementById('p-chg');
-  chgEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(1)} (${chg >= 0 ? '+' : ''}${chgPct.toFixed(2)}%)`;
-  chgEl.className = 'pc-val ' + (chg >= 0 ? 'up' : 'dn');
-  document.getElementById('p-open').textContent = last.open.toLocaleString('ja-JP');
-  document.getElementById('p-high').textContent = last.high.toLocaleString('ja-JP');
-  document.getElementById('p-low').textContent = last.low.toLocaleString('ja-JP');
-  document.getElementById('p-vol').textContent = last.volume > 0 ? Math.round(last.volume/1000).toLocaleString() + '千株' : '—';
-  document.getElementById('price-row').style.display = 'flex';
+  // テクニカル値
+  const rsiLast=rsi2[rsi2.length-1], macdLast=macdData.macd[macdData.macd.length-1];
+  const sigLast=macdData.signal[macdData.signal.length-1], histLast=macdData.hist[macdData.hist.length-1];
+  const bbLast=bbv[bbv.length-1];
+  document.getElementById('tc-rsi').textContent=rsiLast!==null?rsiLast.toFixed(2):'—';
+  document.getElementById('tc-macd').textContent=macdLast!==null?macdLast.toFixed(2):'—';
+  document.getElementById('tc-sig').textContent=sigLast!==null?sigLast.toFixed(2):'—';
+  document.getElementById('tc-hist').textContent=histLast!==null?histLast.toFixed(2):'—';
+  document.getElementById('tc-bbu').textContent=bbLast?bbLast.upper.toFixed(1):'—';
+  document.getElementById('tc-bbl').textContent=bbLast?bbLast.lower.toFixed(1):'—';
+  document.getElementById('tech-row').style.display='grid';
 
-  // テクニカル最新値
-  const rsiLast = rsi2[rsi2.length-1];
-  const macdLast = macdData.macd[macdData.macd.length-1];
-  const sigLast = macdData.signal[macdData.signal.length-1];
-  const histLast = macdData.hist[macdData.hist.length-1];
-  const bbLast = bbv[bbv.length-1];
-  document.getElementById('tc-rsi').textContent = rsiLast !== null ? rsiLast.toFixed(2) : '—';
-  document.getElementById('tc-macd').textContent = macdLast !== null ? macdLast.toFixed(2) : '—';
-  document.getElementById('tc-sig').textContent = sigLast !== null ? sigLast.toFixed(2) : '—';
-  document.getElementById('tc-hist').textContent = histLast !== null ? histLast.toFixed(2) : '—';
-  document.getElementById('tc-bbu').textContent = bbLast ? bbLast.upper.toFixed(1) : '—';
-  document.getElementById('tc-bbl').textContent = bbLast ? bbLast.lower.toFixed(1) : '—';
-  document.getElementById('tech-row').style.display = 'flex';
+  // シグナルバッジ
+  const sigs=detectSignals(rows,ma5v,ma25v,bbv,rsi2,macdData);
+  document.getElementById('signals').innerHTML=sigs.map(s=>`<div class="sig ${s.type}">${s.label}</div>`).join('');
 
-  // シグナル
-  const sigs = detectSignals(rows, ma5v, ma25v, bbv, rsi2, macdData);
-  const sigEl = document.getElementById('signals');
-  sigEl.innerHTML = sigs.map(s => `<div class="sig ${s.type}">${s.label}</div>`).join('');
+  // チャートラベル
+  document.getElementById('chart-label').textContent=`${name}（${code}） ローソク足 / MA / BB`;
 
-  // ---- メインチャート ----
-  document.getElementById('wrap-main').style.display = 'block';
-  document.getElementById('chart-label').textContent = `${ticker} ローソク足 / MA / ボリンジャーバンド`;
+  const chartOpts = {
+    layout:{background:{color:'#1c2128'},textColor:'#8b949e'},
+    grid:{vertLines:{color:'#30363d'},horzLines:{color:'#30363d'}},
+    crosshair:{mode:LightweightCharts.CrosshairMode.Normal},
+    rightPriceScale:{borderColor:'#30363d'},
+    timeScale:{borderColor:'#30363d',timeVisible:true},
+    handleScroll:{mouseWheel:true,pressedMouseMove:true,touchMove:true},
+    handleScale:{mouseWheel:true,pinch:true},
+  };
 
-  if (chartMain) { chartMain.remove(); }
-  chartMain = LightweightCharts.createChart(document.getElementById('chart-main'), {
-    layout: { background: { color: '#1c2128' }, textColor: '#8b949e' },
-    grid: { vertLines: { color: '#30363d' }, horzLines: { color: '#30363d' } },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-    rightPriceScale: { borderColor: '#30363d' },
-    timeScale: { borderColor: '#30363d', timeVisible: true },
-    height: 380,
-  });
+  // メインチャート
+  document.getElementById('wrap-main').style.display='block';
+  if (chartMain) chartMain.remove();
+  chartMain=LightweightCharts.createChart(document.getElementById('chart-main'),{...chartOpts,height:document.getElementById('chart-main').clientHeight||320});
   chartMain.timeScale().fitContent();
 
-  // ローソク足
-  candleSeries = chartMain.addCandlestickSeries({
-    upColor: '#3fb950', downColor: '#f85149',
-    borderUpColor: '#3fb950', borderDownColor: '#f85149',
-    wickUpColor: '#3fb950', wickDownColor: '#f85149',
-  });
-  candleSeries.setData(rows.map(r => ({ time: r.time, open: r.open, high: r.high, low: r.low, close: r.close })));
-
-  // チャートマーカー（買い▲ / 売り▼）
-  const markers = detectAllMarkers(rows, ma5v, ma25v, bbv, rsi2, macdData);
+  candleSeries=chartMain.addCandlestickSeries({upColor:'#3fb950',downColor:'#f85149',borderUpColor:'#3fb950',borderDownColor:'#f85149',wickUpColor:'#3fb950',wickDownColor:'#f85149'});
+  candleSeries.setData(rows.map(r=>({time:r.time,open:r.open,high:r.high,low:r.low,close:r.close})));
+  const markers=detectAllMarkers(rows,ma5v,ma25v,bbv,rsi2,macdData);
   candleSeries.setMarkers(markers);
 
-  // BB
-  const bbUpper = chartMain.addLineSeries({ color: 'rgba(63,185,80,0.5)', lineWidth: 1, lineStyle: 1, priceLineVisible: false });
-  const bbMid   = chartMain.addLineSeries({ color: 'rgba(63,185,80,0.3)', lineWidth: 1, lineStyle: 2, priceLineVisible: false });
-  const bbLower = chartMain.addLineSeries({ color: 'rgba(63,185,80,0.5)', lineWidth: 1, lineStyle: 1, priceLineVisible: false });
-  bbUpper.setData(rows.map((r,i) => bbv[i] ? { time: r.time, value: bbv[i].upper } : null).filter(Boolean));
-  bbMid.setData(rows.map((r,i)   => bbv[i] ? { time: r.time, value: bbv[i].mid   } : null).filter(Boolean));
-  bbLower.setData(rows.map((r,i) => bbv[i] ? { time: r.time, value: bbv[i].lower } : null).filter(Boolean));
+  const bbU=chartMain.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false});
+  const bbM=chartMain.addLineSeries({color:'rgba(63,185,80,.3)',lineWidth:1,lineStyle:2,priceLineVisible:false});
+  const bbL=chartMain.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false});
+  bbU.setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].upper}:null).filter(Boolean));
+  bbM.setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].mid}:null).filter(Boolean));
+  bbL.setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].lower}:null).filter(Boolean));
 
-  // MA
-  const ma5s  = chartMain.addLineSeries({ color: '#e6b422', lineWidth: 1.5, priceLineVisible: false });
-  const ma25s = chartMain.addLineSeries({ color: '#58a6ff', lineWidth: 1.5, priceLineVisible: false });
-  const ma75s = chartMain.addLineSeries({ color: '#bc8cff', lineWidth: 1.5, priceLineVisible: false });
-  ma5s.setData( rows.map((r,i) => ma5v[i]  !== null ? { time: r.time, value: ma5v[i]  } : null).filter(Boolean));
-  ma25s.setData(rows.map((r,i) => ma25v[i] !== null ? { time: r.time, value: ma25v[i] } : null).filter(Boolean));
-  ma75s.setData(rows.map((r,i) => ma75v[i] !== null ? { time: r.time, value: ma75v[i] } : null).filter(Boolean));
+  const ma5s=chartMain.addLineSeries({color:'#e6b422',lineWidth:1.5,priceLineVisible:false});
+  const ma25s=chartMain.addLineSeries({color:'#58a6ff',lineWidth:1.5,priceLineVisible:false});
+  const ma75s=chartMain.addLineSeries({color:'#bc8cff',lineWidth:1.5,priceLineVisible:false});
+  ma5s.setData(rows.map((r,i)=>ma5v[i]!==null?{time:r.time,value:ma5v[i]}:null).filter(Boolean));
+  ma25s.setData(rows.map((r,i)=>ma25v[i]!==null?{time:r.time,value:ma25v[i]}:null).filter(Boolean));
+  ma75s.setData(rows.map((r,i)=>ma75v[i]!==null?{time:r.time,value:ma75v[i]}:null).filter(Boolean));
 
-  // ---- RSIチャート ----
-  document.getElementById('wrap-rsi').style.display = 'block';
+  // RSIチャート
+  document.getElementById('wrap-rsi').style.display='block';
   if (chartRsi) chartRsi.remove();
-  chartRsi = LightweightCharts.createChart(document.getElementById('chart-rsi'), {
-    layout: { background: { color: '#1c2128' }, textColor: '#8b949e' },
-    grid: { vertLines: { color: '#30363d' }, horzLines: { color: '#30363d' } },
-    rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.1, bottom: 0.1 } },
-    timeScale: { borderColor: '#30363d', timeVisible: true },
-    height: 150,
-  });
+  chartRsi=LightweightCharts.createChart(document.getElementById('chart-rsi'),{...chartOpts,height:document.getElementById('chart-rsi').clientHeight||130,rightPriceScale:{...chartOpts.rightPriceScale,scaleMargins:{top:.1,bottom:.1}}});
   chartRsi.timeScale().fitContent();
+  rsiSeries=chartRsi.addLineSeries({color:'#ffa657',lineWidth:2,priceLineVisible:false});
+  rsiSeries.setData(rows.map((r,i)=>rsi2[i]!==null?{time:r.time,value:rsi2[i]}:null).filter(Boolean));
+  chartRsi.addLineSeries({color:'rgba(248,81,73,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:70})));
+  chartRsi.addLineSeries({color:'rgba(63,185,80,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:30})));
 
-  rsiSeries = chartRsi.addLineSeries({ color: '#ffa657', lineWidth: 2, priceLineVisible: false });
-  rsiSeries.setData(rows.map((r,i) => rsi2[i] !== null ? { time: r.time, value: rsi2[i] } : null).filter(Boolean));
-
-  // RSI水平線
-  const rsi70 = chartRsi.addLineSeries({ color: 'rgba(248,81,73,0.6)', lineWidth: 1, lineStyle: 2, priceLineVisible: false });
-  const rsi30 = chartRsi.addLineSeries({ color: 'rgba(63,185,80,0.6)',  lineWidth: 1, lineStyle: 2, priceLineVisible: false });
-  const rsiData30 = rows.map(r => ({ time: r.time, value: 30 }));
-  const rsiData70 = rows.map(r => ({ time: r.time, value: 70 }));
-  rsi70.setData(rsiData70);
-  rsi30.setData(rsiData30);
-
-  // ---- MACDチャート ----
-  document.getElementById('wrap-macd').style.display = 'block';
+  // MACDチャート
+  document.getElementById('wrap-macd').style.display='block';
   if (chartMacd) chartMacd.remove();
-  chartMacd = LightweightCharts.createChart(document.getElementById('chart-macd'), {
-    layout: { background: { color: '#1c2128' }, textColor: '#8b949e' },
-    grid: { vertLines: { color: '#30363d' }, horzLines: { color: '#30363d' } },
-    rightPriceScale: { borderColor: '#30363d' },
-    timeScale: { borderColor: '#30363d', timeVisible: true },
-    height: 150,
-  });
+  chartMacd=LightweightCharts.createChart(document.getElementById('chart-macd'),{...chartOpts,height:document.getElementById('chart-macd').clientHeight||130});
   chartMacd.timeScale().fitContent();
+  histSeries=chartMacd.addHistogramSeries({priceLineVisible:false});
+  histSeries.setData(rows.map((r,i)=>macdData.hist[i]!==null?{time:r.time,value:macdData.hist[i],color:macdData.hist[i]>=0?'#3fb950':'#f85149'}:null).filter(Boolean));
+  macdLine=chartMacd.addLineSeries({color:'#58a6ff',lineWidth:2,priceLineVisible:false});
+  macdLine.setData(rows.map((r,i)=>macdData.macd[i]!==null?{time:r.time,value:macdData.macd[i]}:null).filter(Boolean));
+  signalLine=chartMacd.addLineSeries({color:'#f85149',lineWidth:1.5,lineStyle:1,priceLineVisible:false});
+  signalLine.setData(rows.map((r,i)=>macdData.signal[i]!==null?{time:r.time,value:macdData.signal[i]}:null).filter(Boolean));
 
-  histSeries = chartMacd.addHistogramSeries({
-    color: '#3fb950',
-    priceFormat: { type: 'price', precision: 2 },
-    priceLineVisible: false,
-  });
-  histSeries.setData(rows.map((r,i) => {
-    if (macdData.hist[i] === null) return null;
-    return { time: r.time, value: macdData.hist[i], color: macdData.hist[i] >= 0 ? '#3fb950' : '#f85149' };
-  }).filter(Boolean));
-
-  macdLine = chartMacd.addLineSeries({ color: '#58a6ff', lineWidth: 2, priceLineVisible: false });
-  macdLine.setData(rows.map((r,i) => macdData.macd[i] !== null ? { time: r.time, value: macdData.macd[i] } : null).filter(Boolean));
-
-  signalLine = chartMacd.addLineSeries({ color: '#f85149', lineWidth: 1.5, lineStyle: 1, priceLineVisible: false });
-  signalLine.setData(rows.map((r,i) => macdData.signal[i] !== null ? { time: r.time, value: macdData.signal[i] } : null).filter(Boolean));
-
-  // 3チャートの時間軸を同期
-  [chartMain, chartRsi, chartMacd].forEach((src, si) => {
-    src.timeScale().subscribeVisibleLogicalRangeChange(range => {
-      if (!range) return;
-      [chartMain, chartRsi, chartMacd].forEach((dst, di) => {
-        if (di !== si) dst.timeScale().setVisibleLogicalRange(range);
-      });
+  // 時間軸同期
+  [chartMain,chartRsi,chartMacd].forEach((src,si)=>{
+    src.timeScale().subscribeVisibleLogicalRangeChange(range=>{
+      if(!range)return;
+      [chartMain,chartRsi,chartMacd].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
     });
   });
+
+  // リサイズ対応
+  const resizeObserver=new ResizeObserver(()=>{
+    chartMain?.applyOptions({width:document.getElementById('chart-main').clientWidth});
+    chartRsi?.applyOptions({width:document.getElementById('chart-rsi').clientWidth});
+    chartMacd?.applyOptions({width:document.getElementById('chart-macd').clientWidth});
+  });
+  ['chart-main','chart-rsi','chart-macd'].forEach(id=>resizeObserver.observe(document.getElementById(id)));
 }
+
+// ===== 初期化 =====
+renderFavs();
 </script>
 </body>
 </html>
