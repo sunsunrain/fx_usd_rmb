@@ -241,7 +241,14 @@ h1{font-size:.95rem;font-weight:700;}
     </div>
 
     <div id="status-bar">銘柄名またはコードを入力してください。東証全銘柄のコード直入力も可。</div>
-    <div class="signals" id="signals1"></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="signals" id="signals1" style="flex:1;min-width:0"></div>
+      <a id="kabutan-link" href="#" target="_blank" rel="noopener"
+        style="display:none;font-size:.72rem;white-space:nowrap;color:var(--accent2);
+               background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;text-decoration:none;flex-shrink:0">
+        株探で見る ↗
+      </a>
+    </div>
 
     <div id="price-row1" class="price-row" style="display:none">
       <div class="pc"><div class="pc-lbl">現在値</div><div class="pc-val" id="p-last1">—</div></div>
@@ -935,6 +942,10 @@ async function loadCharts(){
   const label=rows.length>50?`${rows.length}営業日`:activePeriod==='1d'?'当日（5分足）':activePeriod==='5d'?'1週間（1時間足）':`${rows.length}営業日`;
   setStatus(`${currentName1}（${currentCode1}） — ${label} 取得完了（約20分遅延）`,'ok');
   document.getElementById('sig-guide').style.display='block';
+  // 株探リンク
+  const kLink=document.getElementById('kabutan-link');
+  kLink.href=`https://kabutan.jp/stock/?code=${currentCode1}`;
+  kLink.style.display='inline-block';
   addFav(currentCode1,currentName1);
 
   if(compareMode&&currentCode2)loadChart2();
