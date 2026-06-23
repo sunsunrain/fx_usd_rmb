@@ -131,6 +131,8 @@ h1{font-size:1.1rem;font-weight:700;}
         <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MA25</div>
         <div class="leg-item"><div class="leg-dot" style="background:#bc8cff"></div>MA75</div>
         <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.6)"></div>BB±2σ</div>
+        <div class="leg-item" style="color:var(--green)">▲ 買いシグナル（緑=複数重複）</div>
+        <div class="leg-item" style="color:var(--red)">▼ 売りシグナル（赤=複数重複）</div>
       </div>
     </div>
     <div id="chart-main"></div>
@@ -375,7 +377,52 @@ function calcMACD(closes, fast=12, slow=26, signal=9) {
   return { macd, signal: sigLine, hist };
 }
 
-// ---- シグナル判定 ----
+// ---- 全期間シグナル検出（チャートマーカー用） ----
+function detectAllMarkers(rows, ma5, ma25, bb, rsi2, macdData) {
+  const markers = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const buys = [], sells = [];
+
+    // RSI
+    if (rsi2[i] !== null) {
+      if (rsi2[i] < 30) buys.push(`RSI ${rsi2[i].toFixed(0)}`);
+      else if (rsi2[i] > 70) sells.push(`RSI ${rsi2[i].toFixed(0)}`);
+    }
+
+    // BB
+    if (bb[i]) {
+      if (r.close <= bb[i].lower * 1.005) buys.push('BB↓');
+      else if (r.close >= bb[i].upper * 0.995) sells.push('BB↑');
+    }
+
+    // MACD ヒストグラム転換
+    if (macdData.hist[i] !== null && macdData.hist[i-1] !== null) {
+      if (macdData.hist[i-1] < 0 && macdData.hist[i] >= 0) buys.push('MACD✕');
+      else if (macdData.hist[i-1] > 0 && macdData.hist[i] <= 0) sells.push('MACD✕');
+    }
+
+    // MA クロス
+    if (ma5[i] !== null && ma25[i] !== null && ma5[i-1] !== null && ma25[i-1] !== null) {
+      if (ma5[i-1] < ma25[i-1] && ma5[i] >= ma25[i]) buys.push('MA✕');
+      else if (ma5[i-1] > ma25[i-1] && ma5[i] <= ma25[i]) sells.push('MA✕');
+    }
+
+    // 複数の買いシグナルが重なった場合のみマーカー表示（ノイズ削減）
+    if (buys.length >= 2) {
+      markers.push({ time: r.time, position: 'belowBar', color: '#3fb950', shape: 'arrowUp', text: buys.join(' ') });
+    } else if (sells.length >= 2) {
+      markers.push({ time: r.time, position: 'aboveBar', color: '#f85149', shape: 'arrowDown', text: sells.join(' ') });
+    } else if (buys.length === 1) {
+      markers.push({ time: r.time, position: 'belowBar', color: '#e6b422', shape: 'arrowUp', text: buys[0] });
+    } else if (sells.length === 1) {
+      markers.push({ time: r.time, position: 'aboveBar', color: '#ffa657', shape: 'arrowDown', text: sells[0] });
+    }
+  }
+  return markers;
+}
+
+// ---- 直近シグナル判定（バッジ表示用） ----
 function detectSignals(rows, ma5, ma25, bb, rsi2, macdData) {
   const n = rows.length - 1;
   const last = rows[n];
@@ -383,24 +430,19 @@ function detectSignals(rows, ma5, ma25, bb, rsi2, macdData) {
 
   const rsiVal = rsi2[n];
   const bbVal = bb[n];
-  const macdVal = macdData.macd[n];
-  const sigVal = macdData.signal[n];
   const histVal = macdData.hist[n];
   const prevHistVal = macdData.hist[n-1];
 
-  // RSI過売り
   if (rsiVal !== null && rsiVal < 30)
     signals.push({ label: `RSI過売り (${rsiVal.toFixed(1)})`, type: 'buy' });
   else if (rsiVal !== null && rsiVal > 70)
     signals.push({ label: `RSI過買い (${rsiVal.toFixed(1)})`, type: 'sell' });
 
-  // BB下限タッチ
   if (bbVal && last.close <= bbVal.lower * 1.005)
     signals.push({ label: 'BB下限タッチ (買いゾーン)', type: 'buy' });
   else if (bbVal && last.close >= bbVal.upper * 0.995)
     signals.push({ label: 'BB上限タッチ (売りゾーン)', type: 'sell' });
 
-  // MACD ゴールデンクロス（ヒストグラム転換）
   if (histVal !== null && prevHistVal !== null) {
     if (prevHistVal < 0 && histVal >= 0)
       signals.push({ label: 'MACDゴールデンクロス', type: 'buy' });
@@ -408,7 +450,6 @@ function detectSignals(rows, ma5, ma25, bb, rsi2, macdData) {
       signals.push({ label: 'MACDデッドクロス', type: 'sell' });
   }
 
-  // MA ゴールデンクロス（直近2日）
   const n1 = n - 1;
   if (ma5[n] !== null && ma25[n] !== null && ma5[n1] !== null && ma25[n1] !== null) {
     if (ma5[n1] < ma25[n1] && ma5[n] >= ma25[n])
@@ -490,6 +531,10 @@ function renderAll(rows, ticker) {
     wickUpColor: '#3fb950', wickDownColor: '#f85149',
   });
   candleSeries.setData(rows.map(r => ({ time: r.time, open: r.open, high: r.high, low: r.low, close: r.close })));
+
+  // チャートマーカー（買い▲ / 売り▼）
+  const markers = detectAllMarkers(rows, ma5v, ma25v, bbv, rsi2, macdData);
+  candleSeries.setMarkers(markers);
 
   // BB
   const bbUpper = chartMain.addLineSeries({ color: 'rgba(63,185,80,0.5)', lineWidth: 1, lineStyle: 1, priceLineVisible: false });
