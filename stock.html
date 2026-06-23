@@ -114,6 +114,22 @@ h1{font-size:1rem;font-weight:700;line-height:1.2;}
 .tc-lbl{font-size:.58rem;color:var(--text2);margin-bottom:2px;}
 .tc-val{font-size:.9rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
 
+/* シグナル解説 */
+.sig-guide{background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.sig-guide summary{padding:10px 14px;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--text2);list-style:none;user-select:none;}
+.sig-guide summary::-webkit-details-marker{display:none;}
+.sig-guide[open] summary{border-bottom:1px solid var(--border);color:var(--text);}
+.sig-guide-body{padding:14px;}
+.sg-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:.8rem;line-height:1.6;}
+.sg-arrow{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.sg-arrow.buy{color:#3fb950;}
+.sg-arrow.weak-buy{color:#e6b422;}
+.sg-arrow.sell{color:#f85149;}
+.sg-arrow.weak-sell{color:#ffa657;}
+.sg-terms{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.sg-term{font-size:.76rem;line-height:1.6;display:flex;gap:8px;align-items:baseline;}
+.sg-key{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+
 /* フッター */
 .disclaimer{font-size:.6rem;color:var(--text2);margin-top:16px;line-height:1.7;
   padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
@@ -209,6 +225,49 @@ h1{font-size:1rem;font-weight:700;line-height:1.2;}
     <div id="chart-main"></div>
   </div>
 
+  <!-- シグナル凡例 -->
+  <div class="sig-legend" id="wrap-main" style="display:none"><!-- placeholder --></div>
+  <details class="sig-guide" id="sig-guide" style="display:none">
+    <summary>▶ チャート上のシグナルマーカーの見方</summary>
+    <div class="sig-guide-body">
+      <div class="sg-row">
+        <span class="sg-arrow buy">▲</span>
+        <div>
+          <b>緑の▲（強い買いシグナル）</b>：複数の買いサインが同時に出ているポイント。より信頼度が高い。
+        </div>
+      </div>
+      <div class="sg-row">
+        <span class="sg-arrow weak-buy">▲</span>
+        <div>
+          <b>黄の▲（買いサイン1つ）</b>：1つの指標が買いを示しているポイント。参考程度に。
+        </div>
+      </div>
+      <div class="sg-row">
+        <span class="sg-arrow sell">▼</span>
+        <div>
+          <b>赤の▼（強い売りシグナル）</b>：複数の売りサインが同時に出ているポイント。利確・損切りの目安。
+        </div>
+      </div>
+      <div class="sg-row">
+        <span class="sg-arrow weak-sell">▼</span>
+        <div>
+          <b>橙の▼（売りサイン1つ）</b>：1つの指標が売りを示しているポイント。
+        </div>
+      </div>
+      <hr style="border-color:var(--border);margin:10px 0">
+      <b style="font-size:.78rem;color:var(--text2)">マーカーに表示される略語：</b>
+      <div class="sg-terms">
+        <div class="sg-term"><span class="sg-key">RSI30</span>RSI（相対力指数）が30以下 → 売られすぎ。反転上昇の可能性。数値が低いほど強い買いサイン。</div>
+        <div class="sg-term"><span class="sg-key">RSI70</span>RSIが70以上 → 買われすぎ。反転下落の可能性。売りの目安。</div>
+        <div class="sg-term"><span class="sg-key">BB↓</span>ボリンジャーバンドの下限（-2σ）付近まで価格が下がった → 統計的に下がりすぎの状態。反発しやすい。</div>
+        <div class="sg-term"><span class="sg-key">BB↑</span>ボリンジャーバンドの上限（+2σ）付近まで価格が上がった → 統計的に上がりすぎの状態。反落しやすい。</div>
+        <div class="sg-term"><span class="sg-key">MACD</span>MACDヒストグラムがマイナス→プラスに転換（ゴールデンクロス）→ 上昇モメンタムの発生。またはプラス→マイナス（デッドクロス）→ 下落モメンタム。</div>
+        <div class="sg-term"><span class="sg-key">MA✕</span>短期移動平均線（MA5）が中期（MA25）を上抜けた（ゴールデンクロス）→ トレンド転換の買いサイン。逆は売りサイン。</div>
+      </div>
+      <div style="font-size:.68rem;color:var(--text2);margin-top:8px">※ シグナルはあくまで参考です。複数のシグナルが重なるほど信頼度が増しますが、必ずしも上昇するわけではありません。</div>
+    </div>
+  </details>
+
   <div class="tech-row" id="tech-row" style="display:none">
     <div class="tc"><div class="tc-lbl">RSI(14)</div><div class="tc-val" id="tc-rsi">—</div></div>
     <div class="tc"><div class="tc-lbl">MACD</div><div class="tc-val" id="tc-macd">—</div></div>
@@ -249,63 +308,119 @@ h1{font-size:1rem;font-weight:700;line-height:1.2;}
 </div>
 
 <script>
-// ===== 銘柄データベース（東証主要銘柄）=====
+// ===== 銘柄データベース（東証主要銘柄）a=別名検索キー =====
 const STOCKS = [
   // 自動車
-  {c:'7203',n:'トヨタ自動車',s:'自動車'},{c:'7267',n:'本田技研工業',s:'自動車'},
-  {c:'7269',n:'スズキ',s:'自動車'},{c:'7270',n:'SUBARU',s:'自動車'},
-  {c:'7201',n:'日産自動車',s:'自動車'},{c:'7261',n:'マツダ',s:'自動車'},
-  {c:'7272',n:'ヤマハ発動機',s:'自動車'},{c:'7242',n:'カヤバ',s:'自動車'},
+  {c:'7203',n:'トヨタ自動車',s:'自動車',a:'toyota'},
+  {c:'7267',n:'本田技研工業',s:'自動車',a:'ホンダ honda'},
+  {c:'7269',n:'スズキ',s:'自動車',a:'suzuki'},
+  {c:'7270',n:'SUBARU',s:'自動車',a:'スバル'},
+  {c:'7201',n:'日産自動車',s:'自動車',a:'nissan'},
+  {c:'7261',n:'マツダ',s:'自動車',a:'mazda'},
+  {c:'7272',n:'ヤマハ発動機',s:'自動車',a:'yamaha'},
   // 電機・半導体
-  {c:'6758',n:'ソニーグループ',s:'電機'},{c:'6861',n:'キーエンス',s:'電機'},
-  {c:'6501',n:'日立製作所',s:'電機'},{c:'6503',n:'三菱電機',s:'電機'},
-  {c:'6594',n:'日本電産（ニデック）',s:'電機'},{c:'6702',n:'富士通',s:'電機'},
-  {c:'6752',n:'パナソニック',s:'電機'},{c:'6753',n:'シャープ',s:'電機'},
-  {c:'6971',n:'京セラ',s:'電機'},{c:'6981',n:'村田製作所',s:'電機'},
-  {c:'8035',n:'東京エレクトロン',s:'半導体'},{c:'4063',n:'信越化学工業',s:'半導体'},
-  {c:'6146',n:'ディスコ',s:'半導体'},{c:'6857',n:'アドバンテスト',s:'半導体'},
-  {c:'4543',n:'テルモ',s:'医療'},{c:'4519',n:'中外製薬',s:'医薬品'},
+  {c:'6758',n:'ソニーグループ',s:'電機',a:'ソニーG SonyG sony'},
+  {c:'8729',n:'ソニーフィナンシャルグループ',s:'金融',a:'ソニーFG ソニー金融 sony financial'},
+  {c:'6861',n:'キーエンス',s:'電機',a:'keyence'},
+  {c:'6501',n:'日立製作所',s:'電機',a:'hitachi'},
+  {c:'6503',n:'三菱電機',s:'電機',a:'三菱 mitsubishi'},
+  {c:'6594',n:'ニデック',s:'電機',a:'日本電産 nidec'},
+  {c:'6702',n:'富士通',s:'電機',a:'fujitsu'},
+  {c:'6752',n:'パナソニックHD',s:'電機',a:'パナソニック panasonic'},
+  {c:'6753',n:'シャープ',s:'電機',a:'sharp'},
+  {c:'6971',n:'京セラ',s:'電機',a:'kyocera'},
+  {c:'6981',n:'村田製作所',s:'電機',a:'murata'},
+  {c:'8035',n:'東京エレクトロン',s:'半導体',a:'TEL'},
+  {c:'4063',n:'信越化学工業',s:'半導体',a:'信越化学'},
+  {c:'6146',n:'ディスコ',s:'半導体',a:'disco'},
+  {c:'6857',n:'アドバンテスト',s:'半導体',a:'advantest'},
+  {c:'4543',n:'テルモ',s:'医療',a:'terumo'},
+  {c:'4519',n:'中外製薬',s:'医薬品',a:'chugai'},
   // 通信・IT
-  {c:'9984',n:'ソフトバンクグループ',s:'通信'},{c:'9433',n:'KDDI',s:'通信'},
-  {c:'9432',n:'日本電信電話（NTT）',s:'通信'},{c:'9434',n:'ソフトバンク',s:'通信'},
-  {c:'4689',n:'LINEヤフー',s:'IT'},{c:'3659',n:'ネクソン',s:'IT'},
-  {c:'4755',n:'楽天グループ',s:'IT'},{c:'3632',n:'グリー',s:'IT'},
-  {c:'4307',n:'野村総合研究所',s:'IT'},{c:'9613',n:'NTTデータグループ',s:'IT'},
+  {c:'9984',n:'ソフトバンクグループ',s:'通信',a:'SBG ソフトバンクG softbank'},
+  {c:'9433',n:'KDDI',s:'通信',a:'au'},
+  {c:'9432',n:'日本電信電話',s:'通信',a:'NTT'},
+  {c:'9434',n:'ソフトバンク',s:'通信',a:'softbank SB'},
+  {c:'4689',n:'LINEヤフー',s:'IT',a:'ライン yahoo'},
+  {c:'3659',n:'ネクソン',s:'IT',a:'nexon'},
+  {c:'4755',n:'楽天グループ',s:'IT',a:'楽天 rakuten'},
+  {c:'4307',n:'野村総合研究所',s:'IT',a:'NRI'},
+  {c:'9613',n:'NTTデータグループ',s:'IT',a:'NTTデータ'},
+  {c:'4384',n:'ラクスル',s:'IT',a:'raksul'},
+  {c:'4478',n:'freee',s:'IT',a:'フリー'},
   // 金融・銀行
-  {c:'7182',n:'ゆうちょ銀行',s:'銀行'},{c:'8411',n:'みずほフィナンシャルグループ',s:'銀行'},
-  {c:'8316',n:'三井住友フィナンシャルグループ',s:'銀行'},{c:'8306',n:'三菱UFJフィナンシャル・グループ',s:'銀行'},
-  {c:'8354',n:'ふくおかフィナンシャルグループ',s:'銀行'},{c:'8253',n:'クレディセゾン',s:'金融'},
-  {c:'8591',n:'オリックス',s:'金融'},{c:'8001',n:'伊藤忠商事',s:'商社'},
-  {c:'8002',n:'丸紅',s:'商社'},{c:'8031',n:'三井物産',s:'商社'},
-  {c:'8053',n:'住友商事',s:'商社'},{c:'8058',n:'三菱商事',s:'商社'},
+  {c:'7182',n:'ゆうちょ銀行',s:'銀行',a:''},
+  {c:'8411',n:'みずほフィナンシャルグループ',s:'銀行',a:'みずほFG みずほ銀行 mizuho'},
+  {c:'8316',n:'三井住友フィナンシャルグループ',s:'銀行',a:'SMFG SMBC 三井住友FG'},
+  {c:'8306',n:'三菱UFJフィナンシャル・グループ',s:'銀行',a:'MUFG 三菱UFJ'},
+  {c:'8354',n:'ふくおかフィナンシャルグループ',s:'銀行',a:'ふくおかFG'},
+  {c:'8253',n:'クレディセゾン',s:'金融',a:'セゾン'},
+  {c:'8591',n:'オリックス',s:'金融',a:'orix'},
+  {c:'8750',n:'第一生命HD',s:'保険',a:'第一生命'},
+  {c:'8725',n:'MS&ADインシュアランスグループHD',s:'保険',a:'MS&AD 三井住友海上'},
+  {c:'8001',n:'伊藤忠商事',s:'商社',a:'itochu'},
+  {c:'8002',n:'丸紅',s:'商社',a:'marubeni'},
+  {c:'8031',n:'三井物産',s:'商社',a:''},
+  {c:'8053',n:'住友商事',s:'商社',a:''},
+  {c:'8058',n:'三菱商事',s:'商社',a:''},
   // 不動産・建設
-  {c:'1925',n:'大和ハウス工業',s:'建設'},{c:'1928',n:'積水ハウス',s:'建設'},
-  {c:'1801',n:'大成建設',s:'建設'},{c:'1802',n:'大林組',s:'建設'},
-  {c:'3003',n:'ヒューリック',s:'不動産'},{c:'8801',n:'三井不動産',s:'不動産'},
-  {c:'8802',n:'三菱地所',s:'不動産'},
+  {c:'1925',n:'大和ハウス工業',s:'建設',a:'大和ハウス'},
+  {c:'1928',n:'積水ハウス',s:'建設',a:''},
+  {c:'1801',n:'大成建設',s:'建設',a:''},
+  {c:'1802',n:'大林組',s:'建設',a:''},
+  {c:'8801',n:'三井不動産',s:'不動産',a:''},
+  {c:'8802',n:'三菱地所',s:'不動産',a:''},
   // 流通・小売
-  {c:'3382',n:'セブン&アイ・ホールディングス',s:'小売'},{c:'8267',n:'イオン',s:'小売'},
-  {c:'7974',n:'任天堂',s:'ゲーム'},{c:'9697',n:'カプコン',s:'ゲーム'},
-  {c:'7832',n:'バンダイナムコHD',s:'ゲーム'},{c:'3765',n:'ガンホー',s:'ゲーム'},
+  {c:'3382',n:'セブン&アイ・ホールディングス',s:'小売',a:'セブンイレブン 7&i'},
+  {c:'8267',n:'イオン',s:'小売',a:'aeon'},
+  {c:'3086',n:'J.フロント リテイリング',s:'小売',a:'大丸 松坂屋'},
+  {c:'3099',n:'三越伊勢丹HD',s:'小売',a:'三越 伊勢丹'},
+  // ゲーム・エンタメ
+  {c:'7974',n:'任天堂',s:'ゲーム',a:'nintendo'},
+  {c:'9697',n:'カプコン',s:'ゲーム',a:'capcom'},
+  {c:'7832',n:'バンダイナムコHD',s:'ゲーム',a:'バンナム bandai namco'},
+  {c:'9684',n:'スクウェア・エニックスHD',s:'ゲーム',a:'スクエニ square enix'},
+  {c:'3765',n:'ガンホー・オンライン',s:'ゲーム',a:'ガンホー gungho'},
+  {c:'2432',n:'DeNA',s:'IT',a:'ディーエヌエー'},
+  {c:'3765',n:'ガンホー',s:'ゲーム',a:''},
   // 食品・飲料
-  {c:'2914',n:'日本たばこ産業（JT）',s:'食品'},{c:'2503',n:'キリンHD',s:'食品'},
-  {c:'2502',n:'アサヒグループHD',s:'食品'},{c:'2282',n:'日本ハム',s:'食品'},
-  {c:'2802',n:'味の素',s:'食品'},{c:'2269',n:'明治HD',s:'食品'},
+  {c:'2914',n:'日本たばこ産業',s:'食品',a:'JT'},
+  {c:'2503',n:'キリンHD',s:'食品',a:'キリン kirin'},
+  {c:'2502',n:'アサヒグループHD',s:'食品',a:'アサヒ asahi'},
+  {c:'2282',n:'日本ハム',s:'食品',a:''},
+  {c:'2802',n:'味の素',s:'食品',a:'ajinomoto'},
+  {c:'2269',n:'明治HD',s:'食品',a:'明治 meiji'},
+  {c:'2871',n:'ニチレイ',s:'食品',a:''},
   // 医薬品
-  {c:'4568',n:'第一三共',s:'医薬品'},{c:'4523',n:'エーザイ',s:'医薬品'},
-  {c:'4506',n:'住友ファーマ',s:'医薬品'},{c:'4502',n:'武田薬品工業',s:'医薬品'},
+  {c:'4568',n:'第一三共',s:'医薬品',a:'daiichi sankyo'},
+  {c:'4523',n:'エーザイ',s:'医薬品',a:'eisai'},
+  {c:'4506',n:'住友ファーマ',s:'医薬品',a:''},
+  {c:'4502',n:'武田薬品工業',s:'医薬品',a:'タケダ takeda'},
+  {c:'4151',n:'協和キリン',s:'医薬品',a:''},
   // エネルギー・資源
-  {c:'5020',n:'ENEOSホールディングス',s:'エネルギー'},{c:'5019',n:'出光興産',s:'エネルギー'},
-  {c:'5713',n:'住友金属鉱山',s:'資源'},{c:'5401',n:'日本製鉄',s:'鉄鋼'},
-  {c:'5411',n:'JFEホールディングス',s:'鉄鋼'},
+  {c:'5020',n:'ENEOSホールディングス',s:'エネルギー',a:'ENEOS エネオス'},
+  {c:'5019',n:'出光興産',s:'エネルギー',a:'idemitsu'},
+  {c:'5713',n:'住友金属鉱山',s:'資源',a:'住金鉱'},
+  {c:'5401',n:'日本製鉄',s:'鉄鋼',a:'nippon steel'},
+  {c:'5411',n:'JFEホールディングス',s:'鉄鋼',a:'JFE'},
   // 運輸
-  {c:'9020',n:'東日本旅客鉄道（JR東日本）',s:'運輸'},{c:'9022',n:'東海旅客鉄道（JR東海）',s:'運輸'},
-  {c:'9021',n:'西日本旅客鉄道（JR西日本）',s:'運輸'},{c:'9301',n:'三菱倉庫',s:'運輸'},
-  {c:'9064',n:'ヤマトホールディングス',s:'運輸'},{c:'9147',n:'NIPPON EXPRESSホールディングス',s:'運輸'},
+  {c:'9020',n:'東日本旅客鉄道',s:'運輸',a:'JR東日本 JR East'},
+  {c:'9022',n:'東海旅客鉄道',s:'運輸',a:'JR東海 JR Central'},
+  {c:'9021',n:'西日本旅客鉄道',s:'運輸',a:'JR西日本'},
+  {c:'9064',n:'ヤマトホールディングス',s:'運輸',a:'ヤマト 黒猫'},
+  {c:'9147',n:'NIPPON EXPRESSホールディングス',s:'運輸',a:'日本通運 日通'},
+  {c:'9107',n:'川崎汽船',s:'運輸',a:'Kline'},
+  {c:'9101',n:'日本郵船',s:'運輸',a:'NYK'},
   // その他
-  {c:'4452',n:'花王',s:'日用品'},{c:'4911',n:'資生堂',s:'化粧品'},
-  {c:'6367',n:'ダイキン工業',s:'機械'},{c:'6326',n:'クボタ',s:'機械'},
-  {c:'7751',n:'キヤノン',s:'精密機器'},{c:'7733',n:'オリンパス',s:'精密機器'},
+  {c:'4452',n:'花王',s:'日用品',a:'kao'},
+  {c:'4911',n:'資生堂',s:'化粧品',a:'shiseido'},
+  {c:'6367',n:'ダイキン工業',s:'機械',a:'daikin'},
+  {c:'6326',n:'クボタ',s:'機械',a:'kubota'},
+  {c:'7751',n:'キヤノン',s:'精密機器',a:'canon'},
+  {c:'7733',n:'オリンパス',s:'精密機器',a:'olympus'},
+  {c:'9843',n:'ニトリHD',s:'小売',a:'ニトリ nitori'},
+  {c:'3197',n:'すかいらーくHD',s:'外食',a:'ガスト すかいらーく'},
+  {c:'2702',n:'日本マクドナルドHD',s:'外食',a:'マック マクドナルド'},
 ];
 
 // ===== お気に入り（localStorage）=====
@@ -327,7 +442,7 @@ function renderFavs() {
   chips.innerHTML = favs.map(f => `
     <div class="fav-chip">
       <button class="fav-chip-btn" onclick="loadByCode('${f.c}','${f.n.replace(/'/g,"\\'")}')">
-        <span style="color:var(--accent);font-family:monospace">${f.c}</span> ${f.n}
+        ${f.n}<span style="color:var(--text2);font-family:monospace;font-size:.68rem;margin-left:4px">${f.c}</span>
       </button>
       <button class="fav-chip-del" onclick="removeFav('${f.c}')" title="削除">✕</button>
     </div>`).join('');
@@ -343,8 +458,11 @@ searchEl.addEventListener('input', () => {
   const q = searchEl.value.trim();
   clearBtn.style.display = q ? 'block' : 'none';
   if (!q) { hideAC(); return; }
+  const ql = q.toLowerCase();
   const hits = STOCKS.filter(s =>
-    s.c.startsWith(q) || s.n.includes(q)
+    s.c.startsWith(q) ||
+    s.n.includes(q) ||
+    (s.a && s.a.toLowerCase().split(' ').some(alias => alias && alias.startsWith(ql)))
   ).slice(0, 8);
   if (hits.length === 0) { hideAC(); return; }
   acEl.innerHTML = hits.map((s,i) =>
@@ -640,6 +758,7 @@ function renderAll(rows, code, name) {
 
   // チャートラベル
   document.getElementById('chart-label').textContent=`${name}（${code}） ローソク足 / MA / BB`;
+  document.getElementById('sig-guide').style.display='block';
 
   const chartOpts = {
     layout:{background:{color:'#1c2128'},textColor:'#8b949e'},
