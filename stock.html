@@ -230,6 +230,8 @@ h1{font-size:.95rem;font-weight:700;}
       <div class="period-row">
         <span class="period-label">期間</span>
         <div class="period-btns">
+          <button class="period-btn" data-p="1d">1日</button>
+          <button class="period-btn" data-p="5d">1週間</button>
           <button class="period-btn" data-p="1mo">1ヶ月</button>
           <button class="period-btn active" data-p="3mo">3ヶ月</button>
           <button class="period-btn" data-p="6mo">6ヶ月</button>
@@ -329,9 +331,17 @@ h1{font-size:.95rem;font-weight:700;}
       <div class="chart-area sub" id="chart-macd"></div>
     </div>
 
+    <!-- 出来高チャート -->
+    <div class="chart-wrap" id="wrap-vol" style="display:none">
+      <div class="chart-header">
+        <div class="chart-title">出来高 — 銘柄1</div>
+      </div>
+      <div class="chart-area sub" id="chart-vol"></div>
+    </div>
+
     <!-- シグナル解説 -->
     <details class="sig-guide" id="sig-guide" style="display:none">
-      <summary>▶ チャート上のシグナルマーカーの見方（略語解説）</summary>
+      <summary>▶ チャート上のシグナルマーカーの見方 / 買い・売りシグナルの定義</summary>
       <div class="sig-guide-body">
         <div class="sg-row"><span class="sg-arrow buy">▲</span><div><b>緑の▲（強い買いシグナル）</b>：複数の買いサインが同時に出たポイント。信頼度が高い。</div></div>
         <div class="sg-row"><span class="sg-arrow wbuy">▲</span><div><b>黄の▲（買いサイン1つ）</b>：1指標のみ。参考程度に。</div></div>
@@ -346,6 +356,20 @@ h1{font-size:.95rem;font-weight:700;}
           <div class="sg-term"><span class="sg-key">DC</span>デッドクロス：短期MA（5日）が中期MA（25日）を<b>下抜け</b> → 下落トレンドへの転換シグナル。</div>
           <div class="sg-term"><span class="sg-key">MACD↑</span>MACDヒストグラムがマイナス→プラスに転換（ゴールデンクロス）→ <b>上昇モメンタム発生</b>。</div>
           <div class="sg-term"><span class="sg-key">MACD↓</span>MACDヒストグラムがプラス→マイナスに転換（デッドクロス）→ <b>下落モメンタム発生</b>。</div>
+        </div>
+        <hr style="border-color:var(--border);margin:10px 0">
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:6px;">📋 シグナル判定の厳密な定義</div>
+        <div class="sg-terms">
+          <div class="sg-term"><span class="sg-key buy-def" style="border-color:var(--green);color:var(--green)">買い</span>以下のいずれかが成立すると「買いシグナル」。2つ以上重なると<b>強い買い</b>（緑▲）。</div>
+          <div class="sg-term"><span class="sg-key">RSI&lt;30</span>14日RSIが<b>30未満</b>（直近14営業日の値上がり幅÷値下がり幅の比率が低い＝売られすぎ）</div>
+          <div class="sg-term"><span class="sg-key">BB↓</span>当日終値 ≤ ボリンジャーバンド下限（20日移動平均 − 2×標準偏差）× 1.005</div>
+          <div class="sg-term"><span class="sg-key">GC</span>前日MA5 &lt; 前日MA25 かつ 当日MA5 ≥ 当日MA25（5日線が25日線を上抜け）</div>
+          <div class="sg-term"><span class="sg-key">MACD↑</span>前日MACDヒストグラム &lt; 0 かつ 当日 ≥ 0（MACDがシグナル線を上抜け）</div>
+          <div class="sg-term"><span class="sg-key sell-def" style="border-color:var(--red);color:var(--red)">売り</span>以下のいずれかが成立すると「売りシグナル」。2つ以上重なると<b>強い売り</b>（赤▼）。</div>
+          <div class="sg-term"><span class="sg-key">RSI&gt;70</span>14日RSIが<b>70超</b>（買われすぎ）</div>
+          <div class="sg-term"><span class="sg-key">BB↑</span>当日終値 ≥ BB上限（20日移動平均 + 2×標準偏差）× 0.995</div>
+          <div class="sg-term"><span class="sg-key">DC</span>前日MA5 &gt; 前日MA25 かつ 当日MA5 ≤ 当日MA25（5日線が25日線を下抜け）</div>
+          <div class="sg-term"><span class="sg-key">MACD↓</span>前日MACDヒストグラム &gt; 0 かつ 当日 ≤ 0（MACDがシグナル線を下抜け）</div>
         </div>
         <div style="font-size:.66rem;color:var(--text2);margin-top:8px">※ 複数シグナルが重なるほど信頼度が増しますが、必ずしも予測通りに動くとは限りません。</div>
       </div>
@@ -549,9 +573,16 @@ function setupAC(inputId, acId, onSelect){
     if(clr)clr.style.display=q?'block':'none';
     if(!q){ac.style.display='none';return;}
     const ql=q.toLowerCase();
-    const hits=STOCKS.filter(s=>
-      s.c.toLowerCase().startsWith(ql)||s.n.includes(q)||(s.a&&s.a.toLowerCase().split(' ').some(a=>a&&a.startsWith(ql)))
-    ).slice(0,8);
+    // 名前優先でスコアリングしてソート
+    const scored=STOCKS.map(s=>{
+      let score=0;
+      if(s.n.startsWith(q))score=100;
+      else if(s.n.includes(q))score=80;
+      else if(s.a&&s.a.toLowerCase().split(' ').some(a=>a&&a.startsWith(ql)))score=60;
+      else if(s.c.toLowerCase().startsWith(ql))score=40;
+      return score>0?{...s,score}:null;
+    }).filter(Boolean).sort((a,b)=>b.score-a.score);
+    const hits=scored.slice(0,8);
 
     // DBにない場合でも4桁コード的入力はそのまま提示
     const isCode=/^[0-9]{3,4}[0-9A-Za-z]?$/.test(q);
@@ -649,9 +680,13 @@ function parseInputCode(inputId,currentCode,currentName){
 }
 
 // ===== データ取得 =====
+// interval決定: 1d→5分足, 5d→1時間足, それ以外→日足
+function rangeToInterval(range){ return range==='1d'?'5m':range==='5d'?'1h':'1d'; }
+
 async function fetchStockData(code,range){
   const sym=encodeURIComponent(code+'.T');
-  const yfUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=${range}&includePrePost=false`;
+  const interval=rangeToInterval(range);
+  const yfUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=${interval}&range=${range}&includePrePost=false`;
   const proxies=[u=>u,u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`];
   for(const proxy of proxies){
     try{
@@ -665,15 +700,25 @@ async function fetchStockData(code,range){
 function parseYF(result){
   const ts=result.timestamp||[];
   const q=result.indicators.quote[0];
+  const gran=result.meta?.dataGranularity||'1d';
+  const isIntraday=(gran!=='1d'&&gran!=='1wk'&&gran!=='1mo');
   const rows=[];
   for(let i=0;i<ts.length;i++){
     const o=q.open[i],h=q.high[i],l=q.low[i],c=q.close[i],v=q.volume[i];
     if(o==null||c==null||isNaN(o)||isNaN(c))continue;
     const d=new Date(ts[i]*1000);
     const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    rows.push({date,time:date,open:o,high:h,low:l,close:c,volume:v||0});
+    // イントラデイはUnixタイムスタンプ（秒）を直接使用
+    const time=isIntraday?ts[i]:date;
+    rows.push({date,time,open:o,high:h,low:l,close:c,volume:v||0});
   }
   return rows.sort((a,b)=>a.date<b.date?-1:1);
+}
+
+// APIレスポンスから銘柄名を取得
+function nameFromResult(result,code){
+  const meta=result?.meta||{};
+  return meta.longName||meta.shortName||STOCKS.find(s=>s.c===code)?.n||code;
 }
 
 // ===== 指標計算 =====
@@ -815,6 +860,10 @@ async function loadCharts(){
   document.getElementById('btn-load').disabled=false;
   if(!result){setStatus('データ取得失敗。コードを確認してください。','err');return;}
 
+  // DBにない場合はAPIから銘柄名を取得
+  if(!currentName1||currentName1===currentCode1)
+    currentName1=nameFromResult(result,currentCode1);
+
   const rows=parseYF(result);
   if(rows.length<5){setStatus('データが少なすぎます。','err');return;}
 
@@ -864,15 +913,26 @@ async function loadCharts(){
   chartMacdObj.addLineSeries({color:'#f85149',lineWidth:1.5,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>macdD.signal[i]!==null?{time:r.time,value:macdD.signal[i]}:null).filter(Boolean));
   new ResizeObserver(()=>chartMacdObj.applyOptions({width:macdEl.clientWidth})).observe(macdEl);
 
-  // 時間軸同期
-  [chartMain1,chartRsiObj,chartMacdObj].forEach((src,si)=>{
+  // 出来高チャート
+  document.getElementById('wrap-vol').style.display='block';
+  if(window.chartVolObj)window.chartVolObj.remove();
+  const volEl=document.getElementById('chart-vol');
+  window.chartVolObj=LightweightCharts.createChart(volEl,{...chartTheme,height:volEl.clientHeight||100});
+  window.chartVolObj.timeScale().fitContent();
+  const volSeries=window.chartVolObj.addHistogramSeries({color:'rgba(88,166,255,0.5)',priceLineVisible:false,priceFormat:{type:'volume'}});
+  volSeries.setData(rows.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?'rgba(63,185,80,0.5)':'rgba(248,81,73,0.5)'})).filter(r=>r.value>0));
+  new ResizeObserver(()=>window.chartVolObj.applyOptions({width:volEl.clientWidth})).observe(volEl);
+
+  // 時間軸同期（4チャート）
+  [chartMain1,chartRsiObj,chartMacdObj,window.chartVolObj].forEach((src,si)=>{
     src.timeScale().subscribeVisibleLogicalRangeChange(range=>{
       if(!range)return;
-      [chartMain1,chartRsiObj,chartMacdObj].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
+      [chartMain1,chartRsiObj,chartMacdObj,window.chartVolObj].forEach((dst,di)=>{if(di!==si)dst.timeScale().setVisibleLogicalRange(range);});
     });
   });
 
-  setStatus(`${currentName1}（${currentCode1}） — ${rows.length}営業日 取得完了（約20分遅延）`,'ok');
+  const label=rows.length>50?`${rows.length}営業日`:activePeriod==='1d'?'当日（5分足）':activePeriod==='5d'?'1週間（1時間足）':`${rows.length}営業日`;
+  setStatus(`${currentName1}（${currentCode1}） — ${label} 取得完了（約20分遅延）`,'ok');
   document.getElementById('sig-guide').style.display='block';
   addFav(currentCode1,currentName1);
 
