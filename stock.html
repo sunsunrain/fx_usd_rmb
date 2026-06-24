@@ -338,6 +338,12 @@ h1{font-size:.95rem;font-weight:700;}
       <div class="chart-area sub" id="chart-macd"></div>
     </div>
 
+    <!-- テクニカル分析コメント -->
+    <div id="ta-comment" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:.82rem;line-height:1.85;">
+      <div style="font-size:.63rem;font-weight:700;color:var(--text2);letter-spacing:.08em;margin-bottom:7px">💬 テクニカル分析コメント</div>
+      <div id="ta-comment-text"></div>
+    </div>
+
     <!-- インジケーター切替ボタン -->
     <div id="indicator-btns" style="display:none;margin-bottom:8px;gap:6px;align-items:center;flex-wrap:wrap">
       <span style="font-size:.63rem;color:var(--text2)">インジケーター</span>
@@ -941,6 +947,10 @@ async function loadCharts(){
 
   const label=rows.length>50?`${rows.length}営業日`:activePeriod==='1d'?'当日（5分足）':activePeriod==='5d'?'1週間（1時間足）':`${rows.length}営業日`;
   setStatus(`${currentName1}（${currentCode1}） — ${label} 取得完了（約20分遅延）`,'ok');
+  // テクニカル分析コメント
+  document.getElementById('ta-comment-text').innerHTML=generateTAComment(rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD);
+  document.getElementById('ta-comment').style.display='block';
+
   document.getElementById('sig-guide').style.display='block';
   // 株探リンク
   const kLink=document.getElementById('kabutan-link');
@@ -1094,6 +1104,110 @@ async function startScan(){
   // ブラウザ通知
   if(buyStocks.length)sendNotif('買いシグナル検出',buyStocks.join('、')+'に買いシグナルが出ています');
   if(sellStocks.length)sendNotif('売りシグナル検出',sellStocks.join('、')+'に売りシグナルが出ています');
+}
+
+// ===== テクニカル分析コメント生成 =====
+function generateTAComment(rows, ma5v, ma25v, ma75v, bbv, rsiV, macdD){
+  const n=rows.length-1;
+  const last=rows[n], prev=rows[n-1];
+  const rsi=rsiV[n], bb=bbv[n];
+  const ma5=ma5v[n], ma25=ma25v[n], ma75=ma75v[n];
+  const hist=macdD.hist[n], histPrev=macdD.hist[n-1];
+  const macdVal=macdD.macd[n], sigVal=macdD.signal[n];
+  const close=last.close;
+
+  const parts=[];
+
+  // ── トレンド分析 ──
+  if(ma25!==null&&ma75!==null&&ma5!==null){
+    if(close>ma5&&ma5>ma25&&ma25>ma75)
+      parts.push(`価格はMA5・MA25・MA75をすべて上回り、<b style="color:var(--green)">強い上昇トレンド</b>が継続中です。`);
+    else if(close>ma25&&ma25>ma75)
+      parts.push(`価格はMA25・MA75の上方に位置し、中長期的に<b style="color:var(--green)">上昇基調</b>を維持しています。`);
+    else if(close<ma5&&ma5<ma25&&ma25<ma75)
+      parts.push(`価格はMA5・MA25・MA75をすべて下回っており、<b style="color:var(--red)">下落トレンドが続いています</b>。反転の確認が必要です。`);
+    else if(close<ma25&&ma25<ma75)
+      parts.push(`価格はMA25・MA75の下方にあり、中長期では<b style="color:var(--red)">下落トレンド</b>内にあります。`);
+    else if(close>ma25&&close<ma75)
+      parts.push(`価格はMA25の上・MA75の下に位置し、<b>トレンドの転換局面</b>にあります。MA75（${ma75.toFixed(0)}円）の突破が上昇継続の鍵です。`);
+    else
+      parts.push(`移動平均線が交差しており、<b>方向感が定まらない</b>横ばい局面です。`);
+  }
+
+  // ── RSI分析 ──
+  if(rsi!==null){
+    // RSIのトレンドも見る（直近5本）
+    const rsiRecent=rsiV.slice(Math.max(0,n-4),n+1).filter(v=>v!==null);
+    const rsiTrend=rsiRecent.length>=2?rsiRecent[rsiRecent.length-1]-rsiRecent[0]:0;
+    if(rsi<25)
+      parts.push(`RSIは<b style="color:var(--green)">${rsi.toFixed(1)}</b>と極端な売られすぎ水準にあります。短期的な<b>急反発</b>が起きやすい状態です。`);
+    else if(rsi<30)
+      parts.push(`RSIは<b style="color:var(--green)">${rsi.toFixed(1)}</b>と30を下回り、<b>売られすぎ</b>のシグナルです。${rsiTrend>0?'直近では上向きに転じており、反発の動きが出始めています。':'底打ち確認が待たれます。'}`);
+    else if(rsi<40)
+      parts.push(`RSIは${rsi.toFixed(1)}とやや弱含みですが、30超のため売られすぎとは言えない水準です。${rsiTrend>0?'上向きに転じてきており、反発力が出てくるか注目です。':'引き続き弱含みの動きが続いています。'}`);
+    else if(rsi<=60)
+      parts.push(`RSIは${rsi.toFixed(1)}と中立圏にあります。過熱感も売られすぎ感もなく、<b>トレンドフォロー</b>が基本戦略です。`);
+    else if(rsi<70)
+      parts.push(`RSIは${rsi.toFixed(1)}と高水準ですが、強いトレンドがあればこの水準を維持することもあります。過熱感に注意しつつ保有継続を検討できます。`);
+    else if(rsi<80)
+      parts.push(`RSIは<b style="color:var(--red)">${rsi.toFixed(1)}</b>と70を超え、<b>買われすぎ</b>の警戒域です。短期的な利益確定売りが出やすい水準です。`);
+    else
+      parts.push(`RSIは<b style="color:var(--red)">${rsi.toFixed(1)}</b>と極端な買われすぎ状態です。高値掴みのリスクが高く、<b>新規買いは慎重</b>に。`);
+  }
+
+  // ── ボリンジャーバンド分析 ──
+  if(bb){
+    const bbW=(bb.upper-bb.lower)/bb.mid*100;
+    const pos=(close-bb.lower)/(bb.upper-bb.lower)*100;
+    if(close<=bb.lower*1.005)
+      parts.push(`ボリンジャーバンド下限（${bb.lower.toFixed(0)}円）付近に位置し、統計的に<b style="color:var(--green)">下がりすぎ</b>の状態です。バンド内への回帰（反発）を期待できるタイミングです。`);
+    else if(close>=bb.upper*0.995)
+      parts.push(`ボリンジャーバンド上限（${bb.upper.toFixed(0)}円）付近まで上昇しています。過熱感があり、<b style="color:var(--red)">短期的な反落に注意</b>が必要です。`);
+    else if(pos<35)
+      parts.push(`バンド内の下位（下限から${pos.toFixed(0)}%の位置）にあり、やや売り優勢の状況です。`);
+    else if(pos>65)
+      parts.push(`バンド内の上位（下限から${pos.toFixed(0)}%の位置）に位置し、買い圧力が続いています。`);
+    if(bbW<3)
+      parts.push(`バンド幅が非常に狭く（スクイーズ）、<b>大きな値動き（ブレイクアウト）が近い</b>可能性があります。方向に注目です。`);
+  }
+
+  // ── MACD分析 ──
+  if(hist!==null&&histPrev!==null&&macdVal!==null){
+    if(histPrev<0&&hist>=0)
+      parts.push(`MACDヒストグラムがマイナスからプラスに転換（<b style="color:var(--green)">ゴールデンクロス</b>）しており、上昇モメンタムが発生しています。`);
+    else if(histPrev>0&&hist<=0)
+      parts.push(`MACDヒストグラムがプラスからマイナスに転換（<b style="color:var(--red)">デッドクロス</b>）しており、下落モメンタムが強まっています。`);
+    else if(hist>0&&hist>histPrev)
+      parts.push(`MACDヒストグラムはプラス圏で拡大しており、<b style="color:var(--green)">上昇の勢いが増しています</b>。`);
+    else if(hist>0&&hist<histPrev)
+      parts.push(`MACDヒストグラムはまだプラスですが縮小傾向にあり、上昇モメンタムが<b>やや鈍化</b>しています。`);
+    else if(hist<0&&hist<histPrev)
+      parts.push(`MACDヒストグラムはマイナス圏で拡大しており、<b style="color:var(--red)">下落圧力が続いています</b>。`);
+    else if(hist<0&&hist>histPrev)
+      parts.push(`MACDヒストグラムはマイナス圏ですが縮小傾向にあり、<b>下落圧力がやや緩和</b>してきています。反転の兆しに注目です。`);
+  }
+
+  // ── 総合判定 ──
+  const sigs=latestSignals(rows,ma5v,ma25v,bbv,rsiV,macdD);
+  const buyCount=sigs.filter(s=>s.type==='buy').length;
+  const sellCount=sigs.filter(s=>s.type==='sell').length;
+  let verdict='';
+  if(buyCount>=3)
+    verdict=`<b style="color:var(--green)">◎ 複数の買いシグナルが重なっており、押し目買いの好機と判断できます。</b>エントリーを検討するタイミングです（必ず損切りラインを設定してください）。`;
+  else if(buyCount===2)
+    verdict=`<b style="color:var(--green)">○ 買いシグナルが2つ重なっています。</b>短期的な反発の可能性が高まっており、少量からのエントリーを検討できます。`;
+  else if(buyCount===1&&sellCount===0)
+    verdict=`<b>△ 買いの兆候が1つ出ています。</b>単独シグナルのため過信は禁物ですが、他の条件と合わせて判断してください。`;
+  else if(sellCount>=2)
+    verdict=`<b style="color:var(--red)">✕ 売りシグナルが複数出ており、新規買いは見送りが無難です。</b>保有中の場合は利確・損切りを検討してください。`;
+  else if(sellCount===1&&buyCount===0)
+    verdict=`<b style="color:var(--red)">▽ 売り圧力がかかっています。</b>慎重に様子を見るのが賢明です。`;
+  else
+    verdict=`<b>━ 明確なシグナルはなく、様子見が基本です。</b>次のシグナル発生まで待機するのが無難です。`;
+
+  parts.push(`<span style="padding:3px 0;display:inline-block">${verdict}</span>`);
+
+  return parts.map(p=>`<div style="margin-bottom:6px;padding-left:8px;border-left:2px solid var(--border)">${p}</div>`).join('');
 }
 
 // ===== インジケーター表示切替 =====
