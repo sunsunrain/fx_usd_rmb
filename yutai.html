@@ -9,66 +9,88 @@
 :root{
   --bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;
   --border:#30363d;--text:#e6edf3;--text2:#8b949e;
-  --accent:#f0a500;--accent2:#58a6ff;--green:#3fb950;--red:#f85149;
+  --accent:#f0a500;--accent2:#58a6ff;--green:#3fb950;--red:#f85149;--purple:#bc8cff;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;padding:20px 16px;}
 a{color:var(--accent2);}
-header{max-width:860px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+header{max-width:900px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
 h1{font-size:1.1rem;font-weight:700;}
 .sub{font-size:.68rem;color:var(--text2);margin-top:2px;}
 .nav-link{font-size:.78rem;color:var(--accent2);text-decoration:none;padding:5px 12px;border:1px solid var(--accent2);border-radius:5px;white-space:nowrap;}
 .nav-link:hover{background:var(--accent2);color:#000;}
-.main{max-width:860px;margin:0 auto;}
+.main{max-width:900px;margin:0 auto;}
 .sec{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:10px;border-left:3px solid var(--accent);padding-left:8px;}
-
-/* 入力 */
 .panel{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end;}
 .field label{display:block;font-size:.68rem;color:var(--text2);margin-bottom:5px;}
-.field input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;font-size:.88rem;font-family:'JetBrains Mono',monospace;}
-.field input:focus{outline:none;border-color:var(--accent);}
+.field input,.field select{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;font-size:.88rem;font-family:'JetBrains Mono',monospace;}
+.field select{font-family:'Noto Sans JP',sans-serif;font-size:.82rem;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);}
 .btn{border:none;padding:8px 18px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;width:100%;}
 .btn-calc{background:var(--accent);color:#000;}
 .btn-calc:hover{opacity:.85;}
+.btn-sm{border:none;padding:5px 12px;border-radius:5px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.btn-sync{background:var(--bg2);color:var(--accent2);border:1px solid var(--accent2);}
+.btn-sync:hover{background:var(--accent2);color:#000;}
+.btn-danger{background:var(--bg2);color:var(--red);border:1px solid var(--red);}
+.btn-danger:hover{background:var(--red);color:#fff;}
 
-/* 株主優待 */
-.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:18px;}
+/* Gist */
+.yt-sync-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.yt-sync-status{font-size:.72rem;color:var(--text2);flex:1;}
+.gist-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.gist-panel .pgrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+.gist-hint{font-size:.65rem;color:var(--text2);margin-top:8px;line-height:1.6;}
+.gist-hint a{color:var(--accent2);}
+
+/* Filter bar */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+.month-nav{display:flex;align-items:center;gap:5px;}
+.mnbtn{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:3px 10px;cursor:pointer;font-size:.82rem;font-family:'Noto Sans JP',sans-serif;}
+.mnbtn:hover{border-color:var(--accent2);color:var(--accent2);}
+.mnbtn.active{background:var(--accent2);color:#000;border-color:var(--accent2);}
+#filter-month-label{font-size:.88rem;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:90px;text-align:center;}
+.tab-row{display:flex;gap:4px;}
+.tab-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:3px 10px;cursor:pointer;font-size:.75rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;}
+.tab-btn.active{background:var(--accent2);color:#000;border-color:var(--accent2);}
+.filter-sep{flex:1;}
+
+/* Cards */
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:18px;}
 .yt-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;}
 .yt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0;background:var(--green);}
 .yt-card.soon::before{background:var(--accent);}
 .yt-card.expired::before{background:var(--red);}
-.yt-name{font-size:1rem;font-weight:700;margin-bottom:8px;padding-right:28px;}
-.yt-badge{display:inline-block;font-size:.6rem;font-weight:700;border-radius:3px;padding:2px 6px;margin-left:6px;vertical-align:middle;}
-.yt-badge.ok{background:rgba(63,185,80,.2);color:var(--green);}
-.yt-badge.soon{background:rgba(240,165,0,.2);color:var(--accent);}
-.yt-badge.expired{background:rgba(248,81,73,.2);color:var(--red);}
+.yt-name{font-size:.98rem;font-weight:700;margin-bottom:8px;padding-right:28px;display:flex;flex-wrap:wrap;align-items:center;gap:4px;line-height:1.5;}
+.badge{display:inline-block;font-size:.6rem;font-weight:700;border-radius:3px;padding:2px 6px;}
+.badge-ok{background:rgba(63,185,80,.2);color:var(--green);}
+.badge-soon{background:rgba(240,165,0,.2);color:var(--accent);}
+.badge-expired{background:rgba(248,81,73,.2);color:var(--red);}
+.badge-owned{background:rgba(88,166,255,.18);color:var(--accent2);}
+.badge-watch{background:rgba(188,140,255,.18);color:var(--purple);}
+.badge-rep{background:rgba(255,255,255,.06);color:var(--text2);font-size:.58rem;}
+.badge-yield{background:rgba(63,185,80,.15);color:var(--green);font-size:.65rem;}
 .yt-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.78rem;border-bottom:1px solid var(--border);}
 .yt-row:last-of-type{border-bottom:none;}
 .yt-row .k{color:var(--text2);font-size:.7rem;flex-shrink:0;}
 .yt-row .v{font-family:'JetBrains Mono',monospace;font-weight:600;text-align:right;}
 .yt-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
 .yt-tag{font-size:.62rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:2px 6px;color:var(--text2);}
+.yt-actions{margin-top:10px;}
 .yt-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text2);cursor:pointer;font-size:.75rem;padding:2px 6px;border-radius:4px;line-height:1;}
 .yt-del:hover{color:var(--red);background:rgba(248,81,73,.1);}
+.yt-renew-btn{border:none;background:rgba(63,185,80,.12);color:var(--green);border-radius:4px;padding:4px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.yt-renew-btn:hover{background:rgba(63,185,80,.25);}
 .yt-empty{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:32px;text-align:center;color:var(--text2);font-size:.82rem;margin-bottom:18px;}
+
+/* Summary */
 .yt-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
-.yt-sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:120px;}
+.yt-sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:110px;}
 .yt-sum-lbl{font-size:.62rem;color:var(--text2);margin-bottom:4px;}
 .yt-sum-val{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
-.yt-sync-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
-.yt-sync-status{font-size:.72rem;color:var(--text2);flex:1;}
-.btn-sm{border:none;padding:5px 12px;border-radius:5px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
-.btn-sync{background:var(--bg2);color:var(--accent2);border:1px solid var(--accent2);}
-.btn-sync:hover{background:var(--accent2);color:#000;}
-.btn-danger{background:var(--bg2);color:var(--red);border:1px solid var(--red);}
-.btn-danger:hover{background:var(--red);color:#fff;}
-.gist-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
-.gist-panel .pgrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
-.gist-hint{font-size:.65rem;color:var(--text2);margin-top:8px;line-height:1.6;}
-.gist-hint a{color:var(--accent2);}
 </style>
 </head>
 <body>
@@ -77,7 +99,7 @@ h1{font-size:1.1rem;font-weight:700;}
     <div class="logo-icon">🎟</div>
     <div>
       <h1>株主優待 管理</h1>
-      <div class="sub">有効期限・金額・使える場所 | Sunnys Corporation</div>
+      <div class="sub">権利確定月・利回り・繰り返し管理 | Sunnys Corporation</div>
     </div>
   </div>
   <a href="index.html" class="nav-link">← 為替計算ツールへ</a>
@@ -85,23 +107,20 @@ h1{font-size:1.1rem;font-weight:700;}
 
 <div class="main">
 
-  <div class="sec">優待一覧</div>
-
-  <!-- Gist同期バー -->
+  <!-- Gist同期 -->
   <div class="yt-sync-bar">
     <span id="yt-gist-status" class="yt-sync-status">Gist未設定（デバイス間同期なし）</span>
     <button class="btn-sm btn-sync" onclick="gistPull()" title="Gistから最新データを取得">⬇ 同期</button>
     <button class="btn-sm btn-sync" onclick="toggleGistPanel()">⚙ Gist設定</button>
   </div>
 
-  <!-- Gist設定パネル（折りたたみ） -->
   <div id="yt-gist-panel" class="gist-panel" style="display:none">
     <div class="pgrid gist-panel">
       <div class="field"><label>Personal Access Token（gist権限）</label><input id="yt-gist-pat" type="password" placeholder="ghp_xxxx..."></div>
       <div class="field"><label>Gist ID（空欄で自動作成）</label><input id="yt-gist-id" type="text" placeholder="例: a1b2c3d4e5f6..."></div>
       <div class="field" style="display:flex;gap:8px;align-items:flex-end">
         <button class="btn btn-calc" style="flex:1" onclick="applyGistSettings()">接続 / 作成</button>
-        <button class="btn-sm btn-danger" onclick="clearGistSettings()" title="設定を削除">切断</button>
+        <button class="btn-sm btn-danger" onclick="clearGistSettings()">切断</button>
       </div>
     </div>
     <div class="gist-hint">
@@ -111,19 +130,50 @@ h1{font-size:1.1rem;font-weight:700;}
     </div>
   </div>
 
-  <!-- サマリー -->
-  <div id="yt-summary" class="yt-summary"></div>
+  <!-- フィルターバー -->
+  <div class="filter-bar">
+    <div class="month-nav">
+      <button class="mnbtn" onclick="shiftMonth(-1)">‹</button>
+      <span id="filter-month-label">全月</span>
+      <button class="mnbtn" onclick="shiftMonth(+1)">›</button>
+      <button id="all-months-btn" class="mnbtn active" onclick="clearMonthFilter()">全月</button>
+    </div>
+    <div class="tab-row">
+      <button class="tab-btn active" data-own="all" onclick="setOwnFilter('all')">全て</button>
+      <button class="tab-btn" data-own="owned" onclick="setOwnFilter('owned')">保有中</button>
+      <button class="tab-btn" data-own="watch" onclick="setOwnFilter('watch')">検討中</button>
+    </div>
+    <div class="filter-sep"></div>
+    <button class="btn-sm btn-danger" onclick="deleteExpired()">🗑 期限切れを削除</button>
+  </div>
 
-  <!-- 優待カード一覧 -->
+  <div id="yt-summary" class="yt-summary"></div>
   <div id="yutai-list"></div>
 
-  <!-- 追加フォーム -->
+  <!-- 新規追加フォーム -->
   <div class="sec" style="margin-top:8px">新規追加</div>
   <div class="panel">
     <div class="pgrid">
-      <div class="field"><label>銘柄名 / 会社名</label><input id="yt-name" type="text" placeholder="例: マクドナルド"></div>
-      <div class="field"><label>有効期限</label><input id="yt-expiry" type="date"></div>
-      <div class="field"><label>金額（円）</label><input id="yt-amount" type="number" placeholder="例: 3000" min="0"></div>
+      <div class="field"><label>銘柄名 / 会社名 ＊</label><input id="yt-name" type="text" placeholder="例: マクドナルド"></div>
+      <div class="field"><label>権利確定月（月別検索に使用）</label><input id="yt-record" type="month"></div>
+      <div class="field"><label>有効期限 ＊</label><input id="yt-expiry" type="date"></div>
+      <div class="field"><label>優待金額（円）</label><input id="yt-amount" type="number" placeholder="例: 3000" min="0"></div>
+      <div class="field"><label>保有状況</label>
+        <select id="yt-owned">
+          <option value="owned">保有中</option>
+          <option value="watch">検討中</option>
+          <option value="none">なし</option>
+        </select>
+      </div>
+      <div class="field"><label>繰り返し</label>
+        <select id="yt-repeat">
+          <option value="none">なし</option>
+          <option value="yearly">毎年（+1年）</option>
+          <option value="6months">6ヶ月ごと</option>
+        </select>
+      </div>
+      <div class="field"><label>株価（円）※利回り計算用</label><input id="yt-price" type="number" placeholder="例: 2500" min="0"></div>
+      <div class="field"><label>購入単元（株）</label><input id="yt-lot" type="number" placeholder="100" min="1" value="100"></div>
       <div class="field"><label>使える場所（カンマ区切り）</label><input id="yt-places" type="text" placeholder="例: 全店舗,EC,アプリ"></div>
       <div class="field"><label>メモ</label><input id="yt-notes" type="text" placeholder="任意"></div>
       <div class="field"><label>&nbsp;</label><button class="btn btn-calc" onclick="addYutai()">＋ 追加</button></div>
@@ -134,15 +184,17 @@ h1{font-size:1.1rem;font-weight:700;}
 
 <script>
 let yutaiData = JSON.parse(localStorage.getItem('yutai') || '[]');
-
 const GIST_FILE = 'yutai_data.json';
 let gistPat = localStorage.getItem('yutai_gist_pat') || '';
 let gistId  = localStorage.getItem('yutai_gist_id')  || '';
+let filterMonth = null;
+let filterOwn = 'all';
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ---- Gist API ----
 function saveYutai() {
   localStorage.setItem('yutai', JSON.stringify(yutaiData));
   if (gistPat) gistPush();
@@ -160,18 +212,21 @@ function setGistStatus(state, msg='') {
   else if (state==='loading') el.innerHTML=`<span style="color:var(--accent2)">⟳ 読込中...</span>`;
   else if (state==='ok')    el.innerHTML=`<span style="color:var(--green)">✓ Gist同期済み ${t}</span>`;
   else if (state==='error') el.innerHTML=`<span style="color:var(--red)">✗ エラー: ${escHtml(msg)}</span>`;
-  else if (state==='none')  el.innerHTML=`Gist未設定（デバイス間同期なし）`;
+  else                      el.innerHTML=`Gist未設定（デバイス間同期なし）`;
 }
 
 async function gistPush() {
   if (!gistPat) return;
   setGistStatus('saving');
   try {
-    const body = JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(yutaiData, null, 2) } } });
+    const payload = JSON.stringify(yutaiData, null, 2);
     const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
     const method = gistId ? 'PATCH' : 'POST';
-    const res = await fetch(url, { method, headers: gistHeaders(), body: gistId ? body : JSON.stringify({ description:'株主優待データ', public:false, files:{ [GIST_FILE]:{ content: JSON.stringify(yutaiData,null,2) } } }) });
-    if (!res.ok) { const e=await res.json(); throw new Error(e.message||`HTTP ${res.status}`); }
+    const body = gistId
+      ? JSON.stringify({ files: { [GIST_FILE]: { content: payload } } })
+      : JSON.stringify({ description: '株主優待データ', public: false, files: { [GIST_FILE]: { content: payload } } });
+    const res = await fetch(url, { method, headers: gistHeaders(), body });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || `HTTP ${res.status}`); }
     const data = await res.json();
     if (!gistId) {
       gistId = data.id;
@@ -187,7 +242,7 @@ async function gistPull() {
   setGistStatus('loading');
   try {
     const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: gistHeaders() });
-    if (!res.ok) { const e=await res.json(); throw new Error(e.message||`HTTP ${res.status}`); }
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || `HTTP ${res.status}`); }
     const data = await res.json();
     const content = data.files?.[GIST_FILE]?.content;
     if (!content) throw new Error(`"${GIST_FILE}" が Gist に見つかりません`);
@@ -205,96 +260,212 @@ async function applyGistSettings() {
   gistPat = pat; gistId = id;
   localStorage.setItem('yutai_gist_pat', pat);
   localStorage.setItem('yutai_gist_id', id);
-  if (id) {
-    await gistPull();
-  } else {
-    await gistPush();
-  }
+  if (id) { await gistPull(); } else { await gistPush(); }
   document.getElementById('yt-gist-id').value = gistId;
 }
 
 function clearGistSettings() {
   if (!confirm('Gist設定（PAT・Gist ID）を削除しますか？\nローカルデータは残ります。')) return;
-  gistPat=''; gistId='';
-  ['yutai_gist_pat','yutai_gist_id'].forEach(k=>localStorage.removeItem(k));
-  document.getElementById('yt-gist-pat').value='';
-  document.getElementById('yt-gist-id').value='';
+  gistPat = ''; gistId = '';
+  ['yutai_gist_pat', 'yutai_gist_id'].forEach(k => localStorage.removeItem(k));
+  document.getElementById('yt-gist-pat').value = '';
+  document.getElementById('yt-gist-id').value  = '';
   setGistStatus('none');
 }
 
 function toggleGistPanel() {
   const p = document.getElementById('yt-gist-panel');
-  p.style.display = p.style.display==='none' ? 'block' : 'none';
-  if (p.style.display==='block') {
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+  if (p.style.display === 'block') {
     document.getElementById('yt-gist-pat').value = gistPat;
     document.getElementById('yt-gist-id').value  = gistId;
   }
 }
 
+// ---- フィルター ----
+function effectiveMonth(item) {
+  return item.recordMonth || (item.expiry ? item.expiry.slice(0, 7) : null);
+}
+
+function shiftMonth(delta) {
+  const base = filterMonth || new Date().toISOString().slice(0, 7);
+  const [y, m] = base.split('-').map(Number);
+  let nm = m + delta, ny = y;
+  if (nm > 12) { nm -= 12; ny++; }
+  if (nm < 1)  { nm += 12; ny--; }
+  filterMonth = `${ny}-${String(nm).padStart(2, '0')}`;
+  updateMonthLabel();
+  renderYutai();
+}
+
+function clearMonthFilter() {
+  filterMonth = null;
+  updateMonthLabel();
+  renderYutai();
+}
+
+function updateMonthLabel() {
+  const lbl = document.getElementById('filter-month-label');
+  const btn = document.getElementById('all-months-btn');
+  if (filterMonth) {
+    const [y, m] = filterMonth.split('-');
+    lbl.textContent = `${y}年${parseInt(m)}月`;
+    btn.classList.remove('active');
+  } else {
+    lbl.textContent = '全月';
+    btn.classList.add('active');
+  }
+}
+
+function setOwnFilter(v) {
+  filterOwn = v;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.own === v));
+  renderYutai();
+}
+
+// ---- データ操作 ----
 function addYutai() {
   const name = document.getElementById('yt-name').value.trim();
   const expiry = document.getElementById('yt-expiry').value;
-  const amount = parseInt(document.getElementById('yt-amount').value) || 0;
-  const placesRaw = document.getElementById('yt-places').value.trim();
-  const notes = document.getElementById('yt-notes').value.trim();
   if (!name)   { alert('銘柄名を入力してください'); return; }
   if (!expiry) { alert('有効期限を入力してください'); return; }
-  const places = placesRaw ? placesRaw.split(',').map(p=>p.trim()).filter(Boolean) : [];
-  yutaiData.push({ id: Date.now().toString(), name, expiry, amount, places, notes });
+  const placesRaw = document.getElementById('yt-places').value.trim();
+  yutaiData.push({
+    id: Date.now().toString(),
+    name,
+    expiry,
+    recordMonth: document.getElementById('yt-record').value.trim() || '',
+    amount: parseInt(document.getElementById('yt-amount').value) || 0,
+    places: placesRaw ? placesRaw.split(',').map(p => p.trim()).filter(Boolean) : [],
+    notes: document.getElementById('yt-notes').value.trim(),
+    owned: document.getElementById('yt-owned').value,
+    repeat: document.getElementById('yt-repeat').value,
+    stockPrice: parseFloat(document.getElementById('yt-price').value) || 0,
+    minLot: parseInt(document.getElementById('yt-lot').value) || 100,
+  });
   saveYutai();
   renderYutai();
-  ['yt-name','yt-expiry','yt-amount','yt-places','yt-notes'].forEach(id=>{ document.getElementById(id).value=''; });
+  ['yt-name','yt-record','yt-expiry','yt-amount','yt-places','yt-notes','yt-price'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('yt-lot').value = '100';
+  document.getElementById('yt-owned').value = 'owned';
+  document.getElementById('yt-repeat').value = 'none';
 }
 
 function deleteYutai(id) {
   if (!confirm('削除してもよろしいですか？')) return;
-  yutaiData = yutaiData.filter(y=>y.id!==id);
+  yutaiData = yutaiData.filter(y => y.id !== id);
   saveYutai();
   renderYutai();
 }
 
-function renderYutai() {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const sorted = [...yutaiData].sort((a,b)=>{
-    const da=new Date(a.expiry), db=new Date(b.expiry);
-    const aExp=da<today, bExp=db<today;
-    if (aExp&&!bExp) return 1;
-    if (!aExp&&bExp) return -1;
-    return da-db;
-  });
-  const total = yutaiData.reduce((s,y)=>s+y.amount,0);
-  const expiredCount = yutaiData.filter(y=>new Date(y.expiry)<today).length;
-  const soonCount = yutaiData.filter(y=>{ const d=new Date(y.expiry); return d>=today&&Math.round((d-today)/86400000)<=30; }).length;
+function calcNextExpiry(item) {
+  const delta = item.repeat === 'yearly' ? 12 : 6;
+  const d = new Date(item.expiry);
+  d.setMonth(d.getMonth() + delta);
+  const newExpiry = d.toISOString().slice(0, 10);
+  let newRecord = '';
+  if (item.recordMonth) {
+    const rd = new Date(item.recordMonth + '-01');
+    rd.setMonth(rd.getMonth() + delta);
+    newRecord = rd.toISOString().slice(0, 7);
+  }
+  return { newExpiry, newRecord };
+}
 
-  const sumEl = document.getElementById('yt-summary');
-  sumEl.innerHTML = yutaiData.length===0 ? '' : `
-    <div class="yt-sum-card"><div class="yt-sum-lbl">合計金額</div><div class="yt-sum-val" style="color:var(--accent)">¥${total.toLocaleString()}</div></div>
-    <div class="yt-sum-card"><div class="yt-sum-lbl">登録件数</div><div class="yt-sum-val">${yutaiData.length}件</div></div>
-    <div class="yt-sum-card"><div class="yt-sum-lbl">残り30日以内</div><div class="yt-sum-val" style="color:${soonCount>0?'var(--accent)':'var(--text)'}">${soonCount}件</div></div>
-    <div class="yt-sum-card"><div class="yt-sum-lbl">期限切れ</div><div class="yt-sum-val" style="color:${expiredCount>0?'var(--red)':'var(--text)'}">${expiredCount}件</div></div>
+function renewYutai(id) {
+  const item = yutaiData.find(y => y.id === id);
+  if (!item) return;
+  const { newExpiry, newRecord } = calcNextExpiry(item);
+  yutaiData = yutaiData.filter(y => y.id !== id);
+  yutaiData.push({ ...item, id: Date.now().toString(), expiry: newExpiry, recordMonth: newRecord });
+  saveYutai();
+  renderYutai();
+}
+
+function deleteExpired() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const expired = yutaiData.filter(y => new Date(y.expiry) < today);
+  if (expired.length === 0) { alert('期限切れの優待はありません'); return; }
+  if (!confirm(`期限切れ ${expired.length}件を削除しますか？`)) return;
+  const withRepeat = expired.filter(y => y.repeat && y.repeat !== 'none');
+  if (withRepeat.length > 0 && confirm(`繰り返し設定のある ${withRepeat.length}件の次回分を作成しますか？`)) {
+    withRepeat.forEach(item => {
+      const { newExpiry, newRecord } = calcNextExpiry(item);
+      yutaiData.push({ ...item, id: Date.now().toString() + Math.floor(Math.random() * 9999), expiry: newExpiry, recordMonth: newRecord });
+    });
+  }
+  yutaiData = yutaiData.filter(y => new Date(y.expiry) >= today);
+  saveYutai();
+  renderYutai();
+}
+
+// ---- 描画 ----
+function ownedOf(item) {
+  return item.owned !== undefined ? item.owned : 'owned';
+}
+
+function renderYutai() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+
+  const filtered = yutaiData.filter(item => {
+    if (filterOwn !== 'all' && ownedOf(item) !== filterOwn) return false;
+    if (filterMonth && effectiveMonth(item) !== filterMonth) return false;
+    return true;
+  }).sort((a, b) => {
+    const da = new Date(a.expiry), db = new Date(b.expiry);
+    const ae = da < today, be = db < today;
+    if (ae && !be) return 1;
+    if (!ae && be) return -1;
+    return da - db;
+  });
+
+  const ownedTotal = filtered.filter(y => ownedOf(y) === 'owned').reduce((s, y) => s + (y.amount || 0), 0);
+  const expCnt  = filtered.filter(y => new Date(y.expiry) < today).length;
+  const soonCnt = filtered.filter(y => { const d = new Date(y.expiry); return d >= today && Math.round((d - today) / 86400000) <= 30; }).length;
+
+  document.getElementById('yt-summary').innerHTML = filtered.length === 0 ? '' : `
+    <div class="yt-sum-card"><div class="yt-sum-lbl">保有合計金額</div><div class="yt-sum-val" style="color:var(--accent)">¥${ownedTotal.toLocaleString()}</div></div>
+    <div class="yt-sum-card"><div class="yt-sum-lbl">表示件数</div><div class="yt-sum-val">${filtered.length}件</div></div>
+    <div class="yt-sum-card"><div class="yt-sum-lbl">残り30日以内</div><div class="yt-sum-val" style="color:${soonCnt > 0 ? 'var(--accent)' : 'var(--text)'}"><b>${soonCnt}</b>件</div></div>
+    <div class="yt-sum-card"><div class="yt-sum-lbl">期限切れ</div><div class="yt-sum-val" style="color:${expCnt > 0 ? 'var(--red)' : 'var(--text)'}"><b>${expCnt}</b>件</div></div>
   `;
 
   const container = document.getElementById('yutai-list');
-  if (sorted.length===0) {
-    container.innerHTML='<div class="yt-empty">株主優待が登録されていません。下のフォームから追加してください。</div>';
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="yt-empty">${filterMonth || filterOwn !== 'all' ? '条件に一致する優待がありません。フィルターを変更してください。' : '株主優待が登録されていません。下のフォームから追加してください。'}</div>`;
     return;
   }
-  container.innerHTML='<div class="yt-grid">'+sorted.map(item=>{
-    const expDate=new Date(item.expiry); expDate.setHours(0,0,0,0);
-    const diffDays=Math.round((expDate-today)/86400000);
-    let sc='ok', bc='ok', bt=`あと${diffDays}日`;
-    if (diffDays<0) { sc='expired'; bc='expired'; bt=`${Math.abs(diffDays)}日超過`; }
-    else if (diffDays<=30) { sc='soon'; bc='soon'; }
-    const tagsHtml=item.places.length?`<div class="yt-tags">${item.places.map(p=>`<span class="yt-tag">${escHtml(p)}</span>`).join('')}</div>`:'';
-    const notesHtml=item.notes?`<div class="yt-row"><span class="k">メモ</span><span class="v" style="font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:.72rem">${escHtml(item.notes)}</span></div>`:'';
-    const amtHtml=item.amount>0?`<div class="yt-row"><span class="k">金額</span><span class="v" style="color:var(--accent)">¥${item.amount.toLocaleString()}</span></div>`:'';
+
+  container.innerHTML = '<div class="yt-grid">' + filtered.map(item => {
+    const expDate = new Date(item.expiry); expDate.setHours(0, 0, 0, 0);
+    const diff = Math.round((expDate - today) / 86400000);
+    const sc = diff < 0 ? 'expired' : diff <= 30 ? 'soon' : 'ok';
+    const bt = diff < 0 ? `${Math.abs(diff)}日超過` : `あと${diff}日`;
+
+    const ov = ownedOf(item);
+    const ownBadge  = ov === 'owned' ? `<span class="badge badge-owned">保有中</span>` : ov === 'watch' ? `<span class="badge badge-watch">検討中</span>` : '';
+    const repBadge  = (item.repeat && item.repeat !== 'none') ? `<span class="badge badge-rep">${item.repeat === 'yearly' ? '毎年' : '6M'}</span>` : '';
+    const yld = (item.amount && item.stockPrice && item.minLot) ? item.amount / (item.stockPrice * item.minLot) * 100 : null;
+    const yieldBadge = yld ? `<span class="badge badge-yield">利回り ${yld.toFixed(2)}%</span>` : '';
+
+    const rows = [
+      `<div class="yt-row"><span class="k">有効期限</span><span class="v">${escHtml(item.expiry)}</span></div>`,
+      item.recordMonth ? `<div class="yt-row"><span class="k">権利確定月</span><span class="v">${escHtml(item.recordMonth)}</span></div>` : '',
+      item.amount > 0 ? `<div class="yt-row"><span class="k">優待金額</span><span class="v" style="color:var(--accent)">¥${item.amount.toLocaleString()}</span></div>` : '',
+      item.stockPrice > 0 ? `<div class="yt-row"><span class="k">株価 / 単元</span><span class="v">¥${item.stockPrice.toLocaleString()} × ${item.minLot || 100}株</span></div>` : '',
+      item.notes ? `<div class="yt-row"><span class="k">メモ</span><span class="v" style="font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:.72rem">${escHtml(item.notes)}</span></div>` : '',
+    ].join('');
+
+    const tagsHtml  = item.places && item.places.length ? `<div class="yt-tags">${item.places.map(p => `<span class="yt-tag">${escHtml(p)}</span>`).join('')}</div>` : '';
+    const renewHtml = (sc === 'expired' && item.repeat && item.repeat !== 'none')
+      ? `<div class="yt-actions"><button class="yt-renew-btn" onclick="renewYutai('${escHtml(item.id)}')">🔄 次回を作成</button></div>` : '';
+
     return `<div class="yt-card ${sc}">
       <button class="yt-del" onclick="deleteYutai('${escHtml(item.id)}')" title="削除">✕</button>
-      <div class="yt-name">${escHtml(item.name)}<span class="yt-badge ${bc}">${bt}</span></div>
-      <div class="yt-row"><span class="k">有効期限</span><span class="v">${escHtml(item.expiry)}</span></div>
-      ${amtHtml}${notesHtml}${tagsHtml}
+      <div class="yt-name"><span>${escHtml(item.name)}</span><span class="badge badge-${sc}">${bt}</span>${ownBadge}${repBadge}${yieldBadge}</div>
+      ${rows}${tagsHtml}${renewHtml}
     </div>`;
-  }).join('')+'</div>';
+  }).join('') + '</div>';
 }
 
 renderYutai();
