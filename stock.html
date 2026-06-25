@@ -870,7 +870,8 @@ function parseYF(result){
     if(o==null||c==null||isNaN(o)||isNaN(c))continue;
     const d=new Date(ts[i]*1000);
     const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const time=isIntraday?ts[i]:date;
+    // JST表示用: +9h オフセット（lightweight-chartsはUTC基準で表示するため）
+    const time=isIntraday?ts[i]+32400:date;
     rows.push({date,time,open:o,high:h,low:l,close:c,volume:v||0});
   }
   return rows.sort((a,b)=>a.date<b.date?-1:1);
@@ -966,13 +967,6 @@ function latestSignals(rows,ma5,ma25,bb,rsi,macdD){
 }
 
 // ===== チャート描画共通設定 =====
-// JST表示用フォーマッタ（数値タイムスタンプ=イントラデイ時のみ適用）
-function jstTimeFormatter(ts){
-  // lightweight-chartsはUTC基準のためJST(+9h)に変換して表示
-  const d=new Date((ts+32400)*1000);
-  return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0');
-}
-
 const chartTheme={
   layout:{background:{color:'#1c2128'},textColor:'#8b949e'},
   grid:{vertLines:{color:'#30363d'},horzLines:{color:'#30363d'}},
@@ -983,9 +977,25 @@ const chartTheme={
   handleScale:{mouseWheel:true,pinch:true},
 };
 
-// イントラデイ用テーマ（JSTフォーマッタ付き）
+// イントラデイ用テーマ: タイムスタンプに+32400(9h)済みのUTC値をそのまま表示=JST
 function intradayTheme(){
-  return{...chartTheme,localization:{timeFormatter:jstTimeFormatter}};
+  // tickMarkFormatter: 軸ラベル / timeFormatter: 十字線ラベル 両方設定
+  const fmt=ts=>{
+    const d=new Date(ts*1000);
+    return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0');
+  };
+  return{
+    ...chartTheme,
+    localization:{timeFormatter:fmt},
+    timeScale:{
+      ...chartTheme.timeScale,
+      tickMarkFormatter:(ts,type)=>{
+        const d=new Date(ts*1000);
+        const h=d.getUTCHours(),m=d.getUTCMinutes();
+        return String(h).padStart(2,'0')+':'+(m?String(m).padStart(2,'0'):'00');
+      }
+    }
+  };
 }
 
 function makeCandleChart(containerId,rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD){
