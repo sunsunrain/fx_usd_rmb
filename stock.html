@@ -871,7 +871,8 @@ function parseYF(result){
     const d=new Date(ts[i]*1000);
     const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     // イントラデイはUnixタイムスタンプ（秒）を直接使用
-    const time=isIntraday?ts[i]:date;
+    // JST(UTC+9)補正: lightweight-chartsはUTC表示のため+9h
+    const time=isIntraday?ts[i]+32400:date;
     rows.push({date,time,open:o,high:h,low:l,close:c,volume:v||0});
   }
   return rows.sort((a,b)=>a.date<b.date?-1:1);
