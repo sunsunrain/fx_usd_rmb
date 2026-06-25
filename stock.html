@@ -578,17 +578,68 @@ function toggleCompare(){
 }
 
 // ===== オートコンプリート共通 =====
+
+// Yahoo Finance 銘柄検索API（DB未登録銘柄のフォールバック）
+async function searchYahooFinance(q){
+  const url=`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&lang=ja&region=JP&quotesCount=8&newsCount=0`;
+  const proxies=[u=>u, u=>`https://corsproxy.io/?${encodeURIComponent(u)}`];
+  for(const proxy of proxies){
+    try{
+      const r=await fetch(proxy(url),{signal:AbortSignal.timeout(5000)});
+      if(!r.ok)continue;
+      const j=await r.json();
+      const quotes=(j?.finance?.result?.[0]?.quotes||j?.quotes||[]);
+      return quotes
+        .filter(q=>q.symbol&&q.symbol.endsWith('.T'))
+        .map(q=>({
+          c:q.symbol.replace('.T',''),
+          n:q.longname||q.shortname||q.symbol.replace('.T',''),
+          s:q.typeDisp||'東証'
+        }));
+    }catch(e){}
+  }
+  return [];
+}
+
 function setupAC(inputId, acId, onSelect){
   const inp=document.getElementById(inputId);
   const ac=document.getElementById(acId);
   const clearId=inputId.replace('search','clear').replace('wl-search','clear-wl');
   let idx=-1;
+  let searchTimer=null;
+
+  function renderAC(localHits, isCode, q, yahooHits=[]){
+    let html='';
+    // ローカルDB結果
+    html+=localHits.map((s,i)=>
+      `<div class="ac-item" data-i="${i}" data-code="${s.c}" data-name="${esc(s.n)}" onclick="onACSelect_${inputId}('${s.c}','${esc(s.n)}')">`+
+      `<span class="ac-code">${s.c}</span><span class="ac-name">${s.n}</span><span class="ac-sector">${s.s}</span></div>`
+    ).join('');
+    // Yahoo Finance結果（ローカルにない銘柄のみ）
+    const localCodes=new Set(localHits.map(h=>h.c));
+    const yahooNew=yahooHits.filter(h=>!localCodes.has(h.c));
+    if(yahooNew.length){
+      if(localHits.length) html+=`<div class="ac-hint" style="border-top:1px solid var(--border);padding-top:6px">Yahoo Finance検索結果</div>`;
+      html+=yahooNew.map((s,i)=>
+        `<div class="ac-item" data-i="${localHits.length+i}" data-code="${s.c}" data-name="${esc(s.n)}" onclick="onACSelect_${inputId}('${s.c}','${esc(s.n)}')">`+
+        `<span class="ac-code">${s.c}</span><span class="ac-name">${s.n}</span><span class="ac-sector" style="color:var(--accent2)">${s.s}</span></div>`
+      ).join('');
+    }
+    // コード直入力ヒント
+    if(isCode && !localHits.find(h=>h.c===q.toUpperCase()) && !yahooNew.find(h=>h.c===q.toUpperCase())){
+      html+=`<div class="ac-hint">「${q}」をコードとして直接検索 →「表示」を押してください</div>`;
+    }
+    if(!html){ac.style.display='none';return;}
+    ac.innerHTML=html;
+    ac.style.display='block';
+    idx=-1;
+  }
 
   inp.addEventListener('input',()=>{
     const q=inp.value.trim();
     const clr=document.getElementById(clearId);
     if(clr)clr.style.display=q?'block':'none';
-    if(!q){ac.style.display='none';return;}
+    if(!q){ac.style.display='none';clearTimeout(searchTimer);return;}
     const ql=q.toLowerCase();
     // 名前優先でスコアリングしてソート
     const scored=STOCKS.map(s=>{
@@ -599,21 +650,25 @@ function setupAC(inputId, acId, onSelect){
       else if(s.c.toLowerCase().startsWith(ql))score=40;
       return score>0?{...s,score}:null;
     }).filter(Boolean).sort((a,b)=>b.score-a.score);
-    const hits=scored.slice(0,8);
-
-    // DBにない場合でも東証コード的入力はそのまま提示（4桁数字 or 3桁+英字）
+    const hits=scored.slice(0,6);
     const isCode=/^([0-9]{4}[0-9A-Za-z]?|[0-9]{3}[A-Za-z])$/.test(q);
-    let extra='';
-    if(isCode && !hits.find(h=>h.c===q.toUpperCase())){
-      extra=`<div class="ac-hint">「${q}」をコードとして直接検索 →「表示」を押してください</div>`;
-    }
 
-    if(!hits.length&&!isCode){ac.style.display='none';return;}
-    ac.innerHTML=hits.map((s,i)=>
-      `<div class="ac-item" data-i="${i}" data-code="${s.c}" data-name="${esc(s.n)}" onclick="onACSelect_${inputId}('${s.c}','${esc(s.n)}')">`+
-      `<span class="ac-code">${s.c}</span><span class="ac-name">${s.n}</span><span class="ac-sector">${s.s}</span></div>`
-    ).join('')+extra;
-    ac.style.display='block'; idx=-1;
+    // まずローカル結果を即表示
+    if(hits.length||isCode) renderAC(hits, isCode, q);
+
+    // ローカルで十分マッチしない場合はYahoo Finance検索（300ms debounce）
+    clearTimeout(searchTimer);
+    if(q.length>=2){
+      // ローカル結果が少ない or コード入力でもないときはAPIも叩く
+      if(hits.length<3 && !isCode){
+        ac.innerHTML=(hits.length?ac.innerHTML:'')+`<div class="ac-hint" id="ac-searching">🔍 検索中...</div>`;
+        ac.style.display='block';
+        searchTimer=setTimeout(async()=>{
+          const yahooHits=await searchYahooFinance(q);
+          if(inp.value.trim()===q) renderAC(hits, isCode, q, yahooHits);
+        },300);
+      }
+    }
   });
 
   inp.addEventListener('keydown',e=>{
