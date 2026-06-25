@@ -870,9 +870,7 @@ function parseYF(result){
     if(o==null||c==null||isNaN(o)||isNaN(c))continue;
     const d=new Date(ts[i]*1000);
     const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    // イントラデイはUnixタイムスタンプ（秒）を直接使用
-    // JST(UTC+9)補正: lightweight-chartsはUTC表示のため+9h
-    const time=isIntraday?ts[i]+32400:date;
+    const time=isIntraday?ts[i]:date;
     rows.push({date,time,open:o,high:h,low:l,close:c,volume:v||0});
   }
   return rows.sort((a,b)=>a.date<b.date?-1:1);
@@ -968,6 +966,13 @@ function latestSignals(rows,ma5,ma25,bb,rsi,macdD){
 }
 
 // ===== チャート描画共通設定 =====
+// JST表示用フォーマッタ（数値タイムスタンプ=イントラデイ時のみ適用）
+function jstTimeFormatter(ts){
+  // lightweight-chartsはUTC基準のためJST(+9h)に変換して表示
+  const d=new Date((ts+32400)*1000);
+  return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0');
+}
+
 const chartTheme={
   layout:{background:{color:'#1c2128'},textColor:'#8b949e'},
   grid:{vertLines:{color:'#30363d'},horzLines:{color:'#30363d'}},
@@ -978,11 +983,18 @@ const chartTheme={
   handleScale:{mouseWheel:true,pinch:true},
 };
 
+// イントラデイ用テーマ（JSTフォーマッタ付き）
+function intradayTheme(){
+  return{...chartTheme,localization:{timeFormatter:jstTimeFormatter}};
+}
+
 function makeCandleChart(containerId,rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD){
   const el=document.getElementById(containerId);
   const h=el.getBoundingClientRect().height||el.clientHeight||280;
   const w=el.getBoundingClientRect().width||el.clientWidth||600;
-  const c=LightweightCharts.createChart(el,{...chartTheme,height:h,width:w});
+  const isInt=typeof rows[0]?.time==='number';
+  const theme=isInt?intradayTheme():chartTheme;
+  const c=LightweightCharts.createChart(el,{...theme,height:h,width:w});
   c.timeScale().fitContent();
   const cs=c.addCandlestickSeries({upColor:'#3fb950',downColor:'#f85149',borderUpColor:'#3fb950',borderDownColor:'#f85149',wickUpColor:'#3fb950',wickDownColor:'#f85149'});
   cs.setData(rows.map(r=>({time:r.time,open:r.open,high:r.high,low:r.low,close:r.close})));
@@ -1067,7 +1079,8 @@ async function loadCharts(){
   if(chartRsiObj)chartRsiObj.remove();
   const rsiEl=document.getElementById('chart-rsi');
   const rsiW=document.getElementById('tab-chart').clientWidth||600;
-  chartRsiObj=LightweightCharts.createChart(rsiEl,{...chartTheme,height:120,width:rsiW,rightPriceScale:{borderColor:'#30363d',scaleMargins:{top:.1,bottom:.1}}});
+  const rsiTheme=typeof rows[0]?.time==='number'?intradayTheme():chartTheme;
+  chartRsiObj=LightweightCharts.createChart(rsiEl,{...rsiTheme,height:120,width:rsiW,rightPriceScale:{borderColor:'#30363d',scaleMargins:{top:.1,bottom:.1}}});
   chartRsiObj.timeScale().fitContent();
   chartRsiObj.addLineSeries({color:'#ffa657',lineWidth:2,priceLineVisible:false}).setData(rows.map((r,i)=>rsiV[i]!==null?{time:r.time,value:rsiV[i]}:null).filter(Boolean));
   chartRsiObj.addLineSeries({color:'rgba(248,81,73,.6)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map(r=>({time:r.time,value:70})));
@@ -1082,7 +1095,8 @@ async function loadCharts(){
   if(chartMacdObj)chartMacdObj.remove();
   const macdEl=document.getElementById('chart-macd');
   const macdW=document.getElementById('tab-chart').clientWidth||600;
-  chartMacdObj=LightweightCharts.createChart(macdEl,{...chartTheme,height:120,width:macdW});
+  const macdTheme=typeof rows[0]?.time==='number'?intradayTheme():chartTheme;
+  chartMacdObj=LightweightCharts.createChart(macdEl,{...macdTheme,height:120,width:macdW});
   chartMacdObj.timeScale().fitContent();
   chartMacdObj.addHistogramSeries({priceLineVisible:false}).setData(rows.map((r,i)=>macdD.hist[i]!==null?{time:r.time,value:macdD.hist[i],color:macdD.hist[i]>=0?'#3fb950':'#f85149'}:null).filter(Boolean));
   chartMacdObj.addLineSeries({color:'#58a6ff',lineWidth:2,priceLineVisible:false}).setData(rows.map((r,i)=>macdD.macd[i]!==null?{time:r.time,value:macdD.macd[i]}:null).filter(Boolean));
