@@ -231,9 +231,9 @@ h1{font-size:.95rem;font-weight:700;}
         <span class="period-label">期間</span>
         <div class="period-btns">
           <button class="period-btn" data-p="1d">1日</button>
-          <button class="period-btn" data-p="5d">1週間</button>
+          <button class="period-btn active" data-p="5d">1週間</button>
           <button class="period-btn" data-p="1mo">1ヶ月</button>
-          <button class="period-btn active" data-p="3mo">3ヶ月</button>
+          <button class="period-btn" data-p="3mo">3ヶ月</button>
           <button class="period-btn" data-p="6mo">6ヶ月</button>
           <button class="period-btn" data-p="1y">1年</button>
         </div>
@@ -404,6 +404,11 @@ h1{font-size:.95rem;font-weight:700;}
         <button class="btn btn-secondary" onclick="wlAddFromInput()" style="height:38px;padding:0 12px">追加</button>
       </div>
       <div id="wl-list" class="wl-list"></div>
+      <!-- ウォッチリスト共有（PC↔スマホ同期用） -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn btn-secondary" onclick="wlCopyURL()" style="height:34px;font-size:.78rem">📋 共有URLをコピー</button>
+        <span style="font-size:.68rem;color:var(--text2);align-self:center">← このURLを別端末で開くとウォッチリストが同期されます</span>
+      </div>
     </div>
 
     <div id="notif-bar" class="notif-bar" style="display:none">
@@ -596,8 +601,8 @@ function setupAC(inputId, acId, onSelect){
     }).filter(Boolean).sort((a,b)=>b.score-a.score);
     const hits=scored.slice(0,8);
 
-    // DBにない場合でも4桁コード的入力はそのまま提示
-    const isCode=/^[0-9]{3,4}[0-9A-Za-z]?$/.test(q);
+    // DBにない場合でも東証コード的入力はそのまま提示（4桁数字 or 3桁+英字）
+    const isCode=/^([0-9]{4}[0-9A-Za-z]?|[0-9]{3}[A-Za-z])$/.test(q);
     let extra='';
     if(isCode && !hits.find(h=>h.c===q.toUpperCase())){
       extra=`<div class="ac-hint">「${q}」をコードとして直接検索 →「表示」を押してください</div>`;
@@ -639,7 +644,7 @@ function clearSearch(n){
 }
 
 // ===== 状態 =====
-let activePeriod='3mo';
+let activePeriod='5d';
 let currentCode1='',currentName1='',currentCode2='',currentName2='';
 let chartMain1=null,chartMain2=null,chartRsiObj=null,chartMacdObj=null;
 
@@ -680,7 +685,7 @@ function parseInputCode(inputId,currentCode,currentName){
   const raw=document.getElementById(inputId).value.trim();
   if(!raw)return{code:'',name:''};
   if(currentCode)return{code:currentCode,name:currentName};
-  const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?)/);
+  const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?|[0-9]{3}[A-Za-z])/);
   if(m){
     const code=m[1].toUpperCase();
     const found=STOCKS.find(s=>s.c===code);
@@ -1010,6 +1015,41 @@ function addWL(code,name){
 }
 function removeWL(code){saveWL(getWL().filter(w=>w.c!==code));renderWL();}
 
+// URLにウォッチリストをエンコードして共有
+function wlCopyURL(){
+  const wl=getWL();
+  if(!wl.length){alert('ウォッチリストが空です。銘柄を追加してからコピーしてください。');return;}
+  const encoded=encodeURIComponent(JSON.stringify(wl));
+  const url=`${location.origin}${location.pathname}?wl=${encoded}#watchlist`;
+  navigator.clipboard.writeText(url).then(()=>{
+    alert('共有URLをコピーしました。別の端末でそのURLを開くとウォッチリストが読み込まれます。');
+  }).catch(()=>{
+    prompt('以下のURLをコピーしてください：',url);
+  });
+}
+
+// URLからウォッチリストをインポート
+function importWLFromURL(){
+  const params=new URLSearchParams(location.search);
+  const wlParam=params.get('wl');
+  if(!wlParam)return;
+  try{
+    const imported=JSON.parse(decodeURIComponent(wlParam));
+    if(!Array.isArray(imported))return;
+    const current=getWL();
+    let added=0;
+    imported.forEach(w=>{
+      if(w.c&&w.n&&!current.find(x=>x.c===w.c)){current.push(w);added++;}
+    });
+    saveWL(current);
+    if(added>0){
+      // URLパラメータを消してリロード防止
+      history.replaceState(null,'',location.pathname+'#watchlist');
+      alert(`${added}銘柄をウォッチリストにインポートしました。`);
+    }
+  }catch(e){}
+}
+
 setupAC('wl-search','ac-wl',(code,name)=>{
   if(!code)return;
   addWL(code,name);
@@ -1019,7 +1059,7 @@ setupAC('wl-search','ac-wl',(code,name)=>{
 function wlAddFromInput(){
   const raw=document.getElementById('wl-search').value.trim();
   if(!raw)return;
-  const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?)/);
+  const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?|[0-9]{3}[A-Za-z])/);
   if(m){const code=m[1].toUpperCase();const found=STOCKS.find(s=>s.c===code);addWL(code,found?found.n:code);}
   else{const found=STOCKS.find(s=>s.n.includes(raw));if(found)addWL(found.c,found.n);}
   document.getElementById('wl-search').value='';
@@ -1226,6 +1266,7 @@ function toggleIndicator(name){
 }
 
 // ===== 初期化 =====
+importWLFromURL();
 renderFavs();
 </script>
 </body>
