@@ -316,7 +316,7 @@ h1{font-size:.95rem;font-weight:700;}
 
     <div class="chart-wrap" id="wrap-rsi" style="display:none">
       <div class="chart-header">
-        <div class="chart-title">RSI (14) — 銘柄1</div>
+        <div class="chart-title" id="rsi-label">RSI (14)</div>
         <div class="legend">
           <div class="leg-item"><div class="leg-dot" style="background:#ffa657"></div>RSI</div>
           <div class="leg-item" style="color:var(--red)">70過買い</div>
@@ -328,7 +328,7 @@ h1{font-size:.95rem;font-weight:700;}
 
     <div class="chart-wrap" id="wrap-macd" style="display:none">
       <div class="chart-header">
-        <div class="chart-title">MACD (12, 26, 9) — 銘柄1</div>
+        <div class="chart-title" id="macd-label">MACD (12, 26, 9)</div>
         <div class="legend">
           <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div>MACD</div>
           <div class="leg-item"><div class="leg-dot" style="background:#f85149"></div>シグナル</div>
@@ -907,7 +907,10 @@ async function loadCharts(){
   document.getElementById('tc-bbl').textContent=bvL?bvL.lower.toFixed(1):'—';
   document.getElementById('tech-row1').style.display='grid';
 
-  document.getElementById('chart-label1').textContent=`${currentName1}（${currentCode1}）`;
+  const stockLabel=`${currentName1}（${currentCode1}）`;
+  document.getElementById('chart-label1').textContent=stockLabel;
+  document.getElementById('rsi-label').textContent=`RSI (14) — ${stockLabel}`;
+  document.getElementById('macd-label').textContent=`MACD (12,26,9) — ${stockLabel}`;
   document.getElementById('wrap-main1').style.display='block';
   if(chartMain1)chartMain1.remove();
   chartMain1=makeCandleChart('chart-main1',rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD);
@@ -1003,8 +1006,7 @@ function renderWL(){
   if(!wl.length){el.innerHTML='<div class="wl-empty">銘柄が登録されていません。上の検索欄から追加してください。</div>';return;}
   el.innerHTML=wl.map(w=>`
     <div class="wl-item">
-      <span class="wl-item-name">${w.n}</span>
-      <span class="wl-item-code">${w.c}</span>
+      <span class="wl-item-name">${w.n===w.c?`<span style="color:var(--text2)">${w.c}</span>`:w.n}<span style="color:var(--text2);font-family:monospace;font-size:.7rem;margin-left:5px">${w.n!==w.c?w.c:''}</span></span>
       <button class="wl-item-del" onclick="removeWL('${w.c}')">✕ 削除</button>
     </div>`).join('');
 }
@@ -1060,8 +1062,25 @@ function wlAddFromInput(){
   const raw=document.getElementById('wl-search').value.trim();
   if(!raw)return;
   const m=raw.match(/^([0-9]{4}[0-9A-Za-z]?|[0-9]{3}[A-Za-z])/);
-  if(m){const code=m[1].toUpperCase();const found=STOCKS.find(s=>s.c===code);addWL(code,found?found.n:code);}
-  else{const found=STOCKS.find(s=>s.n.includes(raw));if(found)addWL(found.c,found.n);}
+  if(m){
+    const code=m[1].toUpperCase();
+    const found=STOCKS.find(s=>s.c===code);
+    addWL(code,found?found.n:code);
+    // DB未登録の場合はAPIから名前を非同期で補完
+    if(!found){
+      fetchStockData(code,'5d').then(result=>{
+        if(!result)return;
+        const apiName=nameFromResult(result,code);
+        if(apiName&&apiName!==code){
+          saveWL(getWL().map(x=>x.c===code?{...x,n:apiName}:x));
+          renderWL();
+        }
+      });
+    }
+  }else{
+    const found=STOCKS.find(s=>s.n.includes(raw));
+    if(found)addWL(found.c,found.n);
+  }
   document.getElementById('wl-search').value='';
 }
 
@@ -1101,9 +1120,19 @@ async function startScan(){
       const loadingEl=document.getElementById(`scan-loading-${w.c}`);
       if(loadingEl)loadingEl.remove();
 
-      if(!result){resEl.insertAdjacentHTML('beforeend',`<div class="scan-loading" style="color:var(--red)">✗ ${w.n} — 取得失敗</div>`);continue;}
+      if(!result){resEl.insertAdjacentHTML('beforeend',`<div class="scan-loading" style="color:var(--red)">✗ ${w.n}（${w.c}） — 取得失敗</div>`);continue;}
       const rows=parseYF(result);
       if(rows.length<5)continue;
+
+      // DB未登録銘柄はAPIから名前を補完してWLに保存
+      if(w.n===w.c){
+        const apiName=nameFromResult(result,w.c);
+        if(apiName&&apiName!==w.c){
+          w.n=apiName;
+          const wl2=getWL().map(x=>x.c===w.c?{...x,n:apiName}:x);
+          saveWL(wl2);
+        }
+      }
 
       const cl=rows.map(r=>r.close);
       const ma5v=calcMA(cl,5),ma25v=calcMA(cl,25);
