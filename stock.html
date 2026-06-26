@@ -395,7 +395,10 @@ h1{font-size:.95rem;font-weight:700;}
   <!-- ======= ウォッチリストタブ ======= -->
   <div id="tab-watchlist" style="display:none">
     <div class="ctrl">
-      <div class="wl-title">ウォッチリスト管理</div>
+      <div class="wl-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>ウォッチリスト管理</span>
+        <span id="wl-count" style="font-size:.7rem;color:var(--text2);font-weight:400"></span>
+      </div>
       <div class="wl-add-row">
         <div class="search-input-wrap" style="flex:1">
           <input type="text" class="search-input" id="wl-search" placeholder="銘柄名 or コードを入力して追加" autocomplete="off" style="height:38px">
@@ -1137,6 +1140,8 @@ async function loadCharts(){
   kLink.href=`https://kabutan.jp/stock/?code=${currentCode1}`;
   kLink.style.display='inline-block';
   addFav(currentCode1,currentName1);
+  // チャート表示時に自動でウォッチリストへ追加（上限30銘柄）
+  addWLauto(currentCode1,currentName1);
 
   if(compareMode&&currentCode2)loadChart2();
 }
@@ -1175,17 +1180,47 @@ async function loadChart2(){
 function renderWL(){
   const wl=getWL();
   const el=document.getElementById('wl-list');
-  if(!wl.length){el.innerHTML='<div class="wl-empty">銘柄が登録されていません。上の検索欄から追加してください。</div>';return;}
+  const cnt=document.getElementById('wl-count');
+  if(cnt)cnt.textContent=`${wl.length} / ${WL_MAX}銘柄`;
+  if(!wl.length){el.innerHTML='<div class="wl-empty">銘柄が登録されていません。チャートで表示すると自動追加されます（上限30銘柄）。</div>';return;}
   el.innerHTML=wl.map(w=>`
     <div class="wl-item">
       <span class="wl-item-name">${w.n===w.c?`<span style="color:var(--text2)">${w.c}</span>`:w.n}<span style="color:var(--text2);font-family:monospace;font-size:.7rem;margin-left:5px">${w.n!==w.c?w.c:''}</span></span>
       <button class="wl-item-del" onclick="removeWL('${w.c}')">✕ 削除</button>
     </div>`).join('');
 }
+const WL_MAX=30;
 function addWL(code,name){
   const wl=getWL().filter(w=>w.c!==code);
   wl.push({c:code,n:name});
   saveWL(wl);renderWL();
+}
+// チャートから自動追加（上限チェック付き・トースト通知）
+function addWLauto(code,name){
+  const wl=getWL();
+  if(wl.find(w=>w.c===code))return; // 既登録はスキップ
+  if(wl.length>=WL_MAX){
+    showToast(`ウォッチリストは上限${WL_MAX}銘柄です。不要な銘柄を削除してください。`,'warn');
+    return;
+  }
+  addWL(code,name);
+  showToast(`${name}（${code}）をウォッチリストに追加しました`,'ok');
+}
+function showToast(msg,type='ok'){
+  let t=document.getElementById('wl-toast');
+  if(!t){
+    t=document.createElement('div');t.id='wl-toast';
+    t.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);'+
+      'padding:8px 16px;border-radius:8px;font-size:.78rem;z-index:999;'+
+      'pointer-events:none;transition:opacity .4s;white-space:nowrap;max-width:90vw;text-align:center';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.background=type==='warn'?'rgba(240,165,0,.92)':'rgba(63,185,80,.92)';
+  t.style.color=type==='warn'?'#000':'#000';
+  t.style.opacity='1';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.style.opacity='0',2800);
 }
 function removeWL(code){saveWL(getWL().filter(w=>w.c!==code));renderWL();}
 
