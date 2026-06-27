@@ -29,6 +29,7 @@ h1{font-size:1.1rem;font-weight:700;}
 .field input,.field select{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:6px;font-size:.88rem;font-family:'JetBrains Mono',monospace;}
 .field select{font-family:'Noto Sans JP',sans-serif;font-size:.82rem;}
 .field input:focus,.field select:focus{outline:none;border-color:var(--accent);}
+.field input.filled{border-color:var(--green);}
 .btn{border:none;padding:8px 18px;border-radius:6px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;width:100%;}
 .btn-calc{background:var(--accent);color:#000;}
 .btn-calc:hover{opacity:.85;}
@@ -85,12 +86,45 @@ h1{font-size:1.1rem;font-weight:700;}
 .yt-renew-btn{border:none;background:rgba(63,185,80,.12);color:var(--green);border-radius:4px;padding:4px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 .yt-renew-btn:hover{background:rgba(63,185,80,.25);}
 .yt-empty{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:32px;text-align:center;color:var(--text2);font-size:.82rem;margin-bottom:18px;}
-
-/* Summary */
 .yt-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
 .yt-sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:110px;}
 .yt-sum-lbl{font-size:.62rem;color:var(--text2);margin-bottom:4px;}
 .yt-sum-val{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+/* Camera modal */
+.cam-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.cam-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;}
+.cam-title{font-size:.92rem;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.cam-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.3rem;line-height:1;padding:2px 6px;border-radius:4px;}
+.cam-close:hover{color:var(--text);background:rgba(255,255,255,.06);}
+.cam-drop{border:2px dashed var(--border);border-radius:8px;padding:28px 16px;text-align:center;cursor:pointer;margin-bottom:14px;transition:border-color .15s;}
+.cam-drop:hover,.cam-drop.drag{border-color:var(--accent2);}
+.cam-drop-icon{font-size:2.2rem;margin-bottom:8px;}
+.cam-drop-lbl{font-size:.78rem;color:var(--text2);line-height:1.6;}
+.cam-drop-lbl strong{color:var(--accent2);}
+.cam-preview-wrap{margin-bottom:14px;display:none;}
+.cam-preview{width:100%;border-radius:6px;border:1px solid var(--border);display:block;}
+.cam-progress{margin-bottom:12px;display:none;}
+.cam-progress-lbl{font-size:.72rem;color:var(--text2);margin-bottom:5px;}
+.cam-bar-bg{background:var(--bg3);border-radius:4px;height:6px;overflow:hidden;}
+.cam-bar{background:var(--accent2);height:100%;border-radius:4px;width:0%;transition:width .25s;}
+.cam-result{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;display:none;}
+.cam-result-hd{font-size:.65rem;font-weight:700;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.cam-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.8rem;}
+.cam-row:last-child{border-bottom:none;}
+.cam-row .lbl{color:var(--text2);font-size:.7rem;width:86px;flex-shrink:0;}
+.cam-row .val{font-family:'JetBrains Mono',monospace;font-weight:600;flex:1;}
+.cam-row .ok{color:var(--green);}
+.cam-row .ng{color:var(--text2);font-style:italic;}
+.cam-raw{margin-top:10px;}
+.cam-raw summary{font-size:.68rem;color:var(--text2);cursor:pointer;user-select:none;}
+.cam-raw pre{font-size:.64rem;color:var(--text2);background:var(--bg2);border-radius:4px;padding:8px;margin-top:6px;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
+.cam-actions{display:flex;gap:8px;}
+.cam-apply-btn{flex:1;border:none;background:var(--accent);color:#000;border-radius:6px;padding:9px 0;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.cam-apply-btn:disabled{opacity:.4;cursor:default;}
+.cam-retry-btn{border:1px solid var(--border);background:var(--bg3);color:var(--text2);border-radius:6px;padding:9px 14px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.sec-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sec-row .sec{margin-bottom:0;}
 </style>
 </head>
 <body>
@@ -151,7 +185,10 @@ h1{font-size:1.1rem;font-weight:700;}
   <div id="yutai-list"></div>
 
   <!-- 新規追加フォーム -->
-  <div class="sec" style="margin-top:8px">新規追加</div>
+  <div class="sec-row">
+    <span class="sec">新規追加</span>
+    <button class="btn-sm btn-sync" onclick="openCamModal()">📷 書類から読み取り</button>
+  </div>
   <div class="panel">
     <div class="pgrid">
       <div class="field"><label>銘柄名 / 会社名 ＊</label><input id="yt-name" type="text" placeholder="例: マクドナルド"></div>
@@ -182,6 +219,57 @@ h1{font-size:1.1rem;font-weight:700;}
 
 </div>
 
+<!-- カメラ / OCRモーダル -->
+<div id="cam-overlay" class="cam-overlay" style="display:none" onclick="camOverlayClick(event)">
+  <div class="cam-box">
+    <div class="cam-title">
+      <span>📷 書類から読み取り</span>
+      <button class="cam-close" onclick="closeCamModal()">✕</button>
+    </div>
+
+    <!-- ドロップ / ファイル選択 -->
+    <div class="cam-drop" id="cam-drop" onclick="document.getElementById('cam-file').click()"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="camDrop(event)">
+      <div class="cam-drop-icon">📄</div>
+      <div class="cam-drop-lbl">
+        <strong>タップして撮影 / ファイルを選択</strong><br>
+        スマホでは直接カメラが起動します<br>
+        <span style="font-size:.65rem">PNG / JPG / HEIC 対応 ・ドラッグ&ドロップも可</span>
+      </div>
+    </div>
+    <input type="file" id="cam-file" accept="image/*" capture="environment" style="display:none" onchange="camFileSelected(this)">
+
+    <!-- プレビュー -->
+    <div class="cam-preview-wrap" id="cam-preview-wrap">
+      <img id="cam-preview" class="cam-preview" alt="プレビュー">
+    </div>
+
+    <!-- 進行バー -->
+    <div class="cam-progress" id="cam-progress">
+      <div class="cam-progress-lbl" id="cam-progress-lbl">読み込み中...</div>
+      <div class="cam-bar-bg"><div class="cam-bar" id="cam-bar"></div></div>
+    </div>
+
+    <!-- 読み取り結果 -->
+    <div class="cam-result" id="cam-result">
+      <div class="cam-result-hd">読み取り結果</div>
+      <div id="cam-result-rows"></div>
+      <details class="cam-raw" id="cam-raw-wrap">
+        <summary>認識テキスト全文を見る</summary>
+        <pre id="cam-raw-text"></pre>
+      </details>
+    </div>
+
+    <!-- ボタン -->
+    <div class="cam-actions" id="cam-actions" style="display:none">
+      <button class="cam-apply-btn" id="cam-apply-btn" onclick="applyOcrResult()">✓ フォームに反映する</button>
+      <button class="cam-retry-btn" onclick="resetCamModal()">やり直す</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let yutaiData = JSON.parse(localStorage.getItem('yutai') || '[]');
 const GIST_FILE = 'yutai_data.json';
@@ -189,6 +277,7 @@ let gistPat = localStorage.getItem('yutai_gist_pat') || '';
 let gistId  = localStorage.getItem('yutai_gist_id')  || '';
 let filterMonth = null;
 let filterOwn = 'all';
+let ocrParsed = {};
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -345,7 +434,11 @@ function addYutai() {
   });
   saveYutai();
   renderYutai();
-  ['yt-name','yt-record','yt-expiry','yt-amount','yt-places','yt-notes','yt-price'].forEach(id => { document.getElementById(id).value = ''; });
+  ['yt-name','yt-record','yt-expiry','yt-amount','yt-places','yt-notes','yt-price'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = '';
+    el.classList.remove('filled');
+  });
   document.getElementById('yt-lot').value = '100';
   document.getElementById('yt-owned').value = 'owned';
   document.getElementById('yt-repeat').value = 'none';
@@ -400,13 +493,10 @@ function deleteExpired() {
 }
 
 // ---- 描画 ----
-function ownedOf(item) {
-  return item.owned !== undefined ? item.owned : 'owned';
-}
+function ownedOf(item) { return item.owned !== undefined ? item.owned : 'owned'; }
 
 function renderYutai() {
   const today = new Date(); today.setHours(0, 0, 0, 0);
-
   const filtered = yutaiData.filter(item => {
     if (filterOwn !== 'all' && ownedOf(item) !== filterOwn) return false;
     if (filterMonth && effectiveMonth(item) !== filterMonth) return false;
@@ -441,13 +531,11 @@ function renderYutai() {
     const diff = Math.round((expDate - today) / 86400000);
     const sc = diff < 0 ? 'expired' : diff <= 30 ? 'soon' : 'ok';
     const bt = diff < 0 ? `${Math.abs(diff)}日超過` : `あと${diff}日`;
-
     const ov = ownedOf(item);
     const ownBadge  = ov === 'owned' ? `<span class="badge badge-owned">保有中</span>` : ov === 'watch' ? `<span class="badge badge-watch">検討中</span>` : '';
     const repBadge  = (item.repeat && item.repeat !== 'none') ? `<span class="badge badge-rep">${item.repeat === 'yearly' ? '毎年' : '6M'}</span>` : '';
     const yld = (item.amount && item.stockPrice && item.minLot) ? item.amount / (item.stockPrice * item.minLot) * 100 : null;
     const yieldBadge = yld ? `<span class="badge badge-yield">利回り ${yld.toFixed(2)}%</span>` : '';
-
     const rows = [
       `<div class="yt-row"><span class="k">有効期限</span><span class="v">${escHtml(item.expiry)}</span></div>`,
       item.recordMonth ? `<div class="yt-row"><span class="k">権利確定月</span><span class="v">${escHtml(item.recordMonth)}</span></div>` : '',
@@ -455,17 +543,192 @@ function renderYutai() {
       item.stockPrice > 0 ? `<div class="yt-row"><span class="k">株価 / 単元</span><span class="v">¥${item.stockPrice.toLocaleString()} × ${item.minLot || 100}株</span></div>` : '',
       item.notes ? `<div class="yt-row"><span class="k">メモ</span><span class="v" style="font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:.72rem">${escHtml(item.notes)}</span></div>` : '',
     ].join('');
-
     const tagsHtml  = item.places && item.places.length ? `<div class="yt-tags">${item.places.map(p => `<span class="yt-tag">${escHtml(p)}</span>`).join('')}</div>` : '';
     const renewHtml = (sc === 'expired' && item.repeat && item.repeat !== 'none')
       ? `<div class="yt-actions"><button class="yt-renew-btn" onclick="renewYutai('${escHtml(item.id)}')">🔄 次回を作成</button></div>` : '';
-
     return `<div class="yt-card ${sc}">
       <button class="yt-del" onclick="deleteYutai('${escHtml(item.id)}')" title="削除">✕</button>
       <div class="yt-name"><span>${escHtml(item.name)}</span><span class="badge badge-${sc}">${bt}</span>${ownBadge}${repBadge}${yieldBadge}</div>
       ${rows}${tagsHtml}${renewHtml}
     </div>`;
   }).join('') + '</div>';
+}
+
+// ---- カメラ / OCR ----
+function openCamModal() {
+  document.getElementById('cam-overlay').style.display = 'flex';
+  resetCamModal();
+}
+
+function closeCamModal() {
+  document.getElementById('cam-overlay').style.display = 'none';
+}
+
+function camOverlayClick(e) {
+  if (e.target === document.getElementById('cam-overlay')) closeCamModal();
+}
+
+function resetCamModal() {
+  document.getElementById('cam-file').value = '';
+  document.getElementById('cam-preview-wrap').style.display = 'none';
+  document.getElementById('cam-progress').style.display = 'none';
+  document.getElementById('cam-result').style.display = 'none';
+  document.getElementById('cam-actions').style.display = 'none';
+  document.getElementById('cam-bar').style.width = '0%';
+  document.getElementById('cam-drop').style.display = '';
+  ocrParsed = {};
+}
+
+function camDrop(e) {
+  e.preventDefault();
+  document.getElementById('cam-drop').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processImage(file);
+}
+
+function camFileSelected(input) {
+  if (input.files[0]) processImage(input.files[0]);
+}
+
+function processImage(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const src = e.target.result;
+    const img = document.getElementById('cam-preview');
+    img.src = src;
+    document.getElementById('cam-preview-wrap').style.display = '';
+    document.getElementById('cam-drop').style.display = 'none';
+    runOcr(src);
+  };
+  reader.readAsDataURL(file);
+}
+
+function setProgress(pct, label) {
+  document.getElementById('cam-progress').style.display = '';
+  document.getElementById('cam-bar').style.width = (pct * 100) + '%';
+  document.getElementById('cam-progress-lbl').textContent = label;
+}
+
+async function loadTesseract() {
+  if (window.Tesseract) return;
+  setProgress(0.05, 'Tesseract.js を読み込み中...');
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Tesseract.js の読み込みに失敗しました'));
+    document.head.appendChild(s);
+  });
+}
+
+async function runOcr(imageSrc) {
+  try {
+    await loadTesseract();
+    setProgress(0.1, '日本語モデルを準備中（初回は数十秒かかります）...');
+
+    const worker = await Tesseract.createWorker('jpn', 1, {
+      logger: m => {
+        if (m.status === 'loading language traineddata') setProgress(0.1 + m.progress * 0.4, `日本語学習データを読み込み中 ${Math.round(m.progress * 100)}%`);
+        if (m.status === 'recognizing text') setProgress(0.5 + m.progress * 0.45, `テキストを認識中 ${Math.round(m.progress * 100)}%`);
+      }
+    });
+
+    const { data: { text } } = await worker.recognize(imageSrc);
+    await worker.terminate();
+
+    setProgress(1.0, '完了');
+    showOcrResult(text);
+  } catch(err) {
+    setProgress(0, '');
+    document.getElementById('cam-progress').style.display = 'none';
+    alert('OCRエラー: ' + err.message);
+  }
+}
+
+function parseOcrText(raw) {
+  const t = raw.replace(/\r/g, '').replace(/[ \t]+/g, ' ');
+  const result = {};
+
+  // 有効期限: YYYY年M月D日
+  let m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+  if (m) result.expiry = `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+
+  // 令和X年M月D日
+  if (!result.expiry) {
+    m = t.match(/令和\s*(\d+)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+    if (m) { const y = 2018 + parseInt(m[1]); result.expiry = `${y}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`; }
+  }
+
+  // YYYY年M月末日
+  if (!result.expiry) {
+    m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月末/);
+    if (m) { const ld = new Date(parseInt(m[1]), parseInt(m[2]), 0).getDate(); result.expiry = `${m[1]}-${m[2].padStart(2,'0')}-${String(ld).padStart(2,'0')}`; }
+  }
+
+  // YYYY.M.D / YYYY/M/D (fallback)
+  if (!result.expiry) {
+    m = t.match(/(\d{4})[.\/](\d{1,2})[.\/](\d{1,2})/);
+    if (m) result.expiry = `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  }
+
+  // 権利確定月: "YYYY年M月" near "権利"
+  m = t.match(/(\d{4})\s*年\s*(\d{1,2})\s*月[末\s].*?権利/) || t.match(/権利[確定\s]*.*?(\d{4})\s*年\s*(\d{1,2})\s*月/);
+  if (m) result.recordMonth = `${m[1]}-${m[2].padStart(2,'0')}`;
+
+  // 金額: ¥X,XXX または X,XXX円 — pick largest plausible value (500–500000)
+  const amts = [];
+  let am;
+  const re1 = /[¥￥]\s*(\d[\d,]*)/g, re2 = /(\d[\d,]*)\s*円/g;
+  while ((am = re1.exec(t)) !== null) amts.push(parseInt(am[1].replace(/,/g,'')));
+  while ((am = re2.exec(t)) !== null) amts.push(parseInt(am[1].replace(/,/g,'')));
+  const valid = amts.filter(a => a >= 500 && a <= 500000);
+  if (valid.length) result.amount = Math.max(...valid);
+
+  return result;
+}
+
+function showOcrResult(rawText) {
+  ocrParsed = parseOcrText(rawText);
+
+  const fields = [
+    { key: 'expiry',       lbl: '有効期限',    fmt: v => v },
+    { key: 'recordMonth',  lbl: '権利確定月',  fmt: v => v },
+    { key: 'amount',       lbl: '優待金額',    fmt: v => `¥${Number(v).toLocaleString()}` },
+  ];
+
+  const rows = fields.map(f => {
+    const v = ocrParsed[f.key];
+    return `<div class="cam-row">
+      <span class="lbl">${f.lbl}</span>
+      ${v ? `<span class="val">${escHtml(f.fmt(v))}</span><span class="ok">✓</span>` : `<span class="val ng">検出できませんでした</span>`}
+    </div>`;
+  }).join('');
+
+  document.getElementById('cam-result-rows').innerHTML = rows;
+  document.getElementById('cam-raw-text').textContent = rawText;
+  document.getElementById('cam-result').style.display = '';
+  document.getElementById('cam-actions').style.display = '';
+  document.getElementById('cam-progress').style.display = 'none';
+}
+
+function applyOcrResult() {
+  if (ocrParsed.expiry) {
+    const el = document.getElementById('yt-expiry');
+    el.value = ocrParsed.expiry;
+    el.classList.add('filled');
+  }
+  if (ocrParsed.recordMonth) {
+    const el = document.getElementById('yt-record');
+    el.value = ocrParsed.recordMonth;
+    el.classList.add('filled');
+  }
+  if (ocrParsed.amount) {
+    const el = document.getElementById('yt-amount');
+    el.value = ocrParsed.amount;
+    el.classList.add('filled');
+  }
+  closeCamModal();
+  document.getElementById('yt-name').focus();
 }
 
 renderYutai();
