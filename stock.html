@@ -272,6 +272,8 @@ h1{font-size:.95rem;font-weight:700;}
               <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.5)"></div>BB±2σ</div>
               <div class="leg-item" style="color:var(--green)">▲買い</div>
               <div class="leg-item" style="color:var(--red)">▼売り</div>
+              <div class="leg-item"><div class="leg-dot" style="background:rgba(63,185,80,.7);height:1px;width:14px;border-top:1px dashed rgba(63,185,80,.7)"></div>S:サポート</div>
+              <div class="leg-item"><div class="leg-dot" style="background:rgba(255,140,0,.7);height:1px;width:14px;border-top:1px dashed rgba(255,140,0,.7)"></div>R:レジスタンス</div>
             </div>
           </div>
           <div class="chart-area" id="chart-main1"></div>
@@ -1001,6 +1003,30 @@ function intradayTheme(){
   };
 }
 
+// ===== ボリュームノード（出来高の壁）検出 =====
+// 出来高が集中した価格帯をサポート/レジスタンスラインとして返す
+function calcVolumeNodes(rows, buckets=30, topN=4){
+  if(rows.length<10) return [];
+  const prices=rows.map(r=>(r.high+r.low)/2);
+  const minP=Math.min(...prices), maxP=Math.max(...prices);
+  const range=maxP-minP;
+  if(range<1) return [];
+  const bw=range/buckets;
+  const volBucket=new Array(buckets).fill(0);
+  rows.forEach(r=>{
+    const mid=(r.high+r.low)/2;
+    const bi=Math.min(Math.floor((mid-minP)/bw),buckets-1);
+    volBucket[bi]+=r.volume;
+  });
+  const avgVol=volBucket.reduce((a,b)=>a+b,0)/buckets;
+  return volBucket
+    .map((v,i)=>({vol:v, price:minP+(i+0.5)*bw}))
+    .filter(x=>x.vol>avgVol*1.5)    // 平均の1.5倍以上の出来高帯のみ
+    .sort((a,b)=>b.vol-a.vol)
+    .slice(0,topN)
+    .map(x=>x.price);
+}
+
 function makeCandleChart(containerId,rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD){
   const el=document.getElementById(containerId);
   const h=el.getBoundingClientRect().height||el.clientHeight||280;
@@ -1012,6 +1038,20 @@ function makeCandleChart(containerId,rows,ma5v,ma25v,ma75v,bbv,rsiV,macdD){
   const cs=c.addCandlestickSeries({upColor:'#3fb950',downColor:'#f85149',borderUpColor:'#3fb950',borderDownColor:'#f85149',wickUpColor:'#3fb950',wickDownColor:'#f85149'});
   cs.setData(rows.map(r=>({time:r.time,open:r.open,high:r.high,low:r.low,close:r.close})));
   cs.setMarkers(buildMarkers(rows,ma5v,ma25v,bbv,rsiV,macdD));
+
+  // ボリュームノード（出来高の壁）→ サポート/レジスタンス水平線
+  const lastClose=rows[rows.length-1].close;
+  calcVolumeNodes(rows).forEach(level=>{
+    const isSupport=level<lastClose;
+    cs.createPriceLine({
+      price:level,
+      color:isSupport?'rgba(63,185,80,0.7)':'rgba(255,140,0,0.7)',
+      lineWidth:1,
+      lineStyle:LightweightCharts.LineStyle.Dashed,
+      axisLabelVisible:true,
+      title:isSupport?'S':'R',
+    });
+  });
   c.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].upper}:null).filter(Boolean));
   c.addLineSeries({color:'rgba(63,185,80,.3)',lineWidth:1,lineStyle:2,priceLineVisible:false}).setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].mid}:null).filter(Boolean));
   c.addLineSeries({color:'rgba(63,185,80,.5)',lineWidth:1,lineStyle:1,priceLineVisible:false}).setData(rows.map((r,i)=>bbv[i]?{time:r.time,value:bbv[i].lower}:null).filter(Boolean));
@@ -1461,6 +1501,28 @@ function generateTAComment(rows, ma5v, ma25v, ma75v, bbv, rsiV, macdD){
       parts.push(`MACDヒストグラムはマイナス圏で拡大しており、<b style="color:var(--red)">下落圧力が続いています</b>。`);
     else if(hist<0&&hist>histPrev)
       parts.push(`MACDヒストグラムはマイナス圏ですが縮小傾向にあり、<b>下落圧力がやや緩和</b>してきています。反転の兆しに注目です。`);
+  }
+
+  // ── ボリュームノード（出来高の壁）分析 ──
+  const nodes=calcVolumeNodes(rows);
+  if(nodes.length>0){
+    const close=rows[n].close;
+    const supports=nodes.filter(p=>p<close).sort((a,b)=>b-a);
+    const resistances=nodes.filter(p=>p>=close).sort((a,b)=>a-b);
+    const nearS=supports[0], nearR=resistances[0];
+    let nodeComment='出来高が集中した価格帯（チャート上のS/Rライン）として';
+    if(nearS&&nearR){
+      const sPct=((close-nearS)/close*100).toFixed(1);
+      const rPct=((nearR-close)/close*100).toFixed(1);
+      nodeComment+=`、直近サポートは<b>${nearS.toFixed(0)}円</b>（現値から-${sPct}%）、直近レジスタンスは<b>${nearR.toFixed(0)}円</b>（+${rPct}%）が目安です。`;
+      if(parseFloat(sPct)<2) nodeComment+=` <b style="color:var(--green)">サポートラインに非常に近く、反発を期待できる位置です。</b>`;
+      if(parseFloat(rPct)<2) nodeComment+=` <b style="color:var(--orange,#ffa657)">レジスタンスラインに接近中。突破できれば上昇加速、跳ね返されると注意が必要です。</b>`;
+    }else if(nearS){
+      nodeComment+=`直近サポートは<b>${nearS.toFixed(0)}円</b>が目安です。`;
+    }else if(nearR){
+      nodeComment+=`直近レジスタンスは<b>${nearR.toFixed(0)}円</b>が目安です。`;
+    }
+    parts.push(nodeComment);
   }
 
   // ── 総合判定 ──
