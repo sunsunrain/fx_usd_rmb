@@ -412,8 +412,22 @@ h1{font-size:.95rem;font-weight:700;}
       <!-- ウォッチリスト共有（PC↔スマホ同期用） -->
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
         <button class="btn btn-secondary" onclick="wlCopyURL()" style="height:34px;font-size:.78rem">📋 共有URLをコピー</button>
-        <span style="font-size:.68rem;color:var(--text2);align-self:center">← このURLを別端末で開くとウォッチリストが同期されます</span>
+        <span style="font-size:.68rem;color:var(--text2);align-self:center">← このURLを別端末で開くと同期されます</span>
       </div>
+    </div>
+
+    <!-- 写真から銘柄追加 -->
+    <div class="ctrl" style="margin-bottom:10px">
+      <div class="wl-title">📷 写真から銘柄コードを読み取って追加</div>
+      <div style="font-size:.72rem;color:var(--text2);margin-bottom:8px">証券アプリ・株価一覧のスクリーンショットを選ぶと銘柄コードを自動抽出します</div>
+      <label class="btn btn-secondary" for="img-upload" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;height:40px;padding:0 14px;margin-bottom:8px">
+        📷 写真を選択
+        <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="readImageStocks(this)">
+      </label>
+      <div id="img-preview" style="display:none;margin-bottom:8px">
+        <img id="img-preview-img" style="max-width:100%;max-height:180px;border-radius:8px;border:1px solid var(--border)">
+      </div>
+      <div id="img-ocr-result"></div>
     </div>
 
     <div id="notif-bar" class="notif-bar" style="display:none">
@@ -1561,6 +1575,95 @@ function toggleIndicator(name){
     if(name==='rsi'&&chartRsiObj)chartRsiObj.applyOptions({width:el.clientWidth||wrap.clientWidth||600});
     if(name==='macd'&&chartMacdObj)chartMacdObj.applyOptions({width:el.clientWidth||wrap.clientWidth||600});
   }
+}
+
+// ===== 写真OCR読み取り =====
+async function readImageStocks(input){
+  const file=input.files[0];
+  if(!file)return;
+
+  // プレビュー表示
+  const prev=document.getElementById('img-preview');
+  const prevImg=document.getElementById('img-preview-img');
+  prevImg.src=URL.createObjectURL(file);
+  prev.style.display='block';
+
+  const resEl=document.getElementById('img-ocr-result');
+  resEl.innerHTML='<div style="color:var(--text2);font-size:.78rem">🔍 読み取り中… 初回は10〜20秒ほどかかります</div>';
+
+  // Tesseract.js 遅延ロード
+  if(!window.Tesseract){
+    await new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src='https://unpkg.com/tesseract.js@4/dist/tesseract.min.js';
+      s.onload=resolve; s.onerror=reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  try{
+    const{data:{text}}=await Tesseract.recognize(file,'eng');
+
+    // 4桁数字 or 3桁+英字のコードを抽出
+    const raw=text.match(/\b\d{4}[A-Za-z]?\b|\b\d{3}[A-Z]\b/gi)||[];
+    const codes=[...new Set(raw.map(c=>c.toUpperCase()))]
+      .filter(c=>{
+        const n=parseInt(c);
+        if(/^\d{4}$/.test(c)) return n>=1000&&n<=9999;
+        if(/^\d{4}[A-Z]$/.test(c)) return n>=1000;
+        if(/^\d{3}[A-Z]$/.test(c)) return n>=100;
+        return false;
+      });
+
+    if(!codes.length){
+      resEl.innerHTML='<div style="color:var(--text2);font-size:.78rem">銘柄コードが見つかりませんでした。数字がはっきり写った画像をお試しください。</div>';
+      return;
+    }
+
+    const found=codes.map(c=>{
+      const db=STOCKS.find(s=>s.c===c);
+      return{c,n:db?db.n:c};
+    });
+
+    resEl.innerHTML=`
+      <div style="font-size:.74rem;color:var(--text2);margin-bottom:6px">📋 ${found.length}件のコードを検出。追加するものを選んでください：</div>
+      <div id="ocr-list">${found.map(s=>`
+        <label style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer">
+          <input type="checkbox" value="${s.c}" data-name="${esc(s.n)}" checked style="width:17px;height:17px;flex-shrink:0">
+          <span style="font-family:monospace;color:var(--accent);font-size:.82rem;min-width:46px">${s.c}</span>
+          <span style="font-size:.82rem">${s.n!==s.c?s.n:'<span style="color:var(--text2)">名称取得中…</span>'}</span>
+        </label>`).join('')}
+      </div>
+      <button class="btn btn-green" onclick="addOCRStocks()" style="height:36px;margin-top:10px;font-size:.8rem">✓ 選択した銘柄をウォッチリストに追加</button>`;
+
+    // DB未登録分の名前を非同期補完
+    found.filter(s=>s.n===s.c).forEach(async s=>{
+      const result=await fetchStockData(s.c,'5d');
+      if(!result)return;
+      const name=nameFromResult(result,s.c);
+      if(name&&name!==s.c){
+        s.n=name;
+        const cb=resEl.querySelector(`input[value="${s.c}"]`);
+        if(cb)cb.closest('label').querySelector('span:last-child').innerHTML=name;
+      }
+    });
+  }catch(e){
+    resEl.innerHTML='<div style="color:var(--red);font-size:.78rem">読み取りに失敗しました。</div>';
+  }
+}
+
+function addOCRStocks(){
+  const resEl=document.getElementById('img-ocr-result');
+  const checks=resEl.querySelectorAll('input[type=checkbox]:checked');
+  let added=0;
+  checks.forEach(cb=>{
+    const code=cb.value, name=cb.closest('label').querySelector('span:last-child').textContent.trim();
+    if(!getWL().find(w=>w.c===code)){addWL(code,name||code);added++;}
+  });
+  resEl.innerHTML=`<div style="color:var(--green);font-size:.78rem">✓ ${added}銘柄を追加しました</div>`;
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-upload').value='';
+  renderWL();
 }
 
 // ===== 初期化 =====
