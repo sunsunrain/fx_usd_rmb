@@ -145,14 +145,52 @@ h1{font-size:.95rem;font-weight:700;}
 .wl-title{font-size:.7rem;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;
   margin-bottom:8px;border-left:3px solid var(--accent);padding-left:8px;}
 .wl-add-row{display:flex;gap:6px;margin-bottom:8px;}
-.wl-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
-.wl-item{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:7px;padding:7px 10px;}
-.wl-item-name{flex:1;font-size:.82rem;}
-.wl-item-code{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);}
-.wl-item-del{background:none;border:none;color:var(--text2);cursor:pointer;font-size:.8rem;padding:2px 6px;}
-.wl-item-del:hover{color:var(--red);}
+.wl-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.wl-item{display:flex;flex-direction:column;gap:4px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;}
+.wl-item-top{display:flex;align-items:center;gap:6px;}
+.wl-item-name{flex:1;font-size:.85rem;font-weight:600;line-height:1.3;}
+.wl-item-code{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent2);
+  background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.25);border-radius:4px;padding:1px 5px;}
+.wl-item-btns{display:flex;gap:3px;flex-shrink:0;}
+.wl-item-btn{background:none;border:1px solid var(--border);border-radius:5px;color:var(--text2);
+  cursor:pointer;font-size:.72rem;padding:2px 7px;transition:all .15s;}
+.wl-item-btn:hover{border-color:var(--accent2);color:var(--text);}
+.wl-item-btn.del:hover{border-color:var(--red);color:var(--red);}
+.wl-trade-row{display:flex;align-items:center;gap:8px;font-size:.75rem;flex-wrap:wrap;}
+.wl-pnl{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;}
+.wl-pnl.up{color:var(--green);}
+.wl-pnl.dn{color:var(--red);}
+.wl-memo-row{font-size:.72rem;color:var(--text2);background:rgba(88,166,255,.06);
+  border-radius:4px;padding:3px 6px;line-height:1.5;white-space:pre-wrap;word-break:break-all;}
 .wl-empty{font-size:.78rem;color:var(--text2);padding:10px 0;}
+/* 購入記録モーダル */
+.trade-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:flex;
+  align-items:flex-end;justify-content:center;}
+.trade-modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px 14px 0 0;
+  padding:18px 16px 24px;width:100%;max-width:520px;animation:slideUp .2s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.trade-modal h3{font-size:.85rem;margin:0 0 12px;font-weight:700;}
+.trade-field{margin-bottom:10px;}
+.trade-field label{display:block;font-size:.68rem;color:var(--text2);margin-bottom:3px;}
+.trade-field input,.trade-field textarea{width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);padding:7px 10px;font-size:.85rem;box-sizing:border-box;}
+.trade-field textarea{min-height:70px;resize:vertical;font-family:inherit;}
+.trade-field input:focus,.trade-field textarea:focus{outline:none;border-color:var(--accent2);}
+/* チャート下の購入記録カード */
+.trade-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;margin-bottom:8px;}
+.trade-card-title{font-size:.65rem;font-weight:700;color:var(--text2);letter-spacing:.07em;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:space-between;}
+.trade-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.trade-card-field label{display:block;font-size:.63rem;color:var(--text2);margin-bottom:2px;}
+.trade-card-field input{width:100%;background:var(--bg);border:1px solid var(--border);
+  border-radius:5px;color:var(--text);padding:5px 8px;font-size:.82rem;box-sizing:border-box;}
+.trade-card-field input:focus{outline:none;border-color:var(--accent2);}
+.trade-card textarea{width:100%;background:var(--bg);border:1px solid var(--border);
+  border-radius:5px;color:var(--text);padding:5px 8px;font-size:.8rem;box-sizing:border-box;
+  min-height:56px;resize:vertical;font-family:inherit;margin-bottom:6px;}
+.trade-card textarea:focus{outline:none;border-color:var(--accent2);}
 
 /* スキャン結果 */
 .scan-result-row{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);
@@ -344,6 +382,27 @@ h1{font-size:.95rem;font-weight:700;}
     <div id="ta-comment" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:.82rem;line-height:1.85;">
       <div style="font-size:.63rem;font-weight:700;color:var(--text2);letter-spacing:.08em;margin-bottom:7px">💬 テクニカル分析コメント</div>
       <div id="ta-comment-text"></div>
+    </div>
+
+    <!-- 購入記録カード -->
+    <div id="trade-card" class="trade-card" style="display:none">
+      <div class="trade-card-title">
+        <span>📝 購入記録 — <span id="trade-card-label"></span></span>
+        <span id="trade-card-pnl" style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700"></span>
+      </div>
+      <div class="trade-card-grid">
+        <div class="trade-card-field">
+          <label>購入価格（円）</label>
+          <input type="number" id="tc-buy" placeholder="例：1250" min="0" step="0.5">
+        </div>
+        <div class="trade-card-field">
+          <label>売却目標（円）</label>
+          <input type="number" id="tc-sell" placeholder="例：1500" min="0" step="0.5">
+        </div>
+      </div>
+      <label style="display:block;font-size:.63rem;color:var(--text2);margin-bottom:2px">購入動機・メモ</label>
+      <textarea class="trade-card textarea" id="tc-memo" placeholder="例：RSI30以下で底値圏、移動平均線ゴールデンクロス間近"></textarea>
+      <button class="btn btn-green" onclick="saveTradeCard()" style="height:34px;font-size:.78rem;width:100%">💾 保存</button>
     </div>
 
     <!-- インジケーター切替ボタン -->
@@ -1196,6 +1255,13 @@ async function loadCharts(){
   addFav(currentCode1,currentName1);
   // チャート表示時に自動でウォッチリストへ追加（上限30銘柄）
   addWLauto(currentCode1,currentName1);
+  // 最終価格をWLに保存し購入記録カードを表示
+  const lastPrice1=rows[rows.length-1]?.close||null;
+  if(lastPrice1){
+    const wl2=getWL().map(w=>w.c===currentCode1?{...w,lastPrice:lastPrice1}:w);
+    saveWL(wl2);
+  }
+  showTradeCard(currentCode1,currentName1,lastPrice1);
 
   if(compareMode&&currentCode2)loadChart2();
 }
@@ -1237,16 +1303,52 @@ function renderWL(){
   const cnt=document.getElementById('wl-count');
   if(cnt)cnt.textContent=`${wl.length} / ${WL_MAX}銘柄`;
   if(!wl.length){el.innerHTML='<div class="wl-empty">銘柄が登録されていません。チャートで表示すると自動追加されます（上限30銘柄）。</div>';return;}
-  el.innerHTML=wl.map(w=>`
-    <div class="wl-item">
-      <span class="wl-item-name">${w.n===w.c?`<span style="color:var(--text2)">${w.c}</span>`:w.n}<span style="color:var(--text2);font-family:monospace;font-size:.7rem;margin-left:5px">${w.n!==w.c?w.c:''}</span></span>
-      <button class="wl-item-del" onclick="removeWL('${w.c}')">✕ 削除</button>
-    </div>`).join('');
+  el.innerHTML=wl.map(w=>{
+    const dispName=w.n&&w.n!==w.c?w.n:w.c;
+    // 損益表示
+    let tradeHTML='';
+    if(w.buy&&w.buy>0){
+      const last=w.lastPrice||null;
+      let pnlStr='';
+      if(last){
+        const pct=((last-w.buy)/w.buy*100).toFixed(2);
+        const cls=pct>=0?'up':'dn';
+        const sign=pct>=0?'+':'';
+        pnlStr=`<span class="wl-pnl ${cls}">${sign}${pct}%</span>`;
+      }
+      const buyStr=`購入 ¥${w.buy.toLocaleString()}`;
+      const lastStr=last?` → 現在 ¥${last.toLocaleString()}`:'';
+      const sellStr=w.sellTarget?` ｜ 目標 ¥${w.sellTarget.toLocaleString()}`:'';
+      tradeHTML=`<div class="wl-trade-row"><span style="color:var(--text2)">${buyStr}${lastStr}${sellStr}</span>${pnlStr}</div>`;
+    }
+    const memoHTML=w.memo?`<div class="wl-memo-row">${escH(w.memo)}</div>`:'';
+    return `<div class="wl-item">
+      <div class="wl-item-top">
+        <span class="wl-item-name">${escH(dispName)}</span>
+        <span class="wl-item-code">${escH(w.c)}</span>
+        <div class="wl-item-btns">
+          <button class="wl-item-btn" onclick="selectWLstock('${escH(w.c)}','${escH(dispName)}')">チャート</button>
+          <button class="wl-item-btn" onclick="openTradeEdit('${escH(w.c)}')">📝</button>
+          <button class="wl-item-btn del" onclick="removeWL('${escH(w.c)}')">✕</button>
+        </div>
+      </div>
+      ${tradeHTML}${memoHTML}
+    </div>`;
+  }).join('');
+}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function selectWLstock(code,name){
+  currentCode1=code;currentName1=name;
+  document.getElementById('search1').value=`${name}　${code}`;
+  switchTab('chart');
+  loadCharts();
 }
 const WL_MAX=30;
 function addWL(code,name){
+  const existing=getWL().find(w=>w.c===code);
   const wl=getWL().filter(w=>w.c!==code);
-  wl.push({c:code,n:name});
+  // preserve trade data if already existed
+  wl.push(existing?{...existing,n:name}:{c:code,n:name});
   saveWL(wl);renderWL();
 }
 // チャートから自動追加（上限チェック付き・トースト通知）
@@ -1277,6 +1379,65 @@ function showToast(msg,type='ok'){
   t._timer=setTimeout(()=>t.style.opacity='0',2800);
 }
 function removeWL(code){saveWL(getWL().filter(w=>w.c!==code));renderWL();}
+
+// ===== 購入記録（チャートカード） =====
+function showTradeCard(code,name,lastPrice){
+  const card=document.getElementById('trade-card');
+  const lbl=document.getElementById('trade-card-label');
+  const pnlEl=document.getElementById('trade-card-pnl');
+  if(!card)return;
+  card.dataset.code=code;
+  card.dataset.lastPrice=lastPrice||'';
+  lbl.textContent=`${name}（${code}）`;
+  // 既存データがあれば反映
+  const wl=getWL();
+  const entry=wl.find(w=>w.c===code);
+  document.getElementById('tc-buy').value=entry?.buy||'';
+  document.getElementById('tc-sell').value=entry?.sellTarget||'';
+  document.getElementById('tc-memo').value=entry?.memo||'';
+  // 損益表示
+  if(entry?.buy&&lastPrice){
+    const pct=((lastPrice-entry.buy)/entry.buy*100).toFixed(2);
+    const sign=pct>=0?'+':'';
+    pnlEl.textContent=`${sign}${pct}%`;
+    pnlEl.style.color=pct>=0?'var(--green)':'var(--red)';
+  } else {
+    pnlEl.textContent='';
+  }
+  card.style.display='block';
+}
+function saveTradeCard(){
+  const card=document.getElementById('trade-card');
+  const code=card.dataset.code;
+  const lastPrice=parseFloat(card.dataset.lastPrice)||null;
+  if(!code)return;
+  const buy=parseFloat(document.getElementById('tc-buy').value)||null;
+  const sellTarget=parseFloat(document.getElementById('tc-sell').value)||null;
+  const memo=document.getElementById('tc-memo').value.trim();
+  const wl=getWL().map(w=>w.c===code?{...w,buy,sellTarget,memo,lastPrice}:w);
+  saveWL(wl);
+  // 損益再計算して表示
+  const pnlEl=document.getElementById('trade-card-pnl');
+  if(buy&&lastPrice){
+    const pct=((lastPrice-buy)/buy*100).toFixed(2);
+    const sign=pct>=0?'+':'';
+    pnlEl.textContent=`${sign}${pct}%`;
+    pnlEl.style.color=pct>=0?'var(--green)':'var(--red)';
+  }
+  showToast('購入記録を保存しました','ok');
+}
+
+// ===== WLアイテム編集（ウォッチリストタブから） =====
+function openTradeEdit(code){
+  const wl=getWL();
+  const entry=wl.find(w=>w.c===code);
+  if(!entry)return;
+  // チャートタブに切り替えてカードを表示
+  currentCode1=entry.c;currentName1=entry.n&&entry.n!==entry.c?entry.n:entry.c;
+  document.getElementById('search1').value=`${currentName1}　${code}`;
+  switchTab('chart');
+  loadCharts();
+}
 
 // URLにウォッチリストをエンコードして共有
 function wlCopyURL(){
